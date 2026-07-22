@@ -1,0 +1,386 @@
+package com.nerdsoft.mods.nerdsoftkitchen.blockentity;
+
+import com.nerdsoft.mods.nerdsoftkitchen.block.GrillTableBlock;
+import com.nerdsoft.mods.nerdsoftkitchen.client.sound.GrillLoopSoundInstance;
+import com.nerdsoft.mods.nerdsoftkitchen.recipe.CookRecipe;
+import com.nerdsoft.mods.nerdsoftkitchen.recipe.CookRecipeInput;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.ModBlockEntities;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.ModRecipeTypes;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.ModSounds;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.Containers;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+import java.util.Optional;
+
+public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements WorldlyContainer {
+
+    public static final int GRILL_SLOTS_START = 0;
+    public static final int GRILL_SLOTS_COUNT = 4;
+    public static final int CAMPFIRE_SLOTS_START = 4;
+    public static final int CAMPFIRE_SLOTS_COUNT = 4;
+    public static final int TOTAL_SLOTS = GRILL_SLOTS_COUNT + CAMPFIRE_SLOTS_COUNT;
+
+    private static final int[] GRILL_SLOTS = {0, 1, 2, 3};
+    private static final int[] CAMPFIRE_SLOTS = {4, 5, 6, 7};
+    private static final int[] ALL_SLOTS = {0, 1, 2, 3, 4, 5, 6, 7};
+
+    private static final float SIZZLE_CHANCE_PER_TICK = 1.0F / 80.0F;
+    private static final double GRILL_MAX_RANDOM_OFFSET = 0.03;
+
+    private static final float HAY_BALE_MULTIPLIER = 1.25F;
+    private static final float SOUL_BONUS_MULTIPLIER = 0.10F;
+    private static final float BASE_MULTIPLIER = 1.0F;
+    private final RecipeManager.CachedCheck<CookRecipeInput, CookRecipe> grillRecipeCheck = RecipeManager.createCheck(ModRecipeTypes.COOK_TYPE.get());
+    private final RecipeManager.CachedCheck<SingleRecipeInput, CampfireCookingRecipe> campfireRecipeCheck = RecipeManager.createCheck(RecipeType.CAMPFIRE_COOKING);
+    private final float[] grillRotation = new float[GRILL_SLOTS_COUNT];
+    private final float[] grillOffsetX = new float[GRILL_SLOTS_COUNT];
+    private final float[] grillOffsetZ = new float[GRILL_SLOTS_COUNT];
+    private final int renderSeedBase;
+    private GrillLoopSoundInstance activeLoopSound;
+    private float speedMultiplier = BASE_MULTIPLIER;
+
+    public GrillTableBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.GRILL_TABLE.get(), pos, state, TOTAL_SLOTS);
+        this.renderSeedBase = (int) pos.asLong();
+    }
+
+    private static boolean isGrillSlot(int slot) {
+        return slot >= GRILL_SLOTS_START && slot < GRILL_SLOTS_START + GRILL_SLOTS_COUNT;
+    }
+
+    private static void playSizzle(Level level, BlockPos pos) {
+        float pitch = 0.85F + level.getRandom().nextFloat() * 0.3F;
+        level.playSound(null, pos, ModSounds.GRILL_SIZZLE.get(), SoundSource.BLOCKS, 0.8F, pitch);
+    }
+
+    private static void playPlaceFood(Level level, BlockPos pos) {
+        float pitch = 0.9F + level.getRandom().nextFloat() * 0.2F;
+        level.playSound(null, pos, ModSounds.GRILL_PLACE_FOOD.get(), SoundSource.BLOCKS, 0.7F, pitch);
+    }
+
+    private static void shuffleArray(int[] arr, RandomSource rand) {
+        for (int i = arr.length - 1; i > 0; i--) {
+            int j = rand.nextInt(i + 1);
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+    }
+
+    private static float computeShuffledRotation(long baseSeed, int localSlot) {
+        RandomSource rand = RandomSource.create(baseSeed);
+
+        int[] ranges = {0, 1, 2, 3};
+        shuffleArray(ranges, rand);
+
+        int[] signs = {1, -1, 1, -1};
+        shuffleArray(signs, rand);
+
+        int rangeIndex = ranges[localSlot % 4];
+        int sign = signs[localSlot % 4];
+
+        RandomSource slotRand = RandomSource.create(baseSeed + localSlot + 99);
+        float minAngle = 30.0F + rangeIndex * 3.75F;
+        float angle = minAngle + slotRand.nextFloat() * 3.75F;
+
+        return angle * sign;
+    }
+
+    private static double[] computeShuffledOffset(long baseSeed, int localSlot, double maxRandomOffset) {
+        RandomSource rand = RandomSource.create(baseSeed ^ 0x5a5a5a5a5a5a5a5aL);
+
+        int[] quadrants = {0, 1, 2, 3};
+        shuffleArray(quadrants, rand);
+
+        int quadrant = quadrants[localSlot % 4];
+
+        RandomSource slotRand = RandomSource.create((baseSeed ^ 0x5a5a5a5a5a5a5a5aL) + localSlot + 99);
+        double distance = (0.4 + slotRand.nextFloat() * 0.6) * maxRandomOffset;
+        double baseAngle = quadrant * (Math.PI / 2.0);
+        double angle = baseAngle + slotRand.nextFloat() * (Math.PI / 2.0);
+
+        double offsetX = Math.cos(angle) * distance;
+        double offsetZ = Math.sin(angle) * distance;
+        return new double[]{offsetX, offsetZ};
+    }
+
+    public static void tick(Level level, BlockPos pos, BlockState state, GrillTableBlockEntity entity) {
+        genericTick(level, pos, state, entity);
+    }
+
+    public int getRenderSeedBase() {
+        return renderSeedBase;
+    }
+
+    private void cacheGrillTransform(int slot) {
+        int localSlot = slot - GRILL_SLOTS_START;
+        long baseSeed = slotSeeds[slot];
+        grillRotation[localSlot] = computeShuffledRotation(baseSeed, localSlot);
+        double[] offset = computeShuffledOffset(baseSeed, localSlot, GRILL_MAX_RANDOM_OFFSET);
+        grillOffsetX[localSlot] = (float) offset[0];
+        grillOffsetZ[localSlot] = (float) offset[1];
+    }
+
+    @Override
+    protected void onSlotSeedAssigned(int slot) {
+        if (isGrillSlot(slot)) {
+            cacheGrillTransform(slot);
+        }
+    }
+
+    @Override
+    protected void onSlotsLoaded() {
+        for (int slot = GRILL_SLOTS_START; slot < GRILL_SLOTS_START + GRILL_SLOTS_COUNT; slot++) {
+            cacheGrillTransform(slot);
+        }
+        if (level != null && getBlockState().getBlock() instanceof GrillTableBlock grillTableBlock) {
+            refreshSpeedMultiplier(grillTableBlock.isSoul());
+        }
+    }
+
+    public float getGrillRotation(int localSlot) {
+        return grillRotation[localSlot];
+    }
+
+    public float getGrillOffsetX(int localSlot) {
+        return grillOffsetX[localSlot];
+    }
+
+    public float getGrillOffsetZ(int localSlot) {
+        return grillOffsetZ[localSlot];
+    }
+
+    public void refreshSpeedMultiplier(boolean soul) {
+        if (level == null) {
+            return;
+        }
+        boolean hayBelow = level.getBlockState(worldPosition.below()).is(Blocks.HAY_BLOCK);
+        float multiplier = BASE_MULTIPLIER;
+        if (hayBelow) {
+            multiplier = HAY_BALE_MULTIPLIER;
+            if (soul) {
+                multiplier += SOUL_BONUS_MULTIPLIER;
+            }
+        }
+        if (multiplier != speedMultiplier) {
+            speedMultiplier = multiplier;
+            refreshAllSlotRecipes();
+            setChanged();
+        }
+    }
+
+    private int scaledCookTime(int baseCookTime) {
+        if (speedMultiplier == BASE_MULTIPLIER) {
+            return baseCookTime;
+        }
+        int scaled = Math.round(baseCookTime / speedMultiplier);
+        return Math.max(1, scaled);
+    }
+
+    @Override
+    protected boolean isBlockActive(Level level, BlockState state) {
+        return state.getValue(GrillTableBlock.LIT);
+    }
+
+    private boolean canCookAt(Level level, ItemStack stack) {
+        if (grillRecipeCheck.getRecipeFor(new CookRecipeInput(stack), level).isPresent()) {
+            return true;
+        }
+        return campfireRecipeCheck.getRecipeFor(new SingleRecipeInput(stack), level).isPresent();
+    }
+
+    @Override
+    protected CookResult resolveRecipe(Level level, int slot, ItemStack stack) {
+        CookRecipeInput cookInput = new CookRecipeInput(stack);
+        Optional<RecipeHolder<CookRecipe>> cookRecipe = grillRecipeCheck.getRecipeFor(cookInput, level);
+        if (cookRecipe.isPresent()) {
+            CookRecipe recipe = cookRecipe.get().value();
+            ItemStack output = recipe.assemble(cookInput, level.registryAccess());
+            return new CookResult(output, scaledCookTime(recipe.cookingTime()));
+        }
+        SingleRecipeInput campfireInput = new SingleRecipeInput(stack);
+        Optional<RecipeHolder<CampfireCookingRecipe>> campfireRecipe = campfireRecipeCheck.getRecipeFor(campfireInput, level);
+        if (campfireRecipe.isPresent()) {
+            CampfireCookingRecipe recipe = campfireRecipe.get().value();
+            ItemStack output = recipe.assemble(campfireInput, level.registryAccess());
+            return new CookResult(output, scaledCookTime(recipe.getCookingTime()));
+        }
+        return null;
+    }
+
+    @Override
+    protected void onCookComplete(Level level, BlockPos pos, int slot, ItemStack result) {
+        playSizzle(level, pos);
+        dropCookedItem(level, pos, slot, result);
+    }
+
+    private void dropCookedItem(Level level, BlockPos pos, int slot, ItemStack result) {
+        if (!result.isItemEnabled(level.enabledFeatures())) {
+            return;
+        }
+        if (isGrillSlot(slot)) {
+            Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, result);
+        } else {
+            Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, result);
+        }
+    }
+
+    @Override
+    protected void onAnyCooking(Level level, BlockPos pos) {
+        if (!level.isClientSide && level.getRandom().nextFloat() < SIZZLE_CHANCE_PER_TICK) {
+            playSizzle(level, pos);
+        }
+    }
+
+    public boolean hasCookableRecipe(ItemStack stack) {
+        Level level = getLevel();
+        if (level == null || !canCookAt(level, stack)) {
+            return false;
+        }
+        return hasFreeSlot(GRILL_SLOTS_START, GRILL_SLOTS_COUNT) || hasFreeSlot(CAMPFIRE_SLOTS_START, CAMPFIRE_SLOTS_COUNT);
+    }
+
+    public boolean isCooking() {
+        return nonEmptySlotCount > 0;
+    }
+
+    private boolean hasFreeSlot(int start, int count) {
+        for (int slot = start; slot < start + count; slot++) {
+            if (items.get(slot).isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean placeFood(@Nullable LivingEntity entity, ItemStack food) {
+        if (placeFoodInRange(entity, food, GRILL_SLOTS_START, GRILL_SLOTS_COUNT)) {
+            return true;
+        }
+        return placeFoodInRange(entity, food, CAMPFIRE_SLOTS_START, CAMPFIRE_SLOTS_COUNT);
+    }
+
+    private boolean placeFoodInRange(@Nullable LivingEntity entity, ItemStack food, int start, int count) {
+        Level lvl = getLevel();
+        if (lvl == null) {
+            return false;
+        }
+        for (int slot = start; slot < start + count; slot++) {
+            if (!items.get(slot).isEmpty()) {
+                continue;
+            }
+
+            ItemStack inserted = food.copyWithCount(1);
+            CookResult result = resolveRecipe(lvl, slot, inserted);
+            if (result == null) {
+                return false;
+            }
+
+            cookProgress[slot] = 0;
+            cachedOutput[slot] = result.output();
+            cookTime[slot] = result.cookTime();
+            items.set(slot, food.consumeAndReturn(1, entity));
+            cookingSlotCount++;
+            nonEmptySlotCount++;
+            this.slotSeeds[slot] = lvl.getRandom().nextLong();
+            onSlotSeedAssigned(slot);
+            playPlaceFood(lvl, getBlockPos());
+            lvl.gameEvent(GameEvent.BLOCK_CHANGE, getBlockPos(), GameEvent.Context.of(entity, getBlockState()));
+            markUpdated();
+            return true;
+        }
+        return false;
+    }
+
+    private void markUpdated() {
+        setChanged();
+        Objects.requireNonNull(getLevel()).sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+    }
+
+    @Override
+    public int @NotNull [] getSlotsForFace(@NotNull Direction side) {
+        if (side == Direction.UP) {
+            return GRILL_SLOTS;
+        }
+        if (side == Direction.DOWN) {
+            return CAMPFIRE_SLOTS;
+        }
+        return ALL_SLOTS;
+    }
+
+    @Override
+    public boolean canPlaceItemThroughFace(int slot, @NotNull ItemStack stack, @Nullable Direction direction) {
+        return canPlaceItem(slot, stack);
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(int slot, @NotNull ItemStack stack, @NotNull Direction direction) {
+        return cookProgress[slot] == 0;
+    }
+
+    @Override
+    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
+        if (!getItem(slot).isEmpty()) {
+            return false;
+        }
+        Level level = getLevel();
+        if (level == null) {
+            return false;
+        }
+        return canCookAt(level, stack);
+    }
+
+    public void copyItemsFrom(NonNullList<ItemStack> source) {
+        int count = Math.min(source.size(), items.size());
+        for (int i = 0; i < count; i++) {
+            items.set(i, source.get(i));
+        }
+        refreshOccupancyCount();
+        refreshAllSlotRecipes();
+        setChanged();
+    }
+
+    public SoundInstance getLoopSound() {
+        return this.activeLoopSound;
+    }
+
+    public void startLoopSound(Level lvl, BlockPos pos) {
+        if (lvl.isClientSide()) {
+            GrillLoopSoundInstance newSound = new GrillLoopSoundInstance(lvl, pos);
+            this.activeLoopSound = newSound;
+            Minecraft.getInstance().getSoundManager().play(newSound);
+        }
+    }
+
+    public void stopLoopSound() {
+        if (this.activeLoopSound != null) {
+            Minecraft.getInstance().getSoundManager().stop(this.activeLoopSound);
+            this.activeLoopSound = null;
+        }
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        if (level != null && level.isClientSide()) {
+            stopLoopSound();
+        }
+    }
+}
