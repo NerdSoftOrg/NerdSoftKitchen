@@ -8,7 +8,6 @@ import com.nerdsoft.mods.nerdsoftkitchen.registry.ModBlockEntities;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.ModBlocks;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.ModDamageTypes;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.ModSounds;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -306,17 +305,9 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> blockEntityType) {
         if (level.isClientSide) {
-            return createTickerHelper(blockEntityType, ModBlockEntities.GRILL_TABLE.get(), (lvl, pos, blockState, entity) -> {
-                boolean shouldPlay = blockState.getValue(LIT) && entity.isCooking();
-                Minecraft mc = Minecraft.getInstance();
-                if (shouldPlay) {
-                    if (!mc.getSoundManager().isActive(entity.getLoopSound())) {
-                        entity.startLoopSound(lvl, pos);
-                    }
-                } else {
-                    entity.stopLoopSound();
-                }
-            });
+            return createTickerHelper(blockEntityType, ModBlockEntities.GRILL_TABLE.get(),
+                    (lvl, pos, blockState, entity) ->
+                            com.nerdsoft.mods.nerdsoftkitchen.client.sound.GrillLoopSoundManager.update(lvl, pos, blockState, entity));
         }
 
         return createTickerHelper(blockEntityType, ModBlockEntities.GRILL_TABLE.get(), GrillTableBlockEntity::tick);

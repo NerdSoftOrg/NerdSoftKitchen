@@ -1,14 +1,11 @@
 package com.nerdsoft.mods.nerdsoftkitchen.blockentity;
 
 import com.nerdsoft.mods.nerdsoftkitchen.block.GrillTableBlock;
-import com.nerdsoft.mods.nerdsoftkitchen.client.sound.GrillLoopSoundInstance;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.CookRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.CookRecipeInput;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.ModBlockEntities;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.ModRecipeTypes;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.ModSounds;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -53,7 +50,6 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
     private final float[] grillOffsetX = new float[GRILL_SLOTS_COUNT];
     private final float[] grillOffsetZ = new float[GRILL_SLOTS_COUNT];
     private final int renderSeedBase;
-    private GrillLoopSoundInstance activeLoopSound;
     private float speedMultiplier = BASE_MULTIPLIER;
 
     public GrillTableBlockEntity(BlockPos pos, BlockState state) {
@@ -355,32 +351,5 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
         refreshOccupancyCount();
         refreshAllSlotRecipes();
         setChanged();
-    }
-
-    public SoundInstance getLoopSound() {
-        return this.activeLoopSound;
-    }
-
-    public void startLoopSound(Level lvl, BlockPos pos) {
-        if (lvl.isClientSide()) {
-            GrillLoopSoundInstance newSound = new GrillLoopSoundInstance(lvl, pos);
-            this.activeLoopSound = newSound;
-            Minecraft.getInstance().getSoundManager().play(newSound);
-        }
-    }
-
-    public void stopLoopSound() {
-        if (this.activeLoopSound != null) {
-            Minecraft.getInstance().getSoundManager().stop(this.activeLoopSound);
-            this.activeLoopSound = null;
-        }
-    }
-
-    @Override
-    public void setRemoved() {
-        super.setRemoved();
-        if (level != null && level.isClientSide()) {
-            stopLoopSound();
-        }
     }
 }

@@ -1,14 +1,15 @@
 <div align="center">
 
-![Banner](docs/media/banner.png)
+# ![NerdSoft Kitchen](docs/media/banner.png)
 
 [![NeoForge](https://img.shields.io/badge/NeoForge-1.21.1-orange?style=for-the-badge&logo=curseforge)](https://neoforged.net/)
 [![Modrinth](https://img.shields.io/badge/Modrinth-Download-1bd96a?style=for-the-badge&logo=modrinth)](https://modrinth.com/mod/nerdsoftkitchen)
 [![CurseForge](https://img.shields.io/badge/CurseForge-Download-f16436?style=for-the-badge&logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/nerdsoftkitchen)
 [![License](https://img.shields.io/badge/License-CC--BY--NC--SA--4%2E0-lightgrey?style=for-the-badge)](#license)
 
-<b> A cooking overhaul for NeoForge 1.21.1 </b>
-<b> New crops, a multi-slot grill table and fillable vessels. </b>
+**A cooking overhaul for NeoForge 1.21.1**
+<br>
+**New crops, a multi-slot grill table and fillable vessels.**
 </div>
 
 ---
@@ -17,7 +18,7 @@
 
 **NerdSoft Kitchen** adds a small but deep cooking loop to Minecraft: grow your own produce, work a hand-fed **Grill
 Table**, and fill a reusable **Iron Cup** with milk, yogurt, or strawberry yogurt. Everything is built data-driven on
-top of vanilla systems (custom recipe types, data components, and datagen for recipes/loot/tags/advancements/language),
+top of vanilla systems (custom recipe types, data components, and datagen for `recipes/loot/tags/advancements/language`),
 so the mod stays lightweight and easy to extend or add compatibility for.
 
 > Currently in **Beta 0.1** — core systems are implemented and stable, but content, balance, and polish are still
@@ -69,18 +70,19 @@ so the mod stays lightweight and easy to extend or add compatibility for.
 
 ## Installation & Requirements
 
-| Requirement | Version                                        |
-|-------------|------------------------------------------------|
-| Minecraft   | `1.21.1`                                       |
-| Mod Loader  | [NeoForge](https://neoforged.net/) `21.1.235+` |
-| Java        | `21+`                                          |
+| Requirement | Version                                            |
+|-------------|----------------------------------------------------|
+| Minecraft   | `1.21.1`                                           |
+| Mod Loader  | [NeoForge](https://neoforged.net/) `21.X` or later |
+| Java        | `21+`                                              |
 
-1. Install [NeoForge](https://neoforged.net/) for Minecraft 1.21.1.
+1. Install [NeoForge](https://neoforged.net/) `21.X` or later for Minecraft 1.21.1.
 2. Download the latest **NerdSoft Kitchen** jar from [Modrinth](https://modrinth.com/mod/nerdsoftkitchen)
    or [CurseForge](https://www.curseforge.com/minecraft/mc-mods/nerdsoftkitchen).
 3. Drop the jar into your `mods/` folder.
-4. (Optional) Install [JEI](https://www.curseforge.com/minecraft/mc-mods/jei)
-   and/or [Jade](https://modrinth.com/mod/jade) for the integrations described below.
+4. (Optional) Install [JEI](https://modrinth.com/mod/jei/versions?g=1.21.1&l=neoforge)
+   and/or [Jade](https://modrinth.com/mod/jade/versions?c=release&g=1.21.1&l=neoforge) for the integrations described
+   below.
 5. Launch the game.
 
 > This mod is a **client + server** mod — install it on both sides for multiplayer.
@@ -102,8 +104,9 @@ items currently cooking inside it — no need to open a GUI to check progress.
 
 ### Data Components
 
-Iron Cup contents are implemented as a first-class [data component](https://docs.neoforged.net/), not NBT or metadata —
-this keeps stacking, tooltips, and JEI/Jade integration consistent and future-proof against further additions.
+Iron Cup contents are implemented as a
+first-class [data component](https://docs.neoforged.net/docs/1.21.1/items/datacomponents/), not NBT or metadata — this
+keeps stacking, tooltips, and JEI/Jade integration consistent and future-proof against further additions.
 
 No config file is required for Beta 0.1; all tuning currently lives in the datapack (recipes, loot tables, tags).
 
@@ -112,39 +115,54 @@ No config file is required for Beta 0.1; all tuning currently lives in the datap
 <div align="center">
 <img src="docs/media/screenshot_grill.png" width="400"/> <img src="docs/media/screenshot_farm.png" width="400"/>
 <br/>
-<img src="docs/media/screenshot_cup.png" width="400"/> <img src="docs/media/screenshot_jei.png" width="400"/>
+<img src="docs/media/screenshot_kitchen_tab.png" width="400"/> <img src="docs/media/screenshot_advancements.png" width="400"/>
 </div>
 
 ## Contribution Guidelines
 
 Contributions are welcome for **bug reports, translations, and datapack-side content** (recipes, loot tables, tags).
-Please note the source license below before submitting code.
 
-1. **Bugs & suggestions:** open a [GitHub Issue](https://github.com/nerdsoft-mods/nerdsoftkitchen/issues) with your
+1. **Bugs & suggestions:** open a [GitHub Issue](https://github.com/NerdSoftOrg/NerdSoft-Kitchen/issues) with your
    Minecraft/NeoForge/mod version, a log if relevant, and steps to reproduce.
-2. **Pull requests:** open an issue first to discuss the change before investing time in a PR — this project does not
-   currently accept unsolicited code contributions without prior discussion (see [License](#license)).
+2. **Pull requests:** open an issue first to discuss the change before investing time in a PR — this keeps effort
+   aligned with where the project is headed, and avoids duplicate work.
 3. **Translations:** language files live under `src/main/java/.../datagen/ModEnUsLanguageProvider.java` and
    `ModEsEsLanguageProvider.java` (datagen-based, not raw JSON) — open an issue to propose or contribute a new language.
-4. **Dev environment:** standard NeoForge Gradle userdev setup — `./gradlew runClient` / `./gradlew runData` to
-   regenerate assets.
+4. **Dev environment:** standard NeoForge Gradle userdev setup — `./gradlew runData` and then `./gradlew runClient` to
+   generate assets and launch.
 
-Please be respectful and constructive — see our [Code of Conduct](CODE_OF_CONDUCT.md) placeholder.
+Please be respectful and constructive when opening issues or discussing changes.
 
 ## License
 
-**All Rights Reserved.**
+This mod is licensed under
+**[Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/)**
+(CC-BY-NC-SA-4.0).
 
-This repository is source-available for transparency and community bug reports, but is **not** licensed for
-redistribution, reuse, or derivative works without explicit permission from the authors. See [`LICENSE`](LICENSE) for
-full terms, or open an issue if you'd like to discuss usage permissions.
+In short, you're free to:
+
+- **Share** — copy and redistribute the mod in any medium or format.
+- **Adapt** — remix, transform, and build upon it.
+
+Under these terms:
+
+- **Attribution** — credit NerdSoft (Bichal & Hugo) and link back to the original.
+- **NonCommercial** — no selling the mod or derivatives, or using them commercially, without permission.
+- **ShareAlike** — if you remix or build on it, your version must carry the same license.
+
+See [`LICENSE`](LICENSE) for the full legal text, or open an issue if you'd like to discuss usage outside these terms.
 
 ---
 
 <div align="center">
 
-Made with 🍳 by **Bichal** and **Hugo**
+![Logo](docs/media/logo_small.png)
 
-[Modrinth](https://modrinth.com/mod/nerdsoftkitchen) · [CurseForge](https://www.curseforge.com/minecraft/mc-mods/nerdsoftkitchen) · [Discord](https://discord.gg/your-invite) · [Issues](https://github.com/nerdsoft-mods/nerdsoftkitchen/issues)
+Made by **[NerdSoft](https://github.com/NerdSoftOrg)** — **[Bichal](https://github.com/Bichal)** &
+**[Hugo](https://github.com/HugobesugoXD)**
+
+[![Modrinth](https://img.shields.io/badge/Modrinth-Download-1bd96a?style=for-the-badge&logo=modrinth)](https://modrinth.com/mod/nerdsoftkitchen)
+[![CurseForge](https://img.shields.io/badge/CurseForge-Download-f16436?style=for-the-badge&logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/nerdsoftkitchen)
+[![Issues](https://img.shields.io/badge/issues-open_issue-f16436?style=for-the-badge&logo=github)](https://github.com/NerdSoftOrg/NerdSoft-Kitchen/issues)
 
 </div>
