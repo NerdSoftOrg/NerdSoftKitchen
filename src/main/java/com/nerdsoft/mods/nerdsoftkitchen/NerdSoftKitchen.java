@@ -1,6 +1,15 @@
 package com.nerdsoft.mods.nerdsoftkitchen;
 
-import com.nerdsoft.mods.nerdsoftkitchen.registry.*;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.gui.ModCreativeTabs;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.data.ModDataComponents;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.gui.ModMenuTypes;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.item.ModItems;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.recipe.ModIngredientTypes;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.recipe.ModRecipeSerializers;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.recipe.ModRecipeTypes;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.sound.ModSounds;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;

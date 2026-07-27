@@ -263,19 +263,6 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
         return items;
     }
 
-    @SuppressWarnings("unused")
-    public int getTotalSlots() {
-        return totalSlots;
-    }
-
-    @SuppressWarnings("unused")
-    public long getSlotSeed(int slot) {
-        if (slot >= 0 && slot < slotSeeds.length) {
-            return slotSeeds[slot];
-        }
-        return 0L;
-    }
-
     public void dropContents(Level level, BlockPos pos) {
         Containers.dropContents(level, pos, items);
         items.clear();
@@ -284,22 +271,24 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
         nonEmptySlotCount = 0;
     }
 
-    @Override
-    protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
-        super.loadAdditional(tag, registries);
-
+    private void readTagInto(CompoundTag tag, HolderLookup.Provider registries, boolean reseedOnMismatch) {
         Collections.fill(items, ItemStack.EMPTY);
 
         if (tag.contains(ITEMS_KEY, 10)) {
             ContainerHelper.loadAllItems(tag.getCompound(ITEMS_KEY), items, registries);
         }
-
-        readProgressAndTime(tag);
-
+        int[] progress = tag.getIntArray(PROGRESS_KEY);
+        int[] times = tag.getIntArray(TIME_KEY);
+        if (progress.length == totalSlots) {
+            System.arraycopy(progress, 0, cookProgress, 0, totalSlots);
+        }
+        if (times.length == totalSlots) {
+            System.arraycopy(times, 0, cookTime, 0, totalSlots);
+        }
         long[] loadedSeeds = tag.getLongArray("SlotSeeds");
         if (loadedSeeds.length == totalSlots) {
             System.arraycopy(loadedSeeds, 0, slotSeeds, 0, totalSlots);
-        } else {
+        } else if (reseedOnMismatch) {
             for (int i = 0; i < totalSlots; i++) {
                 this.slotSeeds[i] = SEED_SOURCE.nextLong();
             }
@@ -307,6 +296,21 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
 
         refreshOccupancyCount();
         onSlotsLoaded();
+    }
+
+    private CompoundTag writeTag(HolderLookup.Provider registries) {
+        CompoundTag tag = new CompoundTag();
+        tag.put(ITEMS_KEY, ContainerHelper.saveAllItems(new CompoundTag(), items, registries));
+        tag.putIntArray(PROGRESS_KEY, cookProgress);
+        tag.putIntArray(TIME_KEY, cookTime);
+        tag.putLongArray("SlotSeeds", slotSeeds);
+        return tag;
+    }
+
+    @Override
+    protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
+        super.loadAdditional(tag, registries);
+        readTagInto(tag, registries, true);
     }
 
     @Override
@@ -318,50 +322,18 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
     @Override
     protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.saveAdditional(tag, registries);
-        tag.put(ITEMS_KEY, ContainerHelper.saveAllItems(new CompoundTag(), items, registries));
-        tag.putIntArray(PROGRESS_KEY, cookProgress);
-        tag.putIntArray(TIME_KEY, cookTime);
-        tag.putLongArray("SlotSeeds", slotSeeds);
+        tag.merge(writeTag(registries));
     }
 
     @Override
     public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registries) {
-        CompoundTag tag = new CompoundTag();
-        tag.put(ITEMS_KEY, ContainerHelper.saveAllItems(new CompoundTag(), items, registries));
-        tag.putLongArray("SlotSeeds", slotSeeds);
-        tag.putIntArray(PROGRESS_KEY, cookProgress);
-        tag.putIntArray(TIME_KEY, cookTime);
-        return tag;
+        return writeTag(registries);
     }
 
     @Override
     public void handleUpdateTag(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.handleUpdateTag(tag, registries);
-        Collections.fill(items, ItemStack.EMPTY);
-        if (tag.contains(ITEMS_KEY, 10)) {
-            ContainerHelper.loadAllItems(tag.getCompound(ITEMS_KEY), items, registries);
-        }
-        readProgressAndTime(tag);
-
-        long[] loadedSeeds = tag.getLongArray("SlotSeeds");
-        if (loadedSeeds.length == totalSlots) {
-            System.arraycopy(loadedSeeds, 0, slotSeeds, 0, totalSlots);
-        }
-
-        refreshOccupancyCount();
-        onSlotsLoaded();
-    }
-
-    private void readProgressAndTime(CompoundTag tag) {
-        int[] progress = tag.getIntArray(PROGRESS_KEY);
-        int[] times = tag.getIntArray(TIME_KEY);
-
-        if (progress.length == totalSlots) {
-            System.arraycopy(progress, 0, cookProgress, 0, totalSlots);
-        }
-        if (times.length == totalSlots) {
-            System.arraycopy(times, 0, cookTime, 0, totalSlots);
-        }
+        readTagInto(tag, registries, false);
     }
 
     @Nullable

@@ -1,6 +1,20 @@
 package com.nerdsoft.mods.nerdsoftkitchen.datagen;
 
-import com.nerdsoft.mods.nerdsoftkitchen.registry.ModPlacedFeatures;
+import com.nerdsoft.mods.nerdsoftkitchen.datagen.advancement.ModAdvancementProvider;
+import com.nerdsoft.mods.nerdsoftkitchen.datagen.block.ModBlockStateProvider;
+import com.nerdsoft.mods.nerdsoftkitchen.datagen.block.ModBlockTagsProvider;
+import com.nerdsoft.mods.nerdsoftkitchen.datagen.data.ModDamageTypeProvider;
+import com.nerdsoft.mods.nerdsoftkitchen.datagen.data.ModDataMapProvider;
+import com.nerdsoft.mods.nerdsoftkitchen.datagen.data.ModLootTableProvider;
+import com.nerdsoft.mods.nerdsoftkitchen.datagen.item.ModItemModelProvider;
+import com.nerdsoft.mods.nerdsoftkitchen.datagen.item.ModItemTagsProvider;
+import com.nerdsoft.mods.nerdsoftkitchen.datagen.lang.ModEnUsLanguageProvider;
+import com.nerdsoft.mods.nerdsoftkitchen.datagen.lang.ModEsEsLanguageProvider;
+import com.nerdsoft.mods.nerdsoftkitchen.datagen.recipe.ModRecipeProvider;
+import com.nerdsoft.mods.nerdsoftkitchen.datagen.sound.ModSoundDefinitionsProvider;
+import com.nerdsoft.mods.nerdsoftkitchen.datagen.worldgen.ModBiomeModifiers;
+import com.nerdsoft.mods.nerdsoftkitchen.datagen.worldgen.ModConfiguredFeatures;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.worldgen.ModPlacedFeatures;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
@@ -32,6 +46,7 @@ public final class DataGenerators {
         generator.addProvider(event.includeServer(), new ModRecipeProvider(packOutput, lookupProvider));
         generator.addProvider(event.includeServer(), new ModLootTableProvider(packOutput, lookupProvider));
         generator.addProvider(event.includeServer(), new ModAdvancementProvider(packOutput, lookupProvider, existingFileHelper));
+        generator.addProvider(event.includeServer(), new ModDataMapProvider(packOutput, lookupProvider));
 
         event.createDatapackRegistryObjects(new RegistrySetBuilder()
                 .add(Registries.DAMAGE_TYPE, ModDamageTypeProvider::bootstrap)

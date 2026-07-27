@@ -1,7 +1,7 @@
 package com.nerdsoft.mods.nerdsoftkitchen.item;
 
 import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
-import com.nerdsoft.mods.nerdsoftkitchen.registry.ModDataComponents;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.data.ModDataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -101,15 +101,33 @@ public class IronCupItem extends Item {
     private void removePartialEffects(Player player) {
         List<MobEffectInstance> toReapply = new ArrayList<>();
         List<Holder<MobEffect>> toRemove = new ArrayList<>();
+
         for (MobEffectInstance effect : player.getActiveEffectsMap().values()) {
             if (effect.getEffect().value().isInstantenous()) continue;
-            int reducedDuration = effect.getDuration() - Math.max(effect.getDuration() / 3, 1);
+
+            int currentDuration = effect.getDuration();
+            int reductionStep = Math.max(currentDuration / 3, 1);
+            int newDuration = currentDuration - reductionStep;
+
             toRemove.add(effect.getEffect());
-            if (reducedDuration > 0) {
-                toReapply.add(new MobEffectInstance(effect.getEffect(), reducedDuration, effect.getAmplifier(),
-                        effect.isAmbient(), effect.isVisible(), effect.showIcon()));
+
+            if (newDuration > 0) {
+                MobEffectInstance newEffect = new MobEffectInstance(
+                        effect.getEffect(),
+                        newDuration,
+                        effect.getAmplifier(),
+                        effect.isAmbient(),
+                        effect.isVisible(),
+                        effect.showIcon()
+                );
+
+                newEffect.getCures().clear();
+                newEffect.getCures().addAll(effect.getCures());
+
+                toReapply.add(newEffect);
             }
         }
+
         toRemove.forEach(player::removeEffect);
         toReapply.forEach(player::addEffect);
     }

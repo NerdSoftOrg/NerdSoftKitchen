@@ -1,7 +1,7 @@
 package com.nerdsoft.mods.nerdsoftkitchen.client.sound;
 
 import com.nerdsoft.mods.nerdsoftkitchen.blockentity.GrillTableBlockEntity;
-import com.nerdsoft.mods.nerdsoftkitchen.registry.ModSounds;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.sound.ModSounds;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;

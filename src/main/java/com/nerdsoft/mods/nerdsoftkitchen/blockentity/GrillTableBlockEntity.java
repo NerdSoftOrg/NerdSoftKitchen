@@ -1,11 +1,11 @@
 package com.nerdsoft.mods.nerdsoftkitchen.blockentity;
 
 import com.nerdsoft.mods.nerdsoftkitchen.block.GrillTableBlock;
-import com.nerdsoft.mods.nerdsoftkitchen.recipe.CookRecipe;
-import com.nerdsoft.mods.nerdsoftkitchen.recipe.CookRecipeInput;
-import com.nerdsoft.mods.nerdsoftkitchen.registry.ModBlockEntities;
-import com.nerdsoft.mods.nerdsoftkitchen.registry.ModRecipeTypes;
-import com.nerdsoft.mods.nerdsoftkitchen.registry.ModSounds;
+import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipe;
+import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipeInput;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.recipe.ModRecipeTypes;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.sound.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;

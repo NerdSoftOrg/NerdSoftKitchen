@@ -1,8 +1,8 @@
 package com.nerdsoft.mods.nerdsoftkitchen.compat.jei.category;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
-import com.nerdsoft.mods.nerdsoftkitchen.recipe.CookRecipe;
-import com.nerdsoft.mods.nerdsoftkitchen.registry.ModItems;
+import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipe;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.item.ModItems;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -20,6 +20,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public final class GrillCookingCategory implements IRecipeCategory<CookRecipe> {
     public static final RecipeType<CookRecipe> RECIPE_TYPE =
             RecipeType.create(NerdSoftKitchen.MOD_ID, "grill_cooking", CookRecipe.class);
@@ -30,6 +33,7 @@ public final class GrillCookingCategory implements IRecipeCategory<CookRecipe> {
     private final IDrawable background;
     private final IDrawable icon;
     private final IGuiHelper guiHelper;
+    private final Map<Integer, ITickTimer> tickTimersByCookTime = new ConcurrentHashMap<>();
 
     public GrillCookingCategory(IGuiHelper guiHelper) {
         this.guiHelper = guiHelper;
@@ -70,7 +74,7 @@ public final class GrillCookingCategory implements IRecipeCategory<CookRecipe> {
     @SuppressWarnings("NoTranslation")
     public void draw(@NotNull CookRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
         int cookTime = recipe.cookingTime() > 0 ? recipe.cookingTime() : 200;
-        ITickTimer timer = guiHelper.createTickTimer(cookTime, 24, true);
+        ITickTimer timer = tickTimersByCookTime.computeIfAbsent(cookTime, time -> guiHelper.createTickTimer(time, 24, true));
 
         guiGraphics.blitSprite(BURN_PROGRESS_SPRITE, 24, 9, 24, 17);
 
