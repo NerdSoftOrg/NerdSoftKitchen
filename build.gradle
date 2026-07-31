@@ -1,104 +1,160 @@
-//file:noinspection GroovyAssignabilityCheck
 plugins {
     id 'java-library'
     id 'maven-publish'
     id 'idea'
-    id 'net.neoforged.gradle.userdev' version '7.1.38'
+    id 'net.neoforged.moddev' version '2.0.143'
 }
 
-version = mod_version
-group = mod_group_id
+def modId = providers.gradleProperty("mod_id").get()
 
-sourceSets.main.resources {
-    srcDir('src/generated/resources')
-    exclude("**/*.bbmodel")
-    exclude("src/generated/**/.cache")
-    exclude("src/generated/**/.cache/**")
-}
+version = providers.gradleProperty("mod_version").get()
+group = providers.gradleProperty("mod_group_id").get()
 
 base {
-    archivesName = mod_id
+    archivesName.set(modId)
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
-
-runs {
-    configureEach {
-        systemProperty 'forge.logging.markers', 'REGISTRIES'
-        systemProperty 'forge.logging.console.level', 'debug'
-
-        workingDirectory project.layout.projectDirectory.dir('run').dir(name)
-
-        modSource project.sourceSets.main
-    }
-
-    client {
-        systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-    }
-
-    server {
-        systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-        argument '--nogui'
-    }
-
-    gameTestServer {
-        systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-    }
-
-    data {
-        arguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
-    }
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
 }
 
 repositories {
+    mavenLocal()
     maven {
+        name = "Modrinth"
         url = "https://api.modrinth.com/maven"
     }
     maven {
+        name = "Jared Maven (JEI)"
         url = "https://maven.blamejared.com/"
     }
     maven {
+        name = "ModMaven"
         url = "https://modmaven.dev"
     }
 }
 
 dependencies {
-    implementation "net.neoforged:neoforge:${neo_version}"
+    def minecraftVersion = providers.gradleProperty("minecraft_version").get()
+    def jadeVersion = providers.gradleProperty("jade_version").get()
+    def jeiVersion = providers.gradleProperty("jei_version").get()
 
-    implementation  "maven.modrinth:jade:${jade_version}"
+    compileOnly "maven.modrinth:jade:${jadeVersion}"
+    compileOnly "mezz.jei:jei-${minecraftVersion}-neoforge-api:${jeiVersion}"
 
-    implementation "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    runtimeOnly "maven.modrinth:jade:${jadeVersion}"
+    runtimeOnly "mezz.jei:jei-${minecraftVersion}-neoforge:${jeiVersion}"
 }
 
-var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
-    var replaceProperties = [minecraft_version      : minecraft_version,
-                             minecraft_version_range: minecraft_version_range,
-                             neo_version            : neo_version,
-                             neo_version_range      : neo_version_range,
-                             loader_version_range   : loader_version_range,
-                             mod_id                 : mod_id,
-                             mod_name               : mod_name,
-                             mod_license            : mod_license,
-                             mod_version            : mod_version,
-                             mod_authors            : mod_authors,
-                             mod_description        : mod_description]
-    inputs.properties replaceProperties
-    expand replaceProperties
-    from "src/main/templates"
-    into "build/generated/sources/modMetadata"
+def mainSourceSet = sourceSets.named("main")
+
+neoForge {
+    version = providers.gradleProperty("neo_version").get()
+
+    parchment {
+        mappingsVersion = providers.gradleProperty("parchment_mappings_version").get()
+        minecraftVersion = providers.gradleProperty("parchment_minecraft_version").get()
+    }
+
+    runs {
+        client {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', modId
+        }
+
+        server {
+            server()
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', modId
+        }
+
+        gameTestServer {
+            type = 'gameTestServer'
+            systemProperty 'neoforge.enabledGameTestNamespaces', modId
+        }
+
+        data {
+            data()
+            programArgument '--mod'
+            programArgument modId
+            programArgument '--all'
+            programArgument '--output'
+            programArgument file('src/generated/resources/').absolutePath
+            programArgument '--existing'
+            programArgument file('src/main/resources/').absolutePath
+        }
+
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        register(modId) { mod ->
+            mod.sourceSet(mainSourceSet.get())
+        }
+    }
 }
 
-sourceSets.main.resources.srcDir generateModMetadata
+def generateModMetadata = tasks.register("generateModMetadata", ProcessResources) { task ->
+    var replaceProperties = [
+            minecraft_version      : providers.gradleProperty("minecraft_version").get(),
+            minecraft_version_range: providers.gradleProperty("minecraft_version_range").get(),
+            neo_version            : providers.gradleProperty("neo_version").get(),
+            neo_version_range      : providers.gradleProperty("neo_version_range").get(),
+            loader_version_range   : providers.gradleProperty("loader_version_range").get(),
+            mod_id                 : modId,
+            mod_name               : providers.gradleProperty("mod_name").get(),
+            mod_license            : providers.gradleProperty("mod_license").get(),
+            mod_version            : providers.gradleProperty("mod_version").get(),
+            mod_authors            : providers.gradleProperty("mod_authors").get(),
+            mod_description        : providers.gradleProperty("mod_description").orElse("").get(),
+            mod_banner             : providers.gradleProperty("mod_banner").orElse("").get(),
+
+            jade_mod_id            : providers.gradleProperty("jade_mod_id").orElse("").get(),
+            jade_type              : providers.gradleProperty("jade_type").orElse("").get(),
+            jade_version_range     : providers.gradleProperty("jade_version_range").orElse("").get(),
+            jade_ordering          : providers.gradleProperty("jade_ordering").orElse("").get(),
+            jade_side              : providers.gradleProperty("jade_side").orElse("").get(),
+
+            jei_mod_id             : providers.gradleProperty("jei_mod_id").orElse("").get(),
+            jei_type               : providers.gradleProperty("jei_type").orElse("").get(),
+            jei_version_range      : providers.gradleProperty("jei_version_range").orElse("").get(),
+            jei_ordering           : providers.gradleProperty("jei_ordering").orElse("").get(),
+            jei_side               : providers.gradleProperty("jei_side").orElse("").get()
+    ]
+
+    task.inputs.properties(replaceProperties)
+    task.expand(replaceProperties)
+    task.from("src/main/templates")
+    task.into("build/generated/sources/modMetadata")
+}
+
+sourceSets.main {
+    resources {
+        srcDir('src/generated/resources')
+        srcDir(generateModMetadata)
+        exclude("**/*.bbmodel")
+        exclude("**/ .cache/**")
+    }
+}
+
+neoForge.ideSyncTask(generateModMetadata)
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
 
 publishing {
     publications {
-        register('mavenJava', MavenPublication) {
-            from components.java
+        register('mavenJava', MavenPublication) { pub ->
+            pub.from components['java'] as SoftwareComponent
         }
     }
     repositories {
         maven {
-            url "file://${project.projectDir}/repo"
+            url = layout.buildDirectory.dir("repo")
         }
     }
 }

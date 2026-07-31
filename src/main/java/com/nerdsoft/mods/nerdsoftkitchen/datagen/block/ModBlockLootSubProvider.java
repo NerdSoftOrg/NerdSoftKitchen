@@ -52,7 +52,7 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
     @Override
     protected void generate() {
         dropSelf(ModBlocks.GRILL_TABLE.get());
-        add(ModBlocks.GRILL_TABLE_SOUL.get(), block -> createSingleItemTable(ModItems.GRILL_TABLE.get()));
+        dropSelf(ModBlocks.GRILL_TABLE_SOUL.get());
 
         // WILD_STRAWBERRY will not drop WILD item consumable like WILD_TOMATO
         add(ModBlocks.WILD_STRAWBERRY.get(), block -> createWildCropDrops(ModItems.STRAWBERRY.get(), ModItems.STRAWBERRY_SEEDS.get()));

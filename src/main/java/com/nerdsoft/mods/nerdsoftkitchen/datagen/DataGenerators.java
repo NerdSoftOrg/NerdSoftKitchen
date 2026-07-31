@@ -15,11 +15,13 @@ import com.nerdsoft.mods.nerdsoftkitchen.datagen.sound.ModSoundDefinitionsProvid
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.worldgen.ModBiomeModifiers;
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.worldgen.ModConfiguredFeatures;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.worldgen.ModPlacedFeatures;
+import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -31,7 +33,12 @@ public final class DataGenerators {
     private DataGenerators() {
     }
 
-    public static void gatherData(GatherDataEvent event) {
+    public static void register(IEventBus eventBus) {
+        eventBus.addListener(DataGenerators::gatherData);
+        NerdSoftKitchenLogger.info("Data Generators listener attached.");
+    }
+
+    private static void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
         PackOutput packOutput = generator.getPackOutput();
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();

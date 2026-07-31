@@ -43,6 +43,8 @@ public class JeiNerdSoftKitchenPlugin implements IModPlugin {
         }
 
         @Override
+        @Deprecated
+        @SuppressWarnings("deprecated")
         public @NotNull String getLegacyStringSubtypeInfo(@NotNull ItemStack stack, @NotNull UidContext context) {
             IronCupContent content = stack.get(ModDataComponents.IRON_CUP_CONTENT.get());
             return content == null ? "" : content.getSerializedName();
@@ -57,7 +59,6 @@ public class JeiNerdSoftKitchenPlugin implements IModPlugin {
     @Override
     public void registerItemSubtypes(@NotNull ISubtypeRegistration registration) {
         registration.registerSubtypeInterpreter(
-                VanillaTypes.ITEM_STACK,
                 ModItems.IRON_CUP.get(),
                 IRON_CUP_SUBTYPE_INTERPRETER
         );
@@ -79,14 +80,18 @@ public class JeiNerdSoftKitchenPlugin implements IModPlugin {
         IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
         List<ItemStack> filledCups = IronCupContent.allFilledStacks(ModItems.IRON_CUP.get());
         ingredientManager.addIngredientsAtRuntime(VanillaTypes.ITEM_STACK, filledCups);
+
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) {
             return;
         }
+
         RecipeManager recipeManager = level.getRecipeManager();
         HolderLookup.Provider registries = level.registryAccess();
+
         List<CookRecipe> mergedRecipes = new ArrayList<>(collectGrillRecipes(recipeManager));
         mergedRecipes.addAll(collectVanillaCampfireRecipes(recipeManager, registries));
+
         jeiRuntime.getRecipeManager().addRecipes(GrillCookingCategory.RECIPE_TYPE, mergedRecipes);
     }
 

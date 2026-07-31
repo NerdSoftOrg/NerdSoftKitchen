@@ -2,6 +2,7 @@ package com.nerdsoft.mods.nerdsoftkitchen.recipe.cup;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.nerdsoft.mods.nerdsoftkitchen.item.IronCupItem;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.recipe.ModRecipeSerializers;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -59,6 +60,19 @@ public record ShapelessCupCraftingRecipe(List<Ingredient> ingredients,
     @Override
     public boolean canCraftInDimensions(int width, int height) {
         return width * height >= ingredients.size();
+    }
+
+    @Override
+    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull CraftingInput input) {
+        int inputSize = input.size();
+        NonNullList<ItemStack> remaining = NonNullList.withSize(inputSize, ItemStack.EMPTY);
+        for (int i = 0; i < inputSize; i++) {
+            ItemStack stack = input.getItem(i);
+            if (!stack.isEmpty() && !IronCupItem.isEmpty(stack)) {
+                remaining.set(i, new ItemStack(stack.getItem()));
+            }
+        }
+        return remaining;
     }
 
     @Override

@@ -4,16 +4,19 @@ import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.item.IronCupItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.item.ModItems;
+import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public final class ModCreativeTabs {
 
-    public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, NerdSoftKitchen.MOD_ID);
+    private static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, NerdSoftKitchen.MOD_ID);
+
     @SuppressWarnings("unused")
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> KITCHEN_TAB = CREATIVE_TABS.register("kitchen_tab", () -> CreativeModeTab.builder().title(Component.translatable("itemGroup.nerdsoftkitchen" + ".kitchen_tab")).icon(() -> new ItemStack(ModItems.GRILL_TABLE.get())).displayItems((parameters, output) -> {
         output.accept(ModItems.GRILL_TABLE.get());
@@ -41,5 +44,10 @@ public final class ModCreativeTabs {
     }).build());
 
     private ModCreativeTabs() {
+    }
+
+    public static void register(IEventBus eventBus) {
+        CREATIVE_TABS.register(eventBus);
+        NerdSoftKitchenLogger.info("Creative Tabs registered successfully.");
     }
 }

@@ -2,6 +2,7 @@ package com.nerdsoft.mods.nerdsoftkitchen.registry.worldgen;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.worldgen.ModConfiguredFeatures;
+import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
@@ -11,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.placement.*;
+import net.neoforged.bus.api.IEventBus;
 
 import java.util.List;
 
@@ -27,6 +29,11 @@ public final class ModPlacedFeatures {
     public static final ResourceKey<PlacedFeature> WILD_PURPLE_ONION = key("wild_purple_onion");
 
     private ModPlacedFeatures() {
+    }
+
+    @SuppressWarnings("unused")
+    public static void register(IEventBus eventBus) {
+        NerdSoftKitchenLogger.info("Placed Features registered successfully.");
     }
 
     private static ResourceKey<PlacedFeature> key(String name) {

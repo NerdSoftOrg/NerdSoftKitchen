@@ -7,12 +7,14 @@ import com.nerdsoft.mods.nerdsoftkitchen.crop.TomatoCropBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.crop.TomatoCropPoleBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.crop.WildCropBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.item.ModItems;
+import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -21,7 +23,7 @@ import java.util.function.Supplier;
 public final class ModBlocks {
 
     /// Blocks
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(NerdSoftKitchen.MOD_ID);
+    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(NerdSoftKitchen.MOD_ID);
     public static final DeferredBlock<GrillTableBlock> GRILL_TABLE = BLOCKS.register("grill_table", () -> new GrillTableBlock(false, BlockBehaviour.Properties.of().mapColor(MapColor.PODZOL).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).noOcclusion().lightLevel(state -> state.getValue(GrillTableBlock.LIT) ? 15 : 0).ignitedByLava()));
     public static final DeferredBlock<GrillTableBlock> GRILL_TABLE_SOUL = BLOCKS.register("grill_table_soul", () -> new GrillTableBlock(true, BlockBehaviour.Properties.of().mapColor(MapColor.PODZOL).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).noOcclusion().lightLevel(state -> state.getValue(GrillTableBlock.LIT) ? 10 : 0).ignitedByLava()));
 
@@ -47,6 +49,11 @@ public final class ModBlocks {
     private ModBlocks() {
     }
 
+    public static void register(IEventBus eventBus) {
+        BLOCKS.register(eventBus);
+        NerdSoftKitchenLogger.info("Blocks registered successfully.");
+    }
+
     /// Register
     private static DeferredBlock<WildCropBlock> registerWildCrop(String name) {
         return BLOCKS.registerBlock(name, props -> new WildCropBlock(props, WildCropBlock.DEFAULT_WILD_SHAPE), WILD_CROP_PROPERTIES);
@@ -57,12 +64,12 @@ public final class ModBlocks {
     }
 
     private static DeferredBlock<TomatoCropBlock> registerTomatoCrop(String name, Supplier<? extends ItemLike> seedSupplier,
-                                                                       Supplier<? extends TomatoCropPoleBlock> poleBlockSupplier) {
+                                                                     Supplier<? extends TomatoCropPoleBlock> poleBlockSupplier) {
         return BLOCKS.registerBlock(name, props -> new TomatoCropBlock(props, ModCropBlock.SHAPES_AGE_5, seedSupplier, poleBlockSupplier), CROP_PROPERTIES);
     }
 
     private static DeferredBlock<TomatoCropPoleBlock> registerTomatoCropPole(String name, Supplier<? extends ItemLike> seedSupplier,
-                                                                               Supplier<? extends ItemLike> harvestItemSupplier) {
+                                                                             Supplier<? extends ItemLike> harvestItemSupplier) {
         return BLOCKS.registerBlock(name, props -> new TomatoCropPoleBlock(props, ModCropBlock.SHAPES_AGE_5, seedSupplier, harvestItemSupplier), CROP_PROPERTIES);
     }
 }

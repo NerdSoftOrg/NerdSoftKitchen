@@ -6,6 +6,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -42,8 +43,12 @@ public class IronCupItem extends Item {
         ItemStack stack = new ItemStack(cupItem);
         stack.set(ModDataComponents.IRON_CUP_CONTENT.get(), content);
         stack.set(DataComponents.FOOD, content.food());
-        stack.set(DataComponents.MAX_STACK_SIZE, 1);
         return stack;
+    }
+
+    @Override
+    public int getMaxStackSize(@NotNull ItemStack stack) {
+        return isEmpty(stack) ? super.getMaxStackSize(stack) : 8;
     }
 
     @Override
@@ -57,24 +62,46 @@ public class IronCupItem extends Item {
     @SuppressWarnings("resource")
     @Override
     public @NotNull InteractionResult interactLivingEntity(@NotNull ItemStack stack, @NotNull Player player,
-                                                             @NotNull LivingEntity target,
-                                                             @NotNull InteractionHand hand) {
+                                                           @NotNull LivingEntity target,
+                                                           @NotNull InteractionHand hand) {
         if (!isEmpty(stack)) return InteractionResult.PASS;
         if (!(target instanceof Cow) || target instanceof MushroomCow) {
             return InteractionResult.PASS;
         }
-        if (player.level().isClientSide) return InteractionResult.CONSUME;
+
+        Level level = player.level();
+        player.playSound(SoundEvents.COW_MILK, 1.0F, 1.0F);
+
+        if (level.isClientSide) {
+            return InteractionResult.SUCCESS;
+        }
+
         ItemStack filledCup = filled(this, IronCupContent.MILK);
-        ItemStack result = ItemUtils.createFilledResult(stack, player, filledCup);
-        player.setItemInHand(hand, result);
+
+        if (!player.getAbilities().instabuild) {
+            if (stack.getCount() == 1) {
+                player.setItemInHand(hand, filledCup);
+            } else {
+                stack.shrink(1);
+                if (!player.getInventory().add(filledCup)) {
+                    player.drop(filledCup, false);
+                }
+            }
+        } else {
+            if (!player.getInventory().contains(filledCup)) {
+                player.getInventory().add(filledCup);
+            }
+        }
+
         return InteractionResult.SUCCESS;
     }
 
     @Override
     public @NotNull ItemStack finishUsingItem(@NotNull ItemStack stack, @NotNull Level level,
-                                               @NotNull LivingEntity entity) {
+                                              @NotNull LivingEntity entity) {
         IronCupContent content = contentOf(stack);
         if (content == null) return stack;
+
         if (entity instanceof Player player && !player.getAbilities().instabuild) {
             stack.shrink(1);
         }
@@ -89,8 +116,8 @@ public class IronCupItem extends Item {
 
     private ItemStack giveEmptyCup(ItemStack stack, Player player) {
         ItemStack emptyCup = new ItemStack(this);
-        if (stack.getCount() <= 1) {
-            return player.getAbilities().instabuild ? stack : emptyCup;
+        if (stack.getCount() <= 0) {
+            return emptyCup;
         }
         if (!player.getInventory().add(emptyCup)) {
             player.drop(emptyCup, false);
@@ -134,12 +161,12 @@ public class IronCupItem extends Item {
 
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context,
-                                 @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
+                                @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
         if (!flag.isAdvanced()) return;
         IronCupContent content = contentOf(stack);
         if (content != null) {
             tooltip.add(Component.translatable("nerdsoftkitchen.iron_cup_content.contains",
-                    Component.translatable("nerdsoftkitchen.iron_cup_content." + content.getSerializedName()))
+                            Component.translatable("nerdsoftkitchen.iron_cup_content." + content.getSerializedName()))
                     .withStyle(ChatFormatting.GRAY));
         }
     }
@@ -156,7 +183,7 @@ public class IronCupItem extends Item {
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player,
-                                                             @NotNull InteractionHand hand) {
+                                                           @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (isEmpty(stack)) {
             return InteractionResultHolder.pass(stack);

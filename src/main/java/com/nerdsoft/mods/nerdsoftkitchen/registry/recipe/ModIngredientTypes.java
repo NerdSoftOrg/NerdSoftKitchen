@@ -2,6 +2,8 @@ package com.nerdsoft.mods.nerdsoftkitchen.registry.recipe;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cup.CupContentIngredient;
+import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -9,7 +11,7 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public final class ModIngredientTypes {
 
-    public static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES =
+    private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, NerdSoftKitchen.MOD_ID);
 
     @SuppressWarnings("unused")
@@ -17,5 +19,10 @@ public final class ModIngredientTypes {
             INGREDIENT_TYPES.register("cup_content", () -> CupContentIngredient.TYPE);
 
     private ModIngredientTypes() {
+    }
+
+    public static void register(IEventBus eventBus) {
+        INGREDIENT_TYPES.register(eventBus);
+        NerdSoftKitchenLogger.info("Ingredient Types registered successfully.");
     }
 }

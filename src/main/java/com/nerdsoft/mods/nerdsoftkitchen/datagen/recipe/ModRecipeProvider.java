@@ -39,15 +39,17 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("I").pattern("S").pattern("C")
                 .define('I', Items.IRON_INGOT)
                 .define('S', Items.STONE_BRICKS)
-                .define('C', Ingredient.of(Items.CAMPFIRE, Items.SOUL_CAMPFIRE))
+                .define('C', Items.CAMPFIRE)
                 .unlockedBy(getHasName(Items.CAMPFIRE), has(Items.CAMPFIRE))
                 .save(output);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.GRILL_TABLE_SOUL.get())
-                .requires(ModItems.GRILL_TABLE.get())
-                .requires(Ingredient.of(Items.SOUL_SAND, Items.SOUL_SOIL))
-                .unlockedBy(getHasName(ModItems.GRILL_TABLE.get()), has(ModItems.GRILL_TABLE.get()))
-                .save(output);
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.GRILL_TABLE_SOUL.get())
+                .pattern("I").pattern("S").pattern("C")
+                .define('I', Items.IRON_INGOT)
+                .define('S', Items.STONE_BRICKS)
+                .define('C', Items.SOUL_CAMPFIRE)
+                .unlockedBy(getHasName(Items.SOUL_CAMPFIRE), has(Items.SOUL_CAMPFIRE))
+                .save(output, id("grill_table_soul"));
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, ModItems.SALAD.get())
                 .requires(ModItems.TOMATO.get())

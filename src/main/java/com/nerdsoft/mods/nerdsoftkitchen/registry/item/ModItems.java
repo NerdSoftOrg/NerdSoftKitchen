@@ -7,14 +7,15 @@ import com.nerdsoft.mods.nerdsoftkitchen.item.GrillBlockItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.IronCupItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.SeedItem;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
+import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
 import net.minecraft.world.item.Item;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public final class ModItems {
 
-    /// Items Register
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(NerdSoftKitchen.MOD_ID);
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(NerdSoftKitchen.MOD_ID);
 
     /// Machine Items
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE = ITEMS.registerItem("grill_table",
@@ -67,5 +68,10 @@ public final class ModItems {
             props -> new Item(props.food(ModFoods.SALAD)));
 
     private ModItems() {
+    }
+
+    public static void register(IEventBus eventBus) {
+        ITEMS.register(eventBus);
+        NerdSoftKitchenLogger.info("Items registered successfully.");
     }
 }

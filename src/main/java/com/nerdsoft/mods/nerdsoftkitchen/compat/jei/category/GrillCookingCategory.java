@@ -71,7 +71,6 @@ public final class GrillCookingCategory implements IRecipeCategory<CookRecipe> {
     }
 
     @Override
-    @SuppressWarnings("NoTranslation")
     public void draw(@NotNull CookRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
         int cookTime = recipe.cookingTime() > 0 ? recipe.cookingTime() : 200;
         ITickTimer timer = tickTimersByCookTime.computeIfAbsent(cookTime, time -> guiHelper.createTickTimer(time, 24, true));
