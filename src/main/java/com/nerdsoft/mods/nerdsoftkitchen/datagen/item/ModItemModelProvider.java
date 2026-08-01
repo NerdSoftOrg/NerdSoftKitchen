@@ -21,9 +21,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         blockItemModel(ModItems.GRILL_TABLE, "block/grill_table_lit");
         blockItemModel(ModItems.GRILL_TABLE_SOUL, "block/grill_table_soul_lit");
 
-        customBlockItem2D(ModItems.WILD_PURPLE_ONION);
-        customBlockItem2D(ModItems.WILD_LETTUCE);
-
+        customItem2D(ModItems.WILD_PURPLE_ONION);
+        customItem2D(ModItems.WILD_LETTUCE);
         customItem2D(ModItems.WILD_TOMATO);
         customItem2D(ModItems.WILD_STRAWBERRY);
 
@@ -47,6 +46,7 @@ public class ModItemModelProvider extends ItemModelProvider {
                 .texture("layer0", modLoc("item/" + item.getId().getPath()));
     }
 
+    @SuppressWarnings("unused")
     private void customBlockItem2D(DeferredItem<?> item) {
         withExistingParent(item.getId().getPath(), mcLoc("item/generated"))
                 .texture("layer0", modLoc("block/" + item.getId().getPath()));

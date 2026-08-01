@@ -34,7 +34,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         grillTable(ModBlocks.GRILL_TABLE.get(), "grill_table_lit", "grill_table_unlit", false);
         grillTable(ModBlocks.GRILL_TABLE_SOUL.get(), "grill_table_soul_lit", null, true);
 
-        wildCrop(ModBlocks.WILD_PURPLE_ONION.get(), "wild_purple_onion");
+        wildCropTintable(ModBlocks.WILD_PURPLE_ONION.get(), "wild_purple_onion");
 
         manualCrop(ModBlocks.WILD_TOMATO.get(), "wild_tomato");
         manualCrop(ModBlocks.WILD_LETTUCE.get(), "wild_lettuce");
@@ -139,6 +139,23 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 .toArray(Integer[]::new);
     }
 
+    private void wildCropTintable(Block block, String name) {
+        MultiPartBlockStateBuilder builder = getMultipartBuilder(block);
+
+        ModelFile tintModel = models()
+                .withExistingParent(name + "_tint", mcLoc("block/tinted_cross"))
+                .texture("cross", modLoc("block/" + name + "_tint"))
+                .renderType("minecraft:cutout");
+
+        ModelFile overlayModel = models()
+                .cross(name + "_overlay", modLoc("block/" + name + "_overlay"))
+                .renderType("minecraft:cutout");
+
+        builder.part().modelFile(tintModel).addModel().end();
+        builder.part().modelFile(overlayModel).addModel().end();
+    }
+
+    @SuppressWarnings("unused")
     private void wildCrop(Block block, String name) {
         simpleBlock(block, models().cross(name, modLoc("block/" + name)).renderType("minecraft:cutout"));
     }

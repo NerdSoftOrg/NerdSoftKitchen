@@ -1,3 +1,4 @@
+//file:noinspection GrDeprecatedAPIUsage
 plugins {
     id 'java-library'
     id 'maven-publish'
@@ -98,32 +99,8 @@ neoForge {
 }
 
 def generateModMetadata = tasks.register("generateModMetadata", ProcessResources) { task ->
-    var replaceProperties = [
-            minecraft_version      : providers.gradleProperty("minecraft_version").get(),
-            minecraft_version_range: providers.gradleProperty("minecraft_version_range").get(),
-            neo_version            : providers.gradleProperty("neo_version").get(),
-            neo_version_range      : providers.gradleProperty("neo_version_range").get(),
-            loader_version_range   : providers.gradleProperty("loader_version_range").get(),
-            mod_id                 : modId,
-            mod_name               : providers.gradleProperty("mod_name").get(),
-            mod_license            : providers.gradleProperty("mod_license").get(),
-            mod_version            : providers.gradleProperty("mod_version").get(),
-            mod_authors            : providers.gradleProperty("mod_authors").get(),
-            mod_description        : providers.gradleProperty("mod_description").orElse("").get(),
-            mod_banner             : providers.gradleProperty("mod_banner").orElse("").get(),
-
-            jade_mod_id            : providers.gradleProperty("jade_mod_id").orElse("").get(),
-            jade_type              : providers.gradleProperty("jade_type").orElse("").get(),
-            jade_version_range     : providers.gradleProperty("jade_version_range").orElse("").get(),
-            jade_ordering          : providers.gradleProperty("jade_ordering").orElse("").get(),
-            jade_side              : providers.gradleProperty("jade_side").orElse("").get(),
-
-            jei_mod_id             : providers.gradleProperty("jei_mod_id").orElse("").get(),
-            jei_type               : providers.gradleProperty("jei_type").orElse("").get(),
-            jei_version_range      : providers.gradleProperty("jei_version_range").orElse("").get(),
-            jei_ordering           : providers.gradleProperty("jei_ordering").orElse("").get(),
-            jei_side               : providers.gradleProperty("jei_side").orElse("").get()
-    ]
+    var replaceProperties = project.properties.findAll { key, val -> val instanceof String }
+    replaceProperties.put("mod_id", modId)
 
     task.inputs.properties(replaceProperties)
     task.expand(replaceProperties)
@@ -136,7 +113,7 @@ sourceSets.main {
         srcDir('src/generated/resources')
         srcDir(generateModMetadata)
         exclude("**/*.bbmodel")
-        exclude("**/ .cache/**")
+        exclude("**/.cache/**")
     }
 }
 
@@ -157,10 +134,6 @@ publishing {
             url = layout.buildDirectory.dir("repo")
         }
     }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
 }
 
 idea {

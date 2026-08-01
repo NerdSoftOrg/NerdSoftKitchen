@@ -48,7 +48,7 @@ public class IronCupItem extends Item {
 
     @Override
     public int getMaxStackSize(@NotNull ItemStack stack) {
-        return isEmpty(stack) ? super.getMaxStackSize(stack) : 8;
+        return isEmpty(stack) ? super.getMaxStackSize(stack) : 4;
     }
 
     @Override
@@ -59,7 +59,6 @@ public class IronCupItem extends Item {
                 Component.translatable("nerdsoftkitchen.iron_cup_content." + content.getSerializedName()));
     }
 
-    @SuppressWarnings("resource")
     @Override
     public @NotNull InteractionResult interactLivingEntity(@NotNull ItemStack stack, @NotNull Player player,
                                                            @NotNull LivingEntity target,
@@ -69,31 +68,32 @@ public class IronCupItem extends Item {
             return InteractionResult.PASS;
         }
 
+        @SuppressWarnings("resource") //! IGNORE RESOURCE WARNING
         Level level = player.level();
+
         player.playSound(SoundEvents.COW_MILK, 1.0F, 1.0F);
 
-        if (level.isClientSide) {
-            return InteractionResult.SUCCESS;
-        }
-
-        ItemStack filledCup = filled(this, IronCupContent.MILK);
-
-        if (!player.getAbilities().instabuild) {
-            if (stack.getCount() == 1) {
-                player.setItemInHand(hand, filledCup);
-            } else {
-                stack.shrink(1);
+        if (player.getAbilities().instabuild) {
+            if (!level.isClientSide) {
+                ItemStack filledCup = filled(this, IronCupContent.MILK);
+                if (!player.getInventory().contains(filledCup)) {
+                    player.getInventory().add(filledCup);
+                }
+            }
+        } else if (stack.getCount() == 1) {
+            stack.set(ModDataComponents.IRON_CUP_CONTENT.get(), IronCupContent.MILK);
+            stack.set(DataComponents.FOOD, IronCupContent.MILK.food());
+        } else {
+            stack.shrink(1);
+            if (!level.isClientSide) {
+                ItemStack filledCup = filled(this, IronCupContent.MILK);
                 if (!player.getInventory().add(filledCup)) {
                     player.drop(filledCup, false);
                 }
             }
-        } else {
-            if (!player.getInventory().contains(filledCup)) {
-                player.getInventory().add(filledCup);
-            }
         }
 
-        return InteractionResult.SUCCESS;
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
     @Override
@@ -102,9 +102,6 @@ public class IronCupItem extends Item {
         IronCupContent content = contentOf(stack);
         if (content == null) return stack;
 
-        if (entity instanceof Player player && !player.getAbilities().instabuild) {
-            stack.shrink(1);
-        }
         if (content == IronCupContent.MILK && entity instanceof Player player) {
             removePartialEffects(player);
         }
@@ -115,10 +112,13 @@ public class IronCupItem extends Item {
     }
 
     private ItemStack giveEmptyCup(ItemStack stack, Player player) {
+        if (player.getAbilities().instabuild) return stack;
+
         ItemStack emptyCup = new ItemStack(this);
-        if (stack.getCount() <= 0) {
+        if (stack.getCount() == 1) {
             return emptyCup;
         }
+        stack.shrink(1);
         if (!player.getInventory().add(emptyCup)) {
             player.drop(emptyCup, false);
         }
