@@ -2,12 +2,12 @@
 
 # ![NerdSoft Kitchen](docs/media/banner.png)
 
-[![NeoForge](https://img.shields.io/badge/NeoForge-1.21.1-orange?style=for-the-badge&logo=curseforge)](https://neoforged.net/)
+[![NeoForge](https://img.shields.io/badge/NeoForge-1.21--.3-orange?style=for-the-badge&logo=curseforge)](https://neoforged.net/)
 [![Modrinth](https://img.shields.io/badge/Modrinth-Download-1bd96a?style=for-the-badge&logo=modrinth)](https://modrinth.com/mod/nerdsoftkitchen)
 [![CurseForge](https://img.shields.io/badge/CurseForge-Download-f16436?style=for-the-badge&logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/nerdsoftkitchen)
 [![License](https://img.shields.io/badge/License-CC--BY--NC--SA--4%2E0-lightgrey?style=for-the-badge)](#license)
 
-**A cooking overhaul for NeoForge 1.21.1**
+**A cooking overhaul for NeoForge 1.21**
 <br>
 **New crops, a multi-slot grill table and fillable vessels.**
 </div>
@@ -21,7 +21,7 @@ Table**, and fill a reusable **Iron Cup** with milk, yogurt, or strawberry yogur
 top of vanilla systems (custom recipe types, data components, and datagen for `recipes/loot/tags/advancements/language`),
 so the mod stays lightweight and easy to extend or add compatibility for.
 
-> Currently in **Beta 0.1** — core systems are implemented and stable, but content, balance, and polish are still
+> Currently in **Beta 0.2** — core systems are implemented and stable, but content, balance, and polish are still
 > evolving. Feedback and bug reports are very welcome.
 
 ## Features
@@ -72,7 +72,7 @@ so the mod stays lightweight and easy to extend or add compatibility for.
 
 | Requirement | Version                                            |
 |-------------|----------------------------------------------------|
-| Minecraft   | `1.21.1`                                           |
+| Minecraft   | `1.21.1-1.21.3`                                           |
 | Mod Loader  | [NeoForge](https://neoforged.net/) `21.X` or later |
 | Java        | `21+`                                              |
 
@@ -80,10 +80,10 @@ so the mod stays lightweight and easy to extend or add compatibility for.
 2. Download the latest **NerdSoft Kitchen** jar from [Modrinth](https://modrinth.com/mod/nerdsoftkitchen)
    or [CurseForge](https://www.curseforge.com/minecraft/mc-mods/nerdsoftkitchen).
 3. Drop the jar into your `mods/` folder.
-4. (Optional) Install [JEI](https://modrinth.com/mod/jei/versions?g=1.21.1&l=neoforge)
-   and/or [Jade](https://modrinth.com/mod/jade/versions?c=release&g=1.21.1&l=neoforge) for the integrations described
+4. (Optional) Install [JEI](https://modrinth.com/mod/jei/versions?l=neoforge)
+   and/or [Jade](https://modrinth.com/mod/jade/versions?c=release&g=neoforge) for the integrations described
    below.
-5. Launch the game.
+6. Launch the game.
 
 > This mod is a **client + server** mod — install it on both sides for multiplayer.
 
@@ -108,7 +108,7 @@ Iron Cup contents are implemented as a
 first-class [data component](https://docs.neoforged.net/docs/1.21.1/items/datacomponents/), not NBT or metadata — this
 keeps stacking, tooltips, and JEI/Jade integration consistent and future-proof against further additions.
 
-No config file is required for Beta 0.1; all tuning currently lives in the datapack (recipes, loot tables, tags).
+No config file is required for Beta 0.2; all tuning currently lives in the datapack (recipes, loot tables, tags).
 
 ## Screenshots
 
