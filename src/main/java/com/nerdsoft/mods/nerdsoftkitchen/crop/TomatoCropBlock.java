@@ -7,7 +7,10 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
+//? if <1.21.2 {
+/*import net.minecraft.world.ItemInteractionResult;
+*///?}
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -56,7 +59,10 @@ public final class TomatoCropBlock extends ModCropBlock {
     }
 
     @Override
-    protected @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state,
+    //? if <1.21.2 {
+    /*protected @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state,
+                                                       *///?} else
+            protected @NotNull InteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state,
                                                        @NotNull Level level, @NotNull BlockPos pos,
                                                        @NotNull Player player, @NotNull InteractionHand hand,
                                                        @NotNull BlockHitResult hitResult) {
@@ -64,7 +70,10 @@ public final class TomatoCropBlock extends ModCropBlock {
             return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
         }
         if (level.isClientSide()) {
-            return ItemInteractionResult.SUCCESS;
+            //? if <1.21.2 {
+            /*return ItemInteractionResult.SUCCESS;
+            *///?} else
+            return InteractionResult.SUCCESS;
         }
 
         int age = state.getValue(this.getAgeProperty());
@@ -81,6 +90,9 @@ public final class TomatoCropBlock extends ModCropBlock {
         ((ServerLevel) level).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.STICK)),
                 pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 8, 0.2, 0.3, 0.2, 0.05);
 
-        return ItemInteractionResult.SUCCESS;
+        //? if <1.21.2 {
+        /*return ItemInteractionResult.SUCCESS;
+        *///?} else
+        return InteractionResult.SUCCESS;
     }
 }

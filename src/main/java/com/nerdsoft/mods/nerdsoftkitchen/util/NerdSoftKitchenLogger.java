@@ -5,7 +5,7 @@ import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 @SuppressWarnings({"unused", "StringConcatenationArgumentToLogCall"})
 public final class NerdSoftKitchenLogger {
 
-    private static final String PREFIX = "[NS][Kitchen]";
+    private static final String PREFIX = "[NS] [Kitchen]";
     private static final String SINGLE_FORMAT = "{} {}";
     private static final String ARGS_FORMAT = "{} ";
 

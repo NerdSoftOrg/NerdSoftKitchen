@@ -11,9 +11,11 @@ import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPredicate;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -24,6 +26,7 @@ import java.util.function.Consumer;
 
 import static net.minecraft.advancements.Advancement.Builder;
 
+@SuppressWarnings("CommentedOutCode")
 public class ModAdvancementProvider extends AdvancementProvider {
 
     public ModAdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries,
@@ -62,7 +65,8 @@ public class ModAdvancementProvider extends AdvancementProvider {
                         InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.IRON_CUP.get()))
                 .save(saver, id("craft_iron_cup"));
 
-        AdvancementHolder milkCup = Builder.advancement()
+//? if <1.21.2 {
+        /*AdvancementHolder milkCup = Builder.advancement()
                 .parent(ironCup)
                 .display(
                         ironCupWith(IronCupContent.MILK),
@@ -96,6 +100,44 @@ public class ModAdvancementProvider extends AdvancementProvider {
                                 .hasComponents(DataComponentPredicate.allOf(ironCupWith(IronCupContent.STRAWBERRY_YOGURT).getComponents()))
                                 .build()))
                 .save(saver, id("make_strawberry_yogurt"));
+        *///?} else {
+        HolderLookup.RegistryLookup<Item> itemRegistry = registries.lookupOrThrow(Registries.ITEM);
+
+        AdvancementHolder milkCup = Builder.advancement()
+                .parent(ironCup)
+                .display(
+                        ironCupWith(IronCupContent.MILK),
+                        Component.translatable("advancements.nerdsoftkitchen.milk_cup.title"),
+                        Component.translatable("advancements.nerdsoftkitchen.milk_cup.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true, true, false
+                )
+                .addCriterion("has_milk_cup",
+                        InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item()
+                                .of(itemRegistry, ModItems.IRON_CUP.get())
+                                .hasComponents(DataComponentPredicate.allOf(ironCupWith(IronCupContent.MILK).getComponents()))
+                                .build()))
+                .save(saver, id("fill_cup_with_milk"));
+
+        AdvancementHolder strawberryYogurt = Builder.advancement()
+                .parent(milkCup)
+                .display(
+                        ironCupWith(IronCupContent.STRAWBERRY_YOGURT),
+                        Component.translatable("advancements.nerdsoftkitchen.strawberry_yogurt.title"),
+                        Component.translatable("advancements.nerdsoftkitchen.strawberry_yogurt.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true, true, false
+                )
+                .rewards(AdvancementRewards.Builder.experience(10))
+                .addCriterion("has_strawberry_yogurt",
+                        InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item()
+                                .of(itemRegistry, ModItems.IRON_CUP.get())
+                                .hasComponents(DataComponentPredicate.allOf(ironCupWith(IronCupContent.STRAWBERRY_YOGURT).getComponents()))
+                                .build()))
+                .save(saver, id("make_strawberry_yogurt"));
+        //?}
 
         AdvancementHolder harvestAll = Builder.advancement()
                 .parent(root)

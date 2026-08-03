@@ -5,6 +5,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+//? if >=1.21.2 {
+import net.minecraft.world.level.ScheduledTickAccess;
+//?}
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -26,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
+@SuppressWarnings("CommentedOutCode")
 public final class TomatoCropPoleBlock extends HarvestableCropBlock {
 
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
@@ -42,6 +46,16 @@ public final class TomatoCropPoleBlock extends HarvestableCropBlock {
 
     private final MapCodec<TomatoCropPoleBlock> codec;
 
+    //? if <1.21.2 {
+    /*public TomatoCropPoleBlock(BlockBehaviour.Properties properties, VoxelShape[] shapes,
+                               Supplier<? extends ItemLike> seedSupplier, Supplier<? extends ItemLike> harvestItemSupplier) {
+        super(properties, MAX_AGE, shapes, seedSupplier, harvestItemSupplier, HARVEST_RESET_AGE, HARVEST_COUNT);
+        this.codec = simpleCodec(props -> new TomatoCropPoleBlock(props, shapes, seedSupplier, harvestItemSupplier));
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(this.getAgeProperty(), 0)
+                .setValue(HALF, DoubleBlockHalf.LOWER));
+    }
+    *///?} else {
     public TomatoCropPoleBlock(BlockBehaviour.Properties properties, VoxelShape[] shapes,
                                Supplier<? extends ItemLike> seedSupplier, Supplier<? extends ItemLike> harvestItemSupplier) {
         super(properties, MAX_AGE, shapes, seedSupplier, harvestItemSupplier, HARVEST_RESET_AGE, HARVEST_COUNT);
@@ -50,6 +64,7 @@ public final class TomatoCropPoleBlock extends HarvestableCropBlock {
                 .setValue(this.getAgeProperty(), 0)
                 .setValue(HALF, DoubleBlockHalf.LOWER));
     }
+    //?}
 
     @Override
     public @NotNull MapCodec<TomatoCropPoleBlock> codec() {
@@ -95,7 +110,7 @@ public final class TomatoCropPoleBlock extends HarvestableCropBlock {
 
     @Override
     @Nullable
-    protected BlockPos resolveHarvestOriginPos(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos) {
+    public BlockPos resolveHarvestOriginPos(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos) {
         if (state.getValue(HALF) == DoubleBlockHalf.UPPER) {
             BlockPos lowerPos = pos.below();
             return level.getBlockState(lowerPos).is(this) ? lowerPos : null;
@@ -136,10 +151,11 @@ public final class TomatoCropPoleBlock extends HarvestableCropBlock {
         return super.canSurvive(state, level, pos);
     }
 
-    @Override
-    protected @NotNull BlockState updateShape(@NotNull BlockState state, @NotNull Direction direction,
-                                              @NotNull BlockState neighborState, @NotNull LevelAccessor level,
-                                              @NotNull BlockPos pos, @NotNull BlockPos neighborPos) {
+    //? if <1.21.2 {
+    /*@Override
+    protected BlockState updateShape(@NotNull BlockState state, @NotNull Direction direction,
+                                     @NotNull BlockState neighborState, @NotNull LevelAccessor level,
+                                     @NotNull BlockPos pos, @NotNull BlockPos neighborPos) {
         if (direction.getAxis() == Direction.Axis.Y && state.getValue(HALF) == DoubleBlockHalf.UPPER && direction == Direction.DOWN) {
             if (!neighborState.is(this) || neighborState.getValue(HALF) != DoubleBlockHalf.LOWER) {
                 return Blocks.AIR.defaultBlockState();
@@ -148,6 +164,21 @@ public final class TomatoCropPoleBlock extends HarvestableCropBlock {
         }
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
+    *///?} else {
+    @Override
+    protected @NotNull BlockState updateShape(@NotNull BlockState state, @NotNull LevelReader level,
+                                              @NotNull ScheduledTickAccess scheduledTickAccess, @NotNull BlockPos pos,
+                                              @NotNull Direction direction, @NotNull BlockPos neighborPos,
+                                              @NotNull BlockState neighborState, @NotNull RandomSource random) {
+        if (direction.getAxis() == Direction.Axis.Y && state.getValue(HALF) == DoubleBlockHalf.UPPER && direction == Direction.DOWN) {
+            if (!neighborState.is(this) || neighborState.getValue(HALF) != DoubleBlockHalf.LOWER) {
+                return Blocks.AIR.defaultBlockState();
+            }
+            return state;
+        }
+        return super.updateShape(state, level, scheduledTickAccess, pos, direction, neighborPos, neighborState, random);
+    }
+    //?}
 
     @Override
     protected void randomTick(@NotNull BlockState state, @NotNull ServerLevel level, @NotNull BlockPos pos,

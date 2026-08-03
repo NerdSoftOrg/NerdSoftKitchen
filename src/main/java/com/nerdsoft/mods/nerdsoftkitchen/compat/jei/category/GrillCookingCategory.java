@@ -1,6 +1,7 @@
 package com.nerdsoft.mods.nerdsoftkitchen.compat.jei.category;
 
-import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
+//? if <1.21.2 {
+/*import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.item.ModItems;
 import mezz.jei.api.gui.ITickTimer;
@@ -52,6 +53,7 @@ public final class GrillCookingCategory implements IRecipeCategory<CookRecipe> {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public @NotNull IDrawable getBackground() {
         return background;
     }
@@ -89,3 +91,4 @@ public final class GrillCookingCategory implements IRecipeCategory<CookRecipe> {
         guiGraphics.drawString(font, timeString, background.getWidth() - stringWidth, 0, 0xFF888888, false);
     }
 }
+*///?}

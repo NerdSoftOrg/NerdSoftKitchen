@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+@SuppressWarnings("CommentedOutCode")
 public record ShapelessCupCraftingRecipe(List<Ingredient> ingredients,
                                          ItemStack result) implements CraftingRecipe {
 
@@ -58,11 +59,6 @@ public record ShapelessCupCraftingRecipe(List<Ingredient> ingredients,
     }
 
     @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return width * height >= ingredients.size();
-    }
-
-    @Override
     public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull CraftingInput input) {
         int inputSize = input.size();
         NonNullList<ItemStack> remaining = NonNullList.withSize(inputSize, ItemStack.EMPTY);
@@ -76,6 +72,17 @@ public record ShapelessCupCraftingRecipe(List<Ingredient> ingredients,
     }
 
     @Override
+    public @NotNull CraftingBookCategory category() {
+        return CraftingBookCategory.MISC;
+    }
+
+    //? if <1.21.2 {
+    /*@Override
+    public boolean canCraftInDimensions(int width, int height) {
+        return width * height >= ingredients.size();
+    }
+
+    @Override
     public @NotNull ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
         return result.copy();
     }
@@ -86,19 +93,30 @@ public record ShapelessCupCraftingRecipe(List<Ingredient> ingredients,
     }
 
     @Override
-    public @NotNull CraftingBookCategory category() {
-        return CraftingBookCategory.MISC;
-    }
-
-    @Override
-    public @NotNull RecipeSerializer<? extends Recipe<CraftingInput>> getSerializer() {
+    public @NotNull RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.SHAPELESS_CUP_SERIALIZER.get();
     }
 
     @Override
-    public @NotNull RecipeType<? extends Recipe<CraftingInput>> getType() {
+    public @NotNull RecipeType<?> getType() {
         return RecipeType.CRAFTING;
     }
+    *///?} else {
+    @Override
+    public @NotNull PlacementInfo placementInfo() {
+        return PlacementInfo.create(ingredients);
+    }
+
+    @Override
+    public @NotNull RecipeSerializer<ShapelessCupCraftingRecipe> getSerializer() {
+        return ModRecipeSerializers.SHAPELESS_CUP_SERIALIZER.get();
+    }
+
+    @Override
+    public @NotNull RecipeType<CraftingRecipe> getType() {
+        return RecipeType.CRAFTING;
+    }
+    //?}
 
     public static class Serializer implements RecipeSerializer<ShapelessCupCraftingRecipe> {
 

@@ -1,6 +1,7 @@
 package com.nerdsoft.mods.nerdsoftkitchen.compat.jei;
 
-import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
+//? if <1.21.2 {
+/*import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.compat.jei.category.GrillCookingCategory;
 import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipe;
@@ -116,3 +117,4 @@ public class JeiNerdSoftKitchenPlugin implements IModPlugin {
         return new CookRecipe(recipe.getIngredients().getFirst(), recipe.getResultItem(registries), recipe.getCookingTime());
     }
 }
+*///?}

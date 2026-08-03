@@ -195,14 +195,27 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
         return state.getValue(GrillTableBlock.LIT);
     }
 
-    private boolean canCookAt(Level level, ItemStack stack) {
+    //? if <1.21.2 {
+    /*private boolean canCookAt(Level level, ItemStack stack) {
         if (grillRecipeCheck.getRecipeFor(new CookRecipeInput(stack), level).isPresent()) {
             return true;
         }
         return campfireRecipeCheck.getRecipeFor(new SingleRecipeInput(stack), level).isPresent();
     }
+    *///?} else {
+    private boolean canCookAt(Level level, ItemStack stack) {
+        if (!(level instanceof net.minecraft.server.level.ServerLevel serverLevel)) {
+            return false;
+        }
+        if (grillRecipeCheck.getRecipeFor(new CookRecipeInput(stack), serverLevel).isPresent()) {
+            return true;
+        }
+        return campfireRecipeCheck.getRecipeFor(new SingleRecipeInput(stack), serverLevel).isPresent();
+    }
+    //?}
 
-    @Override
+    //? if <1.21.2 {
+    /*@Override
     protected CookResult resolveRecipe(Level level, int slot, ItemStack stack) {
         CookRecipeInput cookInput = new CookRecipeInput(stack);
         Optional<RecipeHolder<CookRecipe>> cookRecipe = grillRecipeCheck.getRecipeFor(cookInput, level);
@@ -220,6 +233,29 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
         }
         return null;
     }
+    *///?} else {
+    @Override
+    protected CookResult resolveRecipe(Level level, int slot, ItemStack stack) {
+        if (!(level instanceof net.minecraft.server.level.ServerLevel serverLevel)) {
+            return null;
+        }
+        CookRecipeInput cookInput = new CookRecipeInput(stack);
+        Optional<RecipeHolder<CookRecipe>> cookRecipe = grillRecipeCheck.getRecipeFor(cookInput, serverLevel);
+        if (cookRecipe.isPresent()) {
+            CookRecipe recipe = cookRecipe.get().value();
+            ItemStack output = recipe.assemble(cookInput, level.registryAccess());
+            return new CookResult(output, scaledCookTime(recipe.cookingTime()));
+        }
+        SingleRecipeInput campfireInput = new SingleRecipeInput(stack);
+        Optional<RecipeHolder<CampfireCookingRecipe>> campfireRecipe = campfireRecipeCheck.getRecipeFor(campfireInput, serverLevel);
+        if (campfireRecipe.isPresent()) {
+            CampfireCookingRecipe recipe = campfireRecipe.get().value();
+            ItemStack output = recipe.assemble(campfireInput, level.registryAccess());
+            return new CookResult(output, scaledCookTime(recipe.cookingTime()));
+        }
+        return null;
+    }
+    //?}
 
     @Override
     protected void onCookComplete(Level level, BlockPos pos, int slot, ItemStack result) {
@@ -247,7 +283,7 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
 
     public boolean hasCookableRecipe(ItemStack stack) {
         Level level = getLevel();
-        if (level == null || !canCookAt(level, stack)) {
+        if (!canCookAt(level, stack)) {
             return false;
         }
         return hasFreeSlot(GRILL_SLOTS_START, GRILL_SLOTS_COUNT) || hasFreeSlot(CAMPFIRE_SLOTS_START, CAMPFIRE_SLOTS_COUNT);

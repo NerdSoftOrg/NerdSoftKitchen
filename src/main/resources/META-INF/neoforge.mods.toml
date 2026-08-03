@@ -31,6 +31,7 @@ versionRange = "${jade_version_range}"
 ordering = "${jade_ordering}"
 side = "${jade_side}"
 
+#? if <1.21.2 {
 [[dependencies."${mod_id}"]]
 modId = "${jei_mod_id}"
 type = "${jei_type}"

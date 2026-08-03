@@ -24,8 +24,56 @@ public final class ModBlocks {
 
     /// Blocks
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(NerdSoftKitchen.MOD_ID);
-    public static final DeferredBlock<GrillTableBlock> GRILL_TABLE = BLOCKS.register("grill_table", () -> new GrillTableBlock(false, BlockBehaviour.Properties.of().mapColor(MapColor.PODZOL).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).noOcclusion().lightLevel(state -> state.getValue(GrillTableBlock.LIT) ? 15 : 0).ignitedByLava()));
-    public static final DeferredBlock<GrillTableBlock> GRILL_TABLE_SOUL = BLOCKS.register("grill_table_soul", () -> new GrillTableBlock(true, BlockBehaviour.Properties.of().mapColor(MapColor.PODZOL).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).noOcclusion().lightLevel(state -> state.getValue(GrillTableBlock.LIT) ? 10 : 0).ignitedByLava()));
+
+    //? if <1.21.2 {
+    /*public static final DeferredBlock<GrillTableBlock> GRILL_TABLE = BLOCKS.register(
+        "grill_table",
+        () -> new GrillTableBlock(
+            false,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.PODZOL)
+                .instrument(NoteBlockInstrument.BASS)
+                .strength(2.0F).sound(SoundType.WOOD)
+                .noOcclusion()
+                .lightLevel(state -> state.getValue(GrillTableBlock.LIT) ? 15 : 0)
+                .ignitedByLava()));
+    public static final DeferredBlock<GrillTableBlock> GRILL_TABLE_SOUL = BLOCKS.register(
+        "grill_table_soul",
+        () -> new GrillTableBlock(
+            true,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.PODZOL)
+                .instrument(NoteBlockInstrument.BASS)
+                .strength(2.0F).sound(SoundType.WOOD)
+                .noOcclusion()
+                .lightLevel(state -> state.getValue(GrillTableBlock.LIT) ? 10 : 0)
+                .ignitedByLava()));
+    *///?} else {
+    public static final DeferredBlock<GrillTableBlock> GRILL_TABLE = BLOCKS.registerBlock(
+            "grill_table",
+            props -> new GrillTableBlock(false, props),
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PODZOL)
+                    .instrument(NoteBlockInstrument.BASS)
+                    .strength(2.0F)
+                    .sound(SoundType.WOOD)
+                    .noOcclusion()
+                    .lightLevel(state -> state.getValue(GrillTableBlock.LIT) ? 15 : 0)
+                    .ignitedByLava()
+    );
+    public static final DeferredBlock<GrillTableBlock> GRILL_TABLE_SOUL = BLOCKS.registerBlock(
+            "grill_table_soul",
+            props -> new GrillTableBlock(true, props),
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PODZOL)
+                    .instrument(NoteBlockInstrument.BASS)
+                    .strength(2.0F)
+                    .sound(SoundType.WOOD)
+                    .noOcclusion()
+                    .lightLevel(state -> state.getValue(GrillTableBlock.LIT) ? 10 : 0)
+                    .ignitedByLava()
+    );
+    //?}
 
     /// Wild Crops
     private static final BlockBehaviour.Properties WILD_CROP_PROPERTIES = BlockBehaviour.Properties.of().noCollission().instabreak().sound(SoundType.CROP).pushReaction(PushReaction.DESTROY);

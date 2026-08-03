@@ -9,7 +9,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,6 +22,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+
+//? if <1.21.2 {
+/*import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.item.UseAnim;
+*///?}
 
 public class IronCupItem extends Item {
 
@@ -54,7 +58,7 @@ public class IronCupItem extends Item {
     @Override
     public @NotNull Component getName(@NotNull ItemStack stack) {
         IronCupContent content = contentOf(stack);
-        if (content == null) return Component.translatable(this.getDescriptionId(stack));
+        if (content == null) return Component.translatable(this.getDescriptionId());
         return Component.translatable("nerdsoftkitchen.iron_cup.filled_name",
                 Component.translatable("nerdsoftkitchen.iron_cup_content." + content.getSerializedName()));
     }
@@ -93,7 +97,11 @@ public class IronCupItem extends Item {
             }
         }
 
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        //? if <1.21.2 {
+        /*return InteractionResult.sidedSuccess(level.isClientSide);
+         *///?} else {
+        return InteractionResult.SUCCESS;
+        //?}
     }
 
     @Override
@@ -139,6 +147,19 @@ public class IronCupItem extends Item {
             toRemove.add(effect.getEffect());
 
             if (newDuration > 0) {
+                //? if <1.21.2 {
+                /*MobEffectInstance newEffect = new MobEffectInstance(
+                        effect.getEffect(),
+                        newDuration,
+                        effect.getAmplifier(),
+                        effect.isAmbient(),
+                        effect.isVisible(),
+                        effect.showIcon()
+                );
+                newEffect.getCures().clear();
+                newEffect.getCures().addAll(effect.getCures());
+                toReapply.add(newEffect);
+                *///?} else {
                 MobEffectInstance newEffect = new MobEffectInstance(
                         effect.getEffect(),
                         newDuration,
@@ -147,11 +168,8 @@ public class IronCupItem extends Item {
                         effect.isVisible(),
                         effect.showIcon()
                 );
-
-                newEffect.getCures().clear();
-                newEffect.getCures().addAll(effect.getCures());
-
                 toReapply.add(newEffect);
+                //?}
             }
         }
 
@@ -172,9 +190,15 @@ public class IronCupItem extends Item {
     }
 
     @Override
-    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
+            //? if <1.21.2 {
+    /*public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
         return isEmpty(stack) ? UseAnim.NONE : UseAnim.DRINK;
     }
+    *///?} else {
+    public @NotNull ItemUseAnimation getUseAnimation(@NotNull ItemStack stack) {
+        return isEmpty(stack) ? ItemUseAnimation.NONE : ItemUseAnimation.DRINK;
+    }
+    //?}
 
     @Override
     public int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
@@ -182,7 +206,8 @@ public class IronCupItem extends Item {
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player,
+            //? if <1.21.2 {
+    /*public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player,
                                                            @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (isEmpty(stack)) {
@@ -190,4 +215,14 @@ public class IronCupItem extends Item {
         }
         return ItemUtils.startUsingInstantly(level, player, hand);
     }
+    *///?} else {
+    public @NotNull InteractionResult use(@NotNull Level level, @NotNull Player player,
+                                          @NotNull InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (isEmpty(stack)) {
+            return InteractionResult.PASS;
+        }
+        return ItemUtils.startUsingInstantly(level, player, hand);
+    }
+    //?}
 }

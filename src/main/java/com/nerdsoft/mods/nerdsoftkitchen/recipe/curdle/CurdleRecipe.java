@@ -1,5 +1,7 @@
 package com.nerdsoft.mods.nerdsoftkitchen.recipe.curdle;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.recipe.ModRecipeSerializers;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.recipe.ModRecipeTypes;
 import net.minecraft.core.HolderLookup;
@@ -12,6 +14,14 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+
+//? if >=1.21.2 {
+import net.minecraft.world.item.crafting.PlacementInfo;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
+import net.minecraft.world.item.crafting.RecipeBookCategories;
+//?}
 
 public record CurdleRecipe(Ingredient base, Ingredient activator,
                            ItemStack result) implements Recipe<CurdleRecipeInput> {
@@ -27,7 +37,8 @@ public record CurdleRecipe(Ingredient base, Ingredient activator,
         return result.copy();
     }
 
-    @Override
+    //? if <1.21.2 {
+    /*@Override
     public boolean canCraftInDimensions(int width, int height) {
         return true;
     }
@@ -38,19 +49,40 @@ public record CurdleRecipe(Ingredient base, Ingredient activator,
     }
 
     @Override
-    public @NotNull RecipeSerializer<? extends Recipe<CurdleRecipeInput>> getSerializer() {
+    public @NotNull RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.CURDLE_SERIALIZER.get();
     }
 
     @Override
-    public @NotNull RecipeType<? extends Recipe<CurdleRecipeInput>> getType() {
+    public @NotNull RecipeType<?> getType() {
         return ModRecipeTypes.CURDLE_TYPE.get();
     }
+    *///?} else {
+    @Override
+    public @NotNull PlacementInfo placementInfo() {
+        return PlacementInfo.create(List.of(base, activator));
+    }
+
+    @Override
+    public @NotNull RecipeBookCategory recipeBookCategory() {
+        return RecipeBookCategories.CRAFTING_MISC;
+    }
+
+    @Override
+    public @NotNull RecipeSerializer<CurdleRecipe> getSerializer() {
+        return ModRecipeSerializers.CURDLE_SERIALIZER.get();
+    }
+
+    @Override
+    public @NotNull RecipeType<CurdleRecipe> getType() {
+        return ModRecipeTypes.CURDLE_TYPE.get();
+    }
+    //?}
 
     public static class Serializer implements RecipeSerializer<CurdleRecipe> {
 
-        public static final com.mojang.serialization.MapCodec<CurdleRecipe> CODEC =
-                com.mojang.serialization.codecs.RecordCodecBuilder.mapCodec(instance -> instance.group(Ingredient.CODEC.fieldOf("base").forGetter(CurdleRecipe::base), Ingredient.CODEC.fieldOf("activator").forGetter(CurdleRecipe::activator), ItemStack.CODEC.fieldOf("result").forGetter(CurdleRecipe::result)).apply(instance, CurdleRecipe::new));
+        public static final MapCodec<CurdleRecipe> CODEC =
+                RecordCodecBuilder.mapCodec(instance -> instance.group(Ingredient.CODEC.fieldOf("base").forGetter(CurdleRecipe::base), Ingredient.CODEC.fieldOf("activator").forGetter(CurdleRecipe::activator), ItemStack.CODEC.fieldOf("result").forGetter(CurdleRecipe::result)).apply(instance, CurdleRecipe::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, CurdleRecipe> STREAM_CODEC =
                 StreamCodec.composite(Ingredient.CONTENTS_STREAM_CODEC, CurdleRecipe::base,
@@ -58,7 +90,7 @@ public record CurdleRecipe(Ingredient base, Ingredient activator,
                         CurdleRecipe::result, CurdleRecipe::new);
 
         @Override
-        public @NotNull com.mojang.serialization.MapCodec<CurdleRecipe> codec() {
+        public @NotNull MapCodec<CurdleRecipe> codec() {
             return CODEC;
         }
 

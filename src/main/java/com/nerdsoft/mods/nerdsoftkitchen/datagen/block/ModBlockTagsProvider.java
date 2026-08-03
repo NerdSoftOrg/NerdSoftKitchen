@@ -21,6 +21,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
         super(output, lookupProvider, NerdSoftKitchen.MOD_ID, existingFileHelper);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static TagKey<Block> cTag(String name) {
         return BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", name));
     }

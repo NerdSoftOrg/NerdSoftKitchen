@@ -10,13 +10,14 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
+//? if >=1.21.2 {
+//?}
+
+@SuppressWarnings("CommentedOutCode")
 public record CookRecipe(Ingredient input, ItemStack result, int cookingTime) implements Recipe<CookRecipeInput> {
 
     public static final int DEFAULT_COOKING_TIME = 200;
@@ -32,7 +33,8 @@ public record CookRecipe(Ingredient input, ItemStack result, int cookingTime) im
         return result.copy();
     }
 
-    @Override
+    //? if <1.21.2 {
+    /*@Override
     public boolean canCraftInDimensions(int width, int height) {
         return true;
     }
@@ -51,6 +53,28 @@ public record CookRecipe(Ingredient input, ItemStack result, int cookingTime) im
     public @NotNull RecipeType<? extends Recipe<CookRecipeInput>> getType() {
         return ModRecipeTypes.COOK_TYPE.get();
     }
+    *///?} else {
+    @Override
+    public @NotNull PlacementInfo placementInfo() {
+        return PlacementInfo.NOT_PLACEABLE;
+    }
+
+    @Override
+    @SuppressWarnings("NullableProblems")
+    public RecipeBookCategory recipeBookCategory() {
+        return null;
+    }
+
+    @Override
+    public @NotNull RecipeSerializer<CookRecipe> getSerializer() {
+        return ModRecipeSerializers.COOK_SERIALIZER.get();
+    }
+
+    @Override
+    public @NotNull RecipeType<CookRecipe> getType() {
+        return ModRecipeTypes.COOK_TYPE.get();
+    }
+    //?}
 
     public static class Serializer implements RecipeSerializer<CookRecipe> {
 

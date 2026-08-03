@@ -17,7 +17,8 @@ public final class ModItems {
 
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(NerdSoftKitchen.MOD_ID);
 
-    /// Machine Items
+    //? if <1.21.2 {
+    /*/// Machine Items
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE = ITEMS.registerItem("grill_table",
             props -> new GrillBlockItem(ModBlocks.GRILL_TABLE.get(), props));
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE_SOUL = ITEMS.registerItem("grill_table_soul",
@@ -42,6 +43,33 @@ public final class ModItems {
             ITEMS.register("lettuce_seeds", () -> new SeedItem(ModBlocks.LETTUCE_CROP.get(), new Item.Properties()));
     public static final DeferredItem<SeedItem> PURPLE_ONION_SEEDS =
             ITEMS.register("purple_onion_seeds", () -> new SeedItem(ModBlocks.PURPLE_ONION_CROP.get(), new Item.Properties()));
+    *///?} else {
+    /// Machine Items
+    public static final DeferredItem<GrillBlockItem> GRILL_TABLE = ITEMS.registerItem(
+            "grill_table", props -> new GrillBlockItem(ModBlocks.GRILL_TABLE.get(), props));
+    public static final DeferredItem<GrillBlockItem> GRILL_TABLE_SOUL = ITEMS.registerItem(
+            "grill_table_soul", props -> new GrillBlockItem(ModBlocks.GRILL_TABLE_SOUL.get(), props));
+
+    /// Wild Crop Block Items
+    public static final DeferredItem<CreativeOnlyBlockItem> WILD_STRAWBERRY = ITEMS.registerItem(
+            "wild_strawberry", props -> new CreativeOnlyBlockItem(ModBlocks.WILD_STRAWBERRY.get(), props));
+    public static final DeferredItem<CreativeOnlyBlockItem> WILD_TOMATO = ITEMS.registerItem(
+            "wild_tomato", props -> new CreativeOnlyBlockItem(ModBlocks.WILD_TOMATO.get(), props.food(ModFoods.WILD_TOMATO, net.minecraft.world.item.component.Consumables.DEFAULT_FOOD)));
+    public static final DeferredItem<CreativeOnlyBlockItem> WILD_LETTUCE = ITEMS.registerItem(
+            "wild_lettuce", props -> new CreativeOnlyBlockItem(ModBlocks.WILD_LETTUCE.get(), props));
+    public static final DeferredItem<CreativeOnlyBlockItem> WILD_PURPLE_ONION = ITEMS.registerItem(
+            "wild_purple_onion", props -> new CreativeOnlyBlockItem(ModBlocks.WILD_PURPLE_ONION.get(), props));
+
+    /// Crop Seeds
+    public static final DeferredItem<SeedItem> STRAWBERRY_SEEDS = ITEMS.registerItem(
+            "strawberry_seeds", props -> new SeedItem(ModBlocks.STRAWBERRY_CROP.get(), props));
+    public static final DeferredItem<SeedItem> TOMATO_SEEDS = ITEMS.registerItem(
+            "tomato_seeds", props -> new SeedItem(ModBlocks.TOMATO_CROP.get(), props));
+    public static final DeferredItem<SeedItem> LETTUCE_SEEDS = ITEMS.registerItem(
+            "lettuce_seeds", props -> new SeedItem(ModBlocks.LETTUCE_CROP.get(), props));
+    public static final DeferredItem<SeedItem> PURPLE_ONION_SEEDS = ITEMS.registerItem(
+            "purple_onion_seeds", props -> new SeedItem(ModBlocks.PURPLE_ONION_CROP.get(), props));
+    //?}
 
     /// Raw Ingredients
     public static final DeferredItem<Item> STRAWBERRY = ITEMS.registerItem("strawberry",

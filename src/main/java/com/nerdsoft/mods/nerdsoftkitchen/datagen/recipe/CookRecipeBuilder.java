@@ -6,12 +6,18 @@ import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+//? if >=1.21.2 {
+import net.minecraft.resources.ResourceKey;
+//?}
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
+//? if <=1.21.1 {
+/*import net.minecraft.resources.ResourceLocation;
+*///?}
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,7 +57,8 @@ public class CookRecipeBuilder implements RecipeBuilder {
         return result.getItem();
     }
 
-    @Override
+    //? if <1.21.2 {
+    /*@Override
     public void save(@NotNull RecipeOutput output, @NotNull ResourceLocation id) {
         Advancement.Builder advancement = output.advancement()
                 .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
@@ -62,4 +69,17 @@ public class CookRecipeBuilder implements RecipeBuilder {
         CookRecipe recipe = new CookRecipe(input, result, cookingTime);
         output.accept(id, recipe, advancement.build(id.withPrefix("recipes/")));
     }
+    *///?} else {
+    @Override
+    public void save(@NotNull RecipeOutput output, @NotNull ResourceKey<Recipe<?>> key) {
+        Advancement.Builder advancement = output.advancement()
+                .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(key))
+                .rewards(AdvancementRewards.Builder.recipe(key))
+                .requirements(AdvancementRequirements.Strategy.OR);
+        criteria.forEach(advancement::addCriterion);
+
+        CookRecipe recipe = new CookRecipe(input, result, cookingTime);
+        output.accept(key, recipe, advancement.build(key.location().withPrefix("recipes/")));
+    }
+    //?}
 }

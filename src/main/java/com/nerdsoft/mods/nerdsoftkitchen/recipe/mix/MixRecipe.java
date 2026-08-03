@@ -18,6 +18,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+//? if >=1.21.2 {
+import net.minecraft.world.item.crafting.PlacementInfo;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
+import net.minecraft.world.item.crafting.RecipeBookCategories;
+//?}
+
 public record MixRecipe(List<Ingredient> inputs, ItemStack result) implements Recipe<MixRecipeInput> {
 
     @Override
@@ -44,7 +50,8 @@ public record MixRecipe(List<Ingredient> inputs, ItemStack result) implements Re
         return result.copy();
     }
 
-    @Override
+    //? if <1.21.2 {
+    /*@Override
     public boolean canCraftInDimensions(int width, int height) {
         return true;
     }
@@ -55,14 +62,35 @@ public record MixRecipe(List<Ingredient> inputs, ItemStack result) implements Re
     }
 
     @Override
-    public @NotNull RecipeSerializer<? extends Recipe<MixRecipeInput>> getSerializer() {
+    public @NotNull RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.MIX_SERIALIZER.get();
     }
 
     @Override
-    public @NotNull RecipeType<? extends Recipe<MixRecipeInput>> getType() {
+    public @NotNull RecipeType<?> getType() {
         return ModRecipeTypes.MIX_TYPE.get();
     }
+    *///?} else {
+    @Override
+    public @NotNull PlacementInfo placementInfo() {
+        return PlacementInfo.create(inputs);
+    }
+
+    @Override
+    public @NotNull RecipeBookCategory recipeBookCategory() {
+        return RecipeBookCategories.CRAFTING_MISC;
+    }
+
+    @Override
+    public @NotNull RecipeSerializer<MixRecipe> getSerializer() {
+        return ModRecipeSerializers.MIX_SERIALIZER.get();
+    }
+
+    @Override
+    public @NotNull RecipeType<MixRecipe> getType() {
+        return ModRecipeTypes.MIX_TYPE.get();
+    }
+    //?}
 
     public static class Serializer implements RecipeSerializer<MixRecipe> {
 

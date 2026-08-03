@@ -10,15 +10,27 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+//? if >=1.21.2 {
+import java.util.Set;
+//?}
+
 public final class ModBlockEntities {
 
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, NerdSoftKitchen.MOD_ID);
 
-    @SuppressWarnings("DataFlowIssue")
+    //? if <1.21.2 {
+    /*@SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GrillTableBlockEntity>> GRILL_TABLE =
             BLOCK_ENTITIES.register("grill_table", () -> BlockEntityType.Builder.of(GrillTableBlockEntity::new,
                     ModBlocks.GRILL_TABLE.get(), ModBlocks.GRILL_TABLE_SOUL.get()).build(null));
+    *///?} else {
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GrillTableBlockEntity>> GRILL_TABLE =
+            BLOCK_ENTITIES.register("grill_table", () -> new BlockEntityType<>(
+                    GrillTableBlockEntity::new,
+                    Set.of(ModBlocks.GRILL_TABLE.get(), ModBlocks.GRILL_TABLE_SOUL.get())
+            ));
+    //?}
 
     private ModBlockEntities() {
     }

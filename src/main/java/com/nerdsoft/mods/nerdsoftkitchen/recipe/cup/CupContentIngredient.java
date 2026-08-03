@@ -5,15 +5,18 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.nerdsoft.mods.nerdsoftkitchen.item.IronCupItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.item.ModItems;
+import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 public record CupContentIngredient(IronCupContent content) implements ICustomIngredient {
@@ -41,10 +44,17 @@ public record CupContentIngredient(IronCupContent content) implements ICustomIng
         return stack.is(ModItems.IRON_CUP.get()) && content == IronCupItem.contentOf(stack);
     }
 
-    @Override
+    //? if <1.21.2 {
+    /*@Override
     public @NotNull Stream<ItemStack> getItems() {
         return Stream.of(IronCupItem.filled(ModItems.IRON_CUP.get(), content));
     }
+    *///?} else {
+    @Override
+    public @NotNull Stream<Holder<Item>> items() {
+        return Stream.of(ModItems.IRON_CUP.getDelegate());
+    }
+    //?}
 
     @Override
     public boolean isSimple() {

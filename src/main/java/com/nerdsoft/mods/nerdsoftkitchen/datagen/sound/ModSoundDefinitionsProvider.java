@@ -1,6 +1,7 @@
 package com.nerdsoft.mods.nerdsoftkitchen.datagen.sound;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
+import com.nerdsoft.mods.nerdsoftkitchen.datagen.DatagenUtils;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.sound.ModSounds;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -13,8 +14,11 @@ import java.util.function.Supplier;
 
 public class ModSoundDefinitionsProvider extends SoundDefinitionsProvider {
 
+    private final ExistingFileHelper existingFileHelper;
+
     public ModSoundDefinitionsProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
         super(output, NerdSoftKitchen.MOD_ID, existingFileHelper);
+        this.existingFileHelper = existingFileHelper;
     }
 
     @Override
@@ -35,6 +39,8 @@ public class ModSoundDefinitionsProvider extends SoundDefinitionsProvider {
 
     private void addSound(Supplier<SoundEvent> soundEvent, String path, String subtitleKey, boolean isLooping) {
         boolean shouldPreload = !isLooping;
+
+        DatagenUtils.trackSound(this.existingFileHelper, path);
 
         add(soundEvent, SoundDefinition.definition()
                 .with(sound(id(path)).preload(shouldPreload))

@@ -4,21 +4,23 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.nerdsoft.mods.nerdsoftkitchen.blockentity.GrillTableBlockEntity;
-import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
+import com.nerdsoft.mods.nerdsoftkitchen.client.sound.GrillLoopSoundManager;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.data.ModDamageTypes;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.sound.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,9 +28,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -37,7 +37,19 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+//? if >=1.21.2 {
+import net.minecraft.world.level.redstone.Orientation;
+import net.minecraft.world.InteractionResult;
+//?}
+//? if <1.21.2 {
+/*
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+ *///?} else {
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+//?}
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
@@ -52,7 +64,11 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
 
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    //? if <1.21.2 {
+    /*public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+     *///?} else {
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+    //?}
 
     public static final MapCodec<GrillTableBlock> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
@@ -96,7 +112,10 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
     }
 
     @Override
-    protected @NotNull ItemInteractionResult useItemOn(
+    //? if <1.21.2 {
+    /*protected @NotNull ItemInteractionResult useItemOn(
+     *///?} else
+    protected @NotNull InteractionResult useItemOn(
             @NotNull ItemStack stack, @NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult
     ) {
         if (level.getBlockEntity(pos) instanceof GrillTableBlockEntity grillTableBlockEntity) {
@@ -104,14 +123,23 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
             if (grillTableBlockEntity.hasCookableRecipe(itemstack)) {
                 if (!level.isClientSide && grillTableBlockEntity.placeFood(player, itemstack)) {
                     player.awardStat(Stats.INTERACT_WITH_CAMPFIRE);
-                    return ItemInteractionResult.SUCCESS;
+                    //? if <1.21.2 {
+                    /*return ItemInteractionResult.SUCCESS;
+                     *///?} else
+                    return InteractionResult.SUCCESS;
                 }
 
-                return ItemInteractionResult.CONSUME;
+                //? if <1.21.2 {
+                /*return ItemInteractionResult.CONSUME;
+                 *///?} else
+                return InteractionResult.CONSUME;
             }
         }
 
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        //? if <1.21.2 {
+        /*return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+         *///?} else
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -124,8 +152,21 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
         super.stepOn(level, pos, state, entity);
     }
 
+    //? if <1.21.2 {
+    /*@Override
+    protected void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!state.is(newState.getBlock())) {
+            BlockEntity blockentity = level.getBlockEntity(pos);
+            if (blockentity instanceof GrillTableBlockEntity grillTableBlockEntity) {
+                grillTableBlockEntity.dropContents(level, pos);
+            }
+
+            super.onRemove(state, level, pos, newState, movedByPiston);
+        }
+    }
+    *///?} else {
     @Override
-    protected void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean isMoving) {
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
             BlockEntity blockentity = level.getBlockEntity(pos);
             if (blockentity instanceof GrillTableBlockEntity grillTableBlockEntity) {
@@ -135,6 +176,7 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
             super.onRemove(state, level, pos, newState, isMoving);
         }
     }
+    //?}
 
     @Nullable
     @Override
@@ -148,16 +190,8 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
                 .setValue(FACING, context.getHorizontalDirection());
     }
 
-    @Override
-    protected @NotNull BlockState updateShape(BlockState state, @NotNull Direction facing, @NotNull BlockState facingState, @NotNull LevelAccessor level, @NotNull BlockPos currentPos, @NotNull BlockPos facingPos) {
-        if (state.getValue(WATERLOGGED)) {
-            level.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
-        }
-
-        return super.updateShape(state, facing, facingState, level, currentPos, facingPos);
-    }
-
-    @Override
+    //? if <1.21.2 {
+    /*@Override
     protected void neighborChanged(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Block neighborBlock, @NotNull BlockPos neighborPos, boolean movedByPiston) {
         super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston);
         if (!level.isClientSide && neighborPos.equals(pos.below())) {
@@ -166,6 +200,17 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
             }
         }
     }
+    *///?} else {
+    @Override
+    protected void neighborChanged(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston) {
+        super.neighborChanged(state, level, pos, neighborBlock, orientation, movedByPiston);
+        if (!level.isClientSide) {
+            if (level.getBlockEntity(pos) instanceof GrillTableBlockEntity grillTableBlockEntity) {
+                grillTableBlockEntity.refreshSpeedMultiplier(soul);
+            }
+        }
+    }
+    //?}
 
     @Override
     public void setPlacedBy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @Nullable LivingEntity placer, @NotNull ItemStack stack) {
@@ -254,11 +299,12 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
     }
 
     @Override
+    @SuppressWarnings("RedundantCast")
     protected void onProjectileHit(Level level, @NotNull BlockState state, BlockHitResult hit, @NotNull Projectile projectile) {
         BlockPos blockpos = hit.getBlockPos();
         if (!level.isClientSide
                 && projectile.isOnFire()
-                && projectile.mayInteract(level, blockpos)
+                && projectile.mayInteract((ServerLevel) level, blockpos)
                 && !state.getValue(LIT)
                 && !state.getValue(WATERLOGGED)) {
             level.setBlock(blockpos, state.setValue(LIT, true), 11);
@@ -286,10 +332,17 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
         return RenderShape.MODEL;
     }
 
-    @Override
+    //? if <1.21.2 {
+    /*@Override
     protected boolean propagatesSkylightDown(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos) {
         return true;
     }
+    *///?} else {
+    @Override
+    protected boolean propagatesSkylightDown(@NotNull BlockState state) {
+        return true;
+    }
+    //?}
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
@@ -306,15 +359,20 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> blockEntityType) {
         if (level.isClientSide) {
             return createTickerHelper(blockEntityType, ModBlockEntities.GRILL_TABLE.get(),
-                    (lvl, pos, blockState, entity) ->
-                            com.nerdsoft.mods.nerdsoftkitchen.client.sound.GrillLoopSoundManager.update(lvl, pos, blockState, entity));
+                    GrillLoopSoundManager::update);
         }
 
         return createTickerHelper(blockEntityType, ModBlockEntities.GRILL_TABLE.get(), GrillTableBlockEntity::tick);
     }
 
     @Override
+    //? if <1.21.2 {
+    /*protected boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType type) {
+        return false;
+    }
+    *///?} else {
     protected boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType pathComputationType) {
         return false;
     }
+    //?}
 }
