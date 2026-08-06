@@ -1,6 +1,7 @@
 package com.nerdsoft.mods.nerdsoftkitchen.compat.jei;
 
 //? if <1.21.2 {
+
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.compat.jei.category.GrillCookingCategory;
 import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
@@ -22,6 +23,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -37,23 +39,9 @@ import java.util.List;
 @JeiPlugin
 @SuppressWarnings("unused")
 public class JeiNerdSoftKitchenPlugin implements IModPlugin {
+
     private static final ResourceLocation PLUGIN_ID =
             ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, "jei_plugin");
-    private static final ISubtypeInterpreter<ItemStack> IRON_CUP_SUBTYPE_INTERPRETER = new ISubtypeInterpreter<>() {
-        @Override
-        public @Nullable Object getSubtypeData(@NotNull ItemStack stack, @NotNull UidContext context) {
-            IronCupContent content = stack.get(ModDataComponents.IRON_CUP_CONTENT.get());
-            return content == null ? null : content.getSerializedName();
-        }
-
-        @Override
-        @Deprecated
-        @SuppressWarnings("deprecated")
-        public @NotNull String getLegacyStringSubtypeInfo(@NotNull ItemStack stack, @NotNull UidContext context) {
-            IronCupContent content = stack.get(ModDataComponents.IRON_CUP_CONTENT.get());
-            return content == null ? "" : content.getSerializedName();
-        }
-    };
 
     @Override
     public @NotNull ResourceLocation getPluginUid() {
@@ -63,8 +51,9 @@ public class JeiNerdSoftKitchenPlugin implements IModPlugin {
     @Override
     public void registerItemSubtypes(@NotNull ISubtypeRegistration registration) {
         registration.registerSubtypeInterpreter(
+                VanillaTypes.ITEM_STACK,
                 ModItems.IRON_CUP.get(),
-                IRON_CUP_SUBTYPE_INTERPRETER
+                new IronCupSubtypeInterpreter(ModDataComponents.IRON_CUP_CONTENT.get())
         );
     }
 
@@ -75,8 +64,12 @@ public class JeiNerdSoftKitchenPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeCatalysts(@NotNull IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(new ItemStack(ModItems.GRILL_TABLE.get()), GrillCookingCategory.RECIPE_TYPE);
-        registration.addRecipeCatalyst(new ItemStack(ModItems.GRILL_TABLE_SOUL.get()), GrillCookingCategory.RECIPE_TYPE);
+        registration.addRecipeCatalyst(
+                new ItemStack(ModItems.GRILL_TABLE.get()),
+                GrillCookingCategory.RECIPE_TYPE);
+        registration.addRecipeCatalyst(
+                new ItemStack(ModItems.GRILL_TABLE_SOUL.get()),
+                GrillCookingCategory.RECIPE_TYPE);
     }
 
     @Override
@@ -113,31 +106,48 @@ public class JeiNerdSoftKitchenPlugin implements IModPlugin {
         RecipeManager recipeManager = level.getRecipeManager();
         HolderLookup.Provider registries = level.registryAccess();
 
-        List<CookRecipe> mergedRecipes = new ArrayList<>(collectGrillRecipes(recipeManager));
+        List<RecipeHolder<CookRecipe>> mergedRecipes = new ArrayList<>(collectGrillRecipes(recipeManager));
         mergedRecipes.addAll(collectVanillaCampfireRecipes(recipeManager, registries));
 
         jeiRuntime.getRecipeManager().addRecipes(GrillCookingCategory.RECIPE_TYPE, mergedRecipes);
     }
 
-    private List<CookRecipe> collectGrillRecipes(RecipeManager recipeManager) {
-        return recipeManager
-                .getAllRecipesFor(ModRecipeTypes.COOK_TYPE.get())
-                .stream()
-                .map(RecipeHolder::value)
-                .toList();
+    private List<RecipeHolder<CookRecipe>> collectGrillRecipes(RecipeManager recipeManager) {
+        return recipeManager.getAllRecipesFor(ModRecipeTypes.COOK_TYPE.get());
     }
 
-    private List<CookRecipe> collectVanillaCampfireRecipes(RecipeManager recipeManager, HolderLookup.Provider registries) {
+    private List<RecipeHolder<CookRecipe>> collectVanillaCampfireRecipes(RecipeManager recipeManager, HolderLookup.Provider registries) {
         return recipeManager
                 .getAllRecipesFor(net.minecraft.world.item.crafting.RecipeType.CAMPFIRE_COOKING)
                 .stream()
-                .map(RecipeHolder::value)
-                .map(recipe -> toCookRecipe(recipe, registries))
+                .map(holder -> toCookRecipeHolder(holder, registries))
                 .toList();
     }
 
-    private CookRecipe toCookRecipe(CampfireCookingRecipe recipe, HolderLookup.Provider registries) {
-        return new CookRecipe(recipe.getIngredients().getFirst(), recipe.getResultItem(registries), recipe.getCookingTime());
+    private RecipeHolder<CookRecipe> toCookRecipeHolder(RecipeHolder<CampfireCookingRecipe> holder, HolderLookup.Provider registries) {
+        CampfireCookingRecipe recipe = holder.value();
+        CookRecipe cookRecipe = new CookRecipe(
+                recipe.getIngredients().getFirst(),
+                recipe.getResultItem(registries),
+                recipe.getCookingTime()
+        );
+        return new RecipeHolder<>(holder.id(), cookRecipe);
+    }
+
+    private record IronCupSubtypeInterpreter(
+            DataComponentType<IronCupContent> componentType
+    ) implements ISubtypeInterpreter<ItemStack> {
+
+        @Override
+        public @Nullable String getSubtypeData(@NotNull ItemStack ingredient, @NotNull UidContext context) {
+            IronCupContent content = ingredient.get(componentType);
+            return content != null ? content.getSerializedName() : null;
+        }
+
+        @Override
+        public @NotNull String getLegacyStringSubtypeInfo(@NotNull ItemStack ingredient, @NotNull UidContext context) {
+            return "";
+        }
     }
 }
 //?}

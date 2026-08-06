@@ -17,6 +17,7 @@ public class ModItemModelProvider extends ItemModelProvider {
     }
 
     @Override
+    @SuppressWarnings("InvariantValue")
     protected void registerModels() {
         // Block Items
         blockItemModel(ModItems.GRILL_TABLE, "grill_table_lit");
@@ -33,13 +34,31 @@ public class ModItemModelProvider extends ItemModelProvider {
                 ModItems.CHEESE, ModItems.CHEESE_SLICE, ModItems.CHEESE_SANDWICH, ModItems.GRILLED_CHEESE
         );
 
-        // Handheld 2D
-        handheldItem2D(
+        // Tintable Handheld
+        tintableKnives("knife_handle", "knife_blade", "knife_highlight",
                 ModItems.STONE_KNIFE, ModItems.IRON_KNIFE, ModItems.GOLD_KNIFE,
-                ModItems.DIAMOND_KNIFE, ModItems.OBSIDIAN_KNIFE
+                ModItems.DIAMOND_KNIFE, ModItems.OBSIDIAN_KNIFE, ModItems.NETHERITE_KNIFE
         );
 
         ironCup();
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private void tintableKnives(String handleTexture, String bladeTexture, String hihglightTexture, DeferredItem<?>... items) {
+        String handlePath = "item/" + handleTexture;
+        String bladePath = "item/" + bladeTexture;
+        String hihglightPath = "item/" + hihglightTexture;
+
+        DatagenUtils.trackTexture(existingFileHelper, handlePath);
+        DatagenUtils.trackTexture(existingFileHelper, bladePath);
+        DatagenUtils.trackTexture(existingFileHelper, hihglightPath);
+
+        for (DeferredItem<?> item : items) {
+            withExistingParent(item.getId().getPath(), mcLoc("item/generated"))
+                    .texture("layer0", modLoc(handlePath))
+                    .texture("layer1", modLoc(bladePath))
+                    .texture("layer2", modLoc(hihglightPath));
+        }
     }
 
     private void customItem2D(DeferredItem<?>... items) {
@@ -48,17 +67,6 @@ public class ModItemModelProvider extends ItemModelProvider {
             DatagenUtils.trackTexture(existingFileHelper, path);
 
             withExistingParent(item.getId().getPath(), mcLoc("item/generated"))
-                    .texture("layer0", modLoc(path));
-        }
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private void handheldItem2D(DeferredItem<?>... items) {
-        for (DeferredItem<?> item : items) {
-            String path = "item/" + item.getId().getPath();
-            DatagenUtils.trackTexture(existingFileHelper, path);
-
-            withExistingParent(item.getId().getPath(), mcLoc("item/handheld"))
                     .texture("layer0", modLoc(path));
         }
     }

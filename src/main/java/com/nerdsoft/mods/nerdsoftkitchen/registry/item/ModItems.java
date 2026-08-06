@@ -18,10 +18,9 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 //? if <1.21.2 {
 import net.minecraft.world.item.Tiers;
- //?} else {
+//?} else {
 /*import net.minecraft.world.item.ToolMaterial;
-import net.minecraft.world.item.component.Consumables;
-*///?}
+ *///?}
 
 public final class ModItems {
 
@@ -29,14 +28,21 @@ public final class ModItems {
 
     private static final float STONE_KNIFE_DAMAGE = 2.5F;
     private static final float STONE_KNIFE_SPEED = -1.4F;
+    @SuppressWarnings("InvariantValue")
+    //? if > 1.21.8 {
+    /*private static final float COPPER_KNIFE_DAMAGE = 2.75F;
+    private static final float COPPER_KNIFE_SPEED = -1.4F;
+    *///?}
     private static final float IRON_KNIFE_DAMAGE = 3.0F;
     private static final float IRON_KNIFE_SPEED = -1.4F;
     private static final float GOLD_KNIFE_DAMAGE = 2.0F;
     private static final float GOLD_KNIFE_SPEED = -1.0F;
     private static final float DIAMOND_KNIFE_DAMAGE = 3.5F;
-    private static final float DIAMOND_KNIFE_SPEED = -1.4F;
+    private static final float DIAMOND_KNIFE_SPEED = -1.3F;
     private static final float OBSIDIAN_KNIFE_DAMAGE = 4.0F;
-    private static final float OBSIDIAN_KNIFE_SPEED = -1.2F;
+    private static final float OBSIDIAN_KNIFE_SPEED = -1.3F;
+    private static final float NETHERITE_KNIFE_DAMAGE = 4.5F;
+    private static final float NETHERITE_KNIFE_SPEED = -1.25F;
 
     //? if <1.21.2 {
     /// Machine Items
@@ -77,6 +83,8 @@ public final class ModItems {
             props -> new KnifeItem(Tiers.DIAMOND, DIAMOND_KNIFE_DAMAGE, DIAMOND_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> OBSIDIAN_KNIFE = ITEMS.registerItem("obsidian_knife",
             props -> new KnifeItem(ModTiers.OBSIDIAN, OBSIDIAN_KNIFE_DAMAGE, OBSIDIAN_KNIFE_SPEED, props));
+    public static final DeferredItem<KnifeItem> NETHERITE_KNIFE = ITEMS.registerItem("netherite_knife",
+            props -> new KnifeItem(ModTiers.OBSIDIAN, NETHERITE_KNIFE_DAMAGE, NETHERITE_KNIFE_SPEED, props));
     //?} else {
     /*/// Machine Items
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE = ITEMS.registerItem(
@@ -106,7 +114,7 @@ public final class ModItems {
             "purple_onion_seeds", props -> new SeedItem(ModBlocks.PURPLE_ONION_CROP.get(), props));
 
     /// Knives
-public static final DeferredItem<KnifeItem> STONE_KNIFE = ITEMS.registerItem("stone_knife",
+    public static final DeferredItem<KnifeItem> STONE_KNIFE = ITEMS.registerItem("stone_knife",
             props -> new KnifeItem(ToolMaterial.STONE, STONE_KNIFE_DAMAGE, STONE_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> IRON_KNIFE = ITEMS.registerItem("iron_knife",
             props -> new KnifeItem(ToolMaterial.IRON, IRON_KNIFE_DAMAGE, IRON_KNIFE_SPEED, props));
@@ -116,6 +124,14 @@ public static final DeferredItem<KnifeItem> STONE_KNIFE = ITEMS.registerItem("st
             props -> new KnifeItem(ToolMaterial.DIAMOND, DIAMOND_KNIFE_DAMAGE, DIAMOND_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> OBSIDIAN_KNIFE = ITEMS.registerItem("obsidian_knife",
             props -> new KnifeItem(ModTiers.OBSIDIAN, OBSIDIAN_KNIFE_DAMAGE, OBSIDIAN_KNIFE_SPEED, props));
+    public static final DeferredItem<KnifeItem> NETHERITE_KNIFE = ITEMS.registerItem("netherite_knife",
+            props -> new KnifeItem(ToolMaterial.NETHERITE, NETHERITE_KNIFE_DAMAGE, NETHERITE_KNIFE_SPEED, props));
+    *///?}
+
+    @SuppressWarnings("InvariantValue")
+    //? if > 1.21.8 {
+    /*public static final DeferredItem<KnifeItem> COPPER_KNIFE = ITEMS.registerItem("copper_knife",
+           props -> new KnifeItem(ToolMaterial.IRON, COPPER_KNIFE_DAMAGE, COPPER_KNIFE_SPEED, props));
     *///?}
 
     /// Raw Ingredients

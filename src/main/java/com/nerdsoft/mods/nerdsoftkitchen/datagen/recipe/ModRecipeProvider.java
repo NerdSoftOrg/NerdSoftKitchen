@@ -123,6 +123,12 @@ public class ModRecipeProvider extends RecipeProvider implements DataProvider {
                 IronCupContent.STRAWBERRY_YOGURT,
                 "iron_cup_strawberry_yogurt"
         );
+        cupYogurtRecipe(
+                output,
+                List.of(CupContentIngredient.of(IronCupContent.YOGURT), Ingredient.of(ModItems.STRAWBERRY.get())),
+                IronCupContent.STRAWBERRY_YOGURT,
+                "iron_cup_strawberry_yogurt_from_yogurt"
+        );
     }
 
     private void grillCookingRecipe(RecipeOutput output, Item input, Item result, String name, int cookTime) {
