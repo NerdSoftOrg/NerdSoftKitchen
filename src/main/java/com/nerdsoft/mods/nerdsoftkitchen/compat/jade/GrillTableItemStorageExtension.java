@@ -5,7 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.nerdsoft.mods.nerdsoftkitchen.blockentity.GrillTableBlockEntity;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
@@ -19,7 +19,8 @@ import java.util.Optional;
 public enum GrillTableItemStorageExtension implements IServerExtensionProvider<ItemStack>, IClientExtensionProvider<ItemStack, ItemView> {
     INSTANCE;
 
-    private static final MapCodec<Integer> COOKING_TIME_CODEC = Codec.INT.fieldOf("nerdsoftkitchen:cooking");
+    private static final String COOKING_TIME_KEY = "nerdsoftkitchen:cooking";
+    private static final MapCodec<Integer> COOKING_TIME_CODEC = Codec.INT.fieldOf(COOKING_TIME_KEY);
     private static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath("nerdsoftkitchen", "grill_table_progress");
 
     @Override
@@ -70,11 +71,9 @@ public enum GrillTableItemStorageExtension implements IServerExtensionProvider<I
         }
         int remainingTicks = Math.max(0, cookTime - grill.getCookProgress(slot));
         ItemStack tagged = stack.copy();
-        CustomData customData = tagged.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).update(
-                NbtOps.INSTANCE,
-                COOKING_TIME_CODEC,
-                remainingTicks).getOrThrow();
-        tagged.set(DataComponents.CUSTOM_DATA, customData);
+        CompoundTag tag = new CompoundTag();
+        tag.putInt(COOKING_TIME_KEY, remainingTicks);
+        tagged.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
         return tagged;
     }
 

@@ -1,4 +1,4 @@
-package com.nerdsoft.mods.nerdsoftkitchen.datagen;
+package com.nerdsoft.mods.nerdsoftkitchen.datagen.util;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import net.minecraft.resources.ResourceLocation;

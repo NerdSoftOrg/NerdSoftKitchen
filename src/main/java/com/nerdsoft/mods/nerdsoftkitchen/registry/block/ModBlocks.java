@@ -1,6 +1,7 @@
 package com.nerdsoft.mods.nerdsoftkitchen.registry.block;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
+import com.nerdsoft.mods.nerdsoftkitchen.block.CuttingBoardBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.block.GrillTableBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.crop.ModCropBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.crop.TomatoCropBlock;
@@ -9,6 +10,7 @@ import com.nerdsoft.mods.nerdsoftkitchen.crop.WildCropBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.item.ModItems;
 import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
@@ -18,38 +20,48 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public final class ModBlocks {
 
-    /// Blocks
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(NerdSoftKitchen.MOD_ID);
 
     //? if <1.21.2 {
-    /*public static final DeferredBlock<GrillTableBlock> GRILL_TABLE = BLOCKS.register(
-        "grill_table",
-        () -> new GrillTableBlock(
-            false,
-            BlockBehaviour.Properties.of()
-                .mapColor(MapColor.PODZOL)
-                .instrument(NoteBlockInstrument.BASS)
-                .strength(2.0F).sound(SoundType.WOOD)
-                .noOcclusion()
-                .lightLevel(state -> state.getValue(GrillTableBlock.LIT) ? 15 : 0)
-                .ignitedByLava()));
+    public static final DeferredBlock<GrillTableBlock> GRILL_TABLE = BLOCKS.register(
+            "grill_table",
+            () -> new GrillTableBlock(
+                    false,
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.PODZOL)
+                            .instrument(NoteBlockInstrument.BASS)
+                            .strength(2.0F).sound(SoundType.WOOD)
+                            .noOcclusion()
+                            .lightLevel(state -> state.getValue(GrillTableBlock.LIT) ? 15 : 0)
+                            .ignitedByLava()));
+
     public static final DeferredBlock<GrillTableBlock> GRILL_TABLE_SOUL = BLOCKS.register(
-        "grill_table_soul",
-        () -> new GrillTableBlock(
-            true,
-            BlockBehaviour.Properties.of()
-                .mapColor(MapColor.PODZOL)
-                .instrument(NoteBlockInstrument.BASS)
-                .strength(2.0F).sound(SoundType.WOOD)
-                .noOcclusion()
-                .lightLevel(state -> state.getValue(GrillTableBlock.LIT) ? 10 : 0)
-                .ignitedByLava()));
-    *///?} else {
-    public static final DeferredBlock<GrillTableBlock> GRILL_TABLE = BLOCKS.registerBlock(
+            "grill_table_soul",
+            () -> new GrillTableBlock(
+                    true,
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.PODZOL)
+                            .instrument(NoteBlockInstrument.BASS)
+                            .strength(2.0F).sound(SoundType.WOOD)
+                            .noOcclusion()
+                            .lightLevel(state -> state.getValue(GrillTableBlock.LIT) ? 10 : 0)
+                            .ignitedByLava()));
+
+    public static final DeferredBlock<CuttingBoardBlock> CUTTING_BOARD = BLOCKS.register(
+            "cutting_board",
+            () -> new CuttingBoardBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.WOOD)
+                            .instrument(NoteBlockInstrument.BASS)
+                            .strength(2.5F).sound(SoundType.WOOD)
+                            .noOcclusion()));
+    //?} else {
+    /*public static final DeferredBlock<GrillTableBlock> GRILL_TABLE = BLOCKS.registerBlock(
             "grill_table",
             props -> new GrillTableBlock(false, props),
             BlockBehaviour.Properties.of()
@@ -73,10 +85,21 @@ public final class ModBlocks {
                     .lightLevel(state -> state.getValue(GrillTableBlock.LIT) ? 10 : 0)
                     .ignitedByLava()
     );
-    //?}
+    public static final DeferredBlock<CuttingBoardBlock> CUTTING_BOARD = BLOCKS.registerBlock(
+            "cutting_board",
+            CuttingBoardBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.WOOD)
+                    .instrument(NoteBlockInstrument.BASS)
+                    .strength(2.5F)
+                    .sound(SoundType.WOOD)
+                    .noOcclusion()
+    );
+    *///?}
 
     /// Wild Crops
-    private static final BlockBehaviour.Properties WILD_CROP_PROPERTIES = BlockBehaviour.Properties.of().noCollission().instabreak().sound(SoundType.CROP).pushReaction(PushReaction.DESTROY);
+    private static final BlockBehaviour.Properties WILD_CROP_PROPERTIES = BlockBehaviour.Properties.of()
+            .noCollission().instabreak().sound(SoundType.CROP).pushReaction(PushReaction.DESTROY);
 
     public static final DeferredBlock<WildCropBlock> WILD_STRAWBERRY = registerWildCrop("wild_strawberry");
     public static final DeferredBlock<WildCropBlock> WILD_TOMATO = registerWildCrop("wild_tomato");
@@ -84,9 +107,9 @@ public final class ModBlocks {
     public static final DeferredBlock<WildCropBlock> WILD_PURPLE_ONION = registerWildCrop("wild_purple_onion");
 
     /// Default Crops
-    private static final BlockBehaviour.Properties CROP_PROPERTIES = BlockBehaviour.Properties.of().noCollission().randomTicks().instabreak().sound(SoundType.CROP).pushReaction(PushReaction.DESTROY);
+    private static final BlockBehaviour.Properties CROP_PROPERTIES = BlockBehaviour.Properties.of()
+            .noCollission().randomTicks().instabreak().sound(SoundType.CROP).pushReaction(PushReaction.DESTROY);
 
-    // Seeds as Seed
     public static final DeferredBlock<ModCropBlock.Ages> STRAWBERRY_CROP = registerCrop3("strawberry_crop", ModItems.STRAWBERRY_SEEDS);
     public static final DeferredBlock<ModCropBlock.Ages> LETTUCE_CROP = registerCrop3("lettuce_crop", ModItems.LETTUCE_SEEDS);
     public static final DeferredBlock<ModCropBlock.Ages> PURPLE_ONION_CROP = registerCrop3("purple_onion_crop", ModItems.PURPLE_ONION_SEEDS);

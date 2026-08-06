@@ -1,7 +1,7 @@
 package com.nerdsoft.mods.nerdsoftkitchen.compat.jei;
 
 //? if <1.21.2 {
-/*import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
+import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.compat.jei.category.GrillCookingCategory;
 import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipe;
@@ -15,12 +15,14 @@ import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
+import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
@@ -33,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JeiPlugin
+@SuppressWarnings("unused")
 public class JeiNerdSoftKitchenPlugin implements IModPlugin {
     private static final ResourceLocation PLUGIN_ID =
             ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, "jei_plugin");
@@ -77,6 +80,26 @@ public class JeiNerdSoftKitchenPlugin implements IModPlugin {
     }
 
     @Override
+    public void registerRecipes(@NotNull IRecipeRegistration registration) {
+        registration.addItemStackInfo(
+                new ItemStack(ModItems.GRILL_TABLE.get()),
+                Component.translatable("nerdsoftkitchen.jei.info.grill_table")
+        );
+        registration.addItemStackInfo(
+                new ItemStack(ModItems.GRILL_TABLE_SOUL.get()),
+                Component.translatable("nerdsoftkitchen.jei.info.grill_table_soul")
+        );
+        registration.addItemStackInfo(
+                new ItemStack(ModItems.IRON_CUP.get()),
+                Component.translatable("nerdsoftkitchen.jei.info.iron_cup")
+        );
+        registration.addItemStackInfo(
+                new ItemStack(ModItems.CUTTING_BOARD.get()),
+                Component.translatable("nerdsoftkitchen.jei.info.cutting_board")
+        );
+    }
+
+    @Override
     public void onRuntimeAvailable(@NotNull IJeiRuntime jeiRuntime) {
         IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
         List<ItemStack> filledCups = IronCupContent.allFilledStacks(ModItems.IRON_CUP.get());
@@ -117,4 +140,4 @@ public class JeiNerdSoftKitchenPlugin implements IModPlugin {
         return new CookRecipe(recipe.getIngredients().getFirst(), recipe.getResultItem(registries), recipe.getCookingTime());
     }
 }
-*///?}
+//?}

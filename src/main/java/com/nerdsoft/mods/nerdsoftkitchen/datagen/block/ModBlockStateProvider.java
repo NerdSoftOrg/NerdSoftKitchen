@@ -2,11 +2,10 @@ package com.nerdsoft.mods.nerdsoftkitchen.datagen.block;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.crop.TomatoCropPoleBlock;
-import com.nerdsoft.mods.nerdsoftkitchen.datagen.DatagenUtils;
+import com.nerdsoft.mods.nerdsoftkitchen.datagen.util.DatagenUtils;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
@@ -16,6 +15,7 @@ import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.client.model.generators.MultiPartBlockStateBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredBlock;
 
 import java.util.function.BiFunction;
 
@@ -33,73 +33,144 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        grillTable(ModBlocks.GRILL_TABLE.get(), "grill_table_lit", "grill_table_unlit", false);
-        grillTable(ModBlocks.GRILL_TABLE_SOUL.get(), "grill_table_soul_lit", null, true);
+        grillTable(ModBlocks.GRILL_TABLE, "grill_table_lit", "grill_table_unlit", false);
+        grillTable(ModBlocks.GRILL_TABLE_SOUL, "grill_table_soul_lit", null, true);
 
-        wildCropTintable(ModBlocks.WILD_PURPLE_ONION.get(), "wild_purple_onion");
+        manualYRotatedBlock(ModBlocks.CUTTING_BOARD);
 
-        manualCrop(ModBlocks.WILD_TOMATO.get(), "wild_tomato");
-        manualCrop(ModBlocks.WILD_LETTUCE.get(), "wild_lettuce");
-        manualCrop(ModBlocks.WILD_STRAWBERRY.get(), "wild_strawberry");
+        wildCropTintable(ModBlocks.WILD_PURPLE_ONION);
 
-        manualStagedCrop(ModBlocks.STRAWBERRY_CROP.get(), "strawberry_crop", BlockStateProperties.AGE_3, AGE_3);
+        manualBlock(ModBlocks.WILD_TOMATO);
+        manualBlock(ModBlocks.WILD_LETTUCE);
+        manualBlock(ModBlocks.WILD_STRAWBERRY);
 
-        standardCrop(ModBlocks.PURPLE_ONION_CROP.get(), "purple_onion_crop");
+        manualStagedCrop(ModBlocks.STRAWBERRY_CROP, BlockStateProperties.AGE_3, AGE_3);
 
-        crossCrop(ModBlocks.TOMATO_CROP.get(), "tomato_crop", BlockStateProperties.AGE_4, VISUAL_AGE_5);
-        tomatoCropPole(ModBlocks.TOMATO_CROP_POLE.get(), "tomato_crop_pole", BlockStateProperties.AGE_5, VISUAL_AGE_6, POLE_THRESHOLD_2);
+        standardCrop(ModBlocks.PURPLE_ONION_CROP);
 
-        hybridCrop(ModBlocks.LETTUCE_CROP.get(), "lettuce_crop", 2);
+        crossCrop(ModBlocks.TOMATO_CROP, BlockStateProperties.AGE_4, VISUAL_AGE_5);
+        tomatoCropPole(ModBlocks.TOMATO_CROP_POLE, BlockStateProperties.AGE_5, VISUAL_AGE_6, POLE_THRESHOLD_2);
+
+        hybridCrop(ModBlocks.LETTUCE_CROP, 2);
     }
 
-    private void standardCrop(Block block, String name) {
-        standardCrop(block, name, BlockStateProperties.AGE_3, AGE_3);
+    private ModelFile getExistingBlockModel(String name) {
+        String path = "block/" + name;
+        DatagenUtils.trackModel(this.models().existingFileHelper, path);
+        return models().getExistingFile(modLoc(path));
     }
 
-    private void standardCrop(Block block, String name, IntegerProperty ageProperty, int visualStages) {
+    // Manual Blocks
+    private void manualBlock(DeferredBlock<?> block) {
+        manualBlock(block, block.getId().getPath());
+    }
+
+    private void manualBlock(DeferredBlock<?> block, String name) {
+        simpleBlock(block.get(), getExistingBlockModel(name));
+    }
+
+    private void manualYRotatedBlock(DeferredBlock<?> block) {
+        manualYRotatedBlock(block, block.getId().getPath());
+    }
+
+    private void manualYRotatedBlock(DeferredBlock<?> block, String name) {
+        horizontalBlock(block.get(), getExistingBlockModel(name));
+    }
+
+    // Crops
+    private void standardCrop(DeferredBlock<?> block) {
+        standardCrop(block, block.getId().getPath(), BlockStateProperties.AGE_3, AGE_3);
+    }
+
+    private void standardCrop(DeferredBlock<?> block, String name, IntegerProperty ageProperty, int visualStages) {
         setupCrop(block, name, ageProperty, visualStages, (stage, texture) ->
-                models()
-                        .crop(name + "_stage" + stage, texture)
-                        .renderType("minecraft:cutout"));
+                models().crop(name + "_stage" + stage, texture).renderType("minecraft:cutout"));
     }
 
-    private void crossCrop(Block block, String name, IntegerProperty ageProperty, int visualStages) {
+    private void crossCrop(DeferredBlock<?> block, IntegerProperty ageProperty, int visualStages) {
+        crossCrop(block, block.getId().getPath(), ageProperty, visualStages);
+    }
+
+    private void crossCrop(DeferredBlock<?> block, String name, IntegerProperty ageProperty, int visualStages) {
         setupCrop(block, name, ageProperty, visualStages, (stage, texture) ->
-                models()
-                        .cross(name + "_stage" + stage, texture)
-                        .renderType("minecraft:cutout"));
+                models().cross(name + "_stage" + stage, texture).renderType("minecraft:cutout"));
     }
 
-    private void hybridCrop(Block block, String name, int manualStageThreshold) {
+    private void hybridCrop(DeferredBlock<?> block, int manualStageThreshold) {
+        hybridCrop(block, block.getId().getPath(), manualStageThreshold);
+    }
+
+    private void hybridCrop(DeferredBlock<?> block, String name, int manualStageThreshold) {
         setupCrop(block, name, BlockStateProperties.AGE_3, AGE_3, (stage, texture) -> {
             if (stage >= manualStageThreshold) {
-                DatagenUtils.trackModel(this.models().existingFileHelper, "block/" + name + "_stage" + stage);
-                return models().getExistingFile(modLoc("block/" + name + "_stage" + stage));
+                return getExistingBlockModel(name + "_stage" + stage);
             }
-            return models()
-                    .cross(name + "_stage" + stage, texture)
-                    .renderType("minecraft:cutout");
+            return models().cross(name + "_stage" + stage, texture).renderType("minecraft:cutout");
         });
     }
 
-    private void manualStagedCrop(Block block, String name, IntegerProperty ageProperty, int visualStages) {
-        setupCrop(block, name, ageProperty, visualStages, (stage, texture) -> {
-            String path = "block/" + name + "_stage" + stage;
+    private void manualStagedCrop(DeferredBlock<?> block, IntegerProperty ageProperty, int visualStages) {
+        manualStagedCrop(block, block.getId().getPath(), ageProperty, visualStages);
+    }
 
-            DatagenUtils.trackModel(this.models().existingFileHelper, path);
+    private void manualStagedCrop(DeferredBlock<?> block, String name, IntegerProperty ageProperty, int visualStages) {
+        setupCrop(block, name, ageProperty, visualStages, (stage, texture) -> getExistingBlockModel(name + "_stage" + stage));
+    }
 
-            return models().getExistingFile(modLoc(path));
+    private void setupCrop(DeferredBlock<?> block, String name, IntegerProperty ageProperty, int visualStages, BiFunction<Integer, ResourceLocation, ModelFile> modelProvider) {
+        int maxAge = ageProperty.getPossibleValues().size() - 1;
+        ModelFile[] stageModels = new ModelFile[visualStages];
+
+        for (int stage = 0; stage < visualStages; stage++) {
+            ResourceLocation texturePath = ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, "block/" + name + "_stage" + stage);
+            DatagenUtils.trackTexture(this.models().existingFileHelper, "block/" + name + "_stage" + stage);
+            stageModels[stage] = modelProvider.apply(stage, texturePath);
+        }
+
+        getVariantBuilder(block.get()).forAllStates(state -> {
+            int age = state.getValue(ageProperty);
+            int stage = Math.min(visualStages - 1, (age * visualStages) / Math.max(1, maxAge));
+
+            return ConfiguredModel.builder()
+                    .modelFile(stageModels[stage])
+                    .build();
         });
     }
 
-    private void tomatoCropPole(Block block, String baseName, IntegerProperty ageProperty, int visualStages, int poleThreshold) {
-        MultiPartBlockStateBuilder builder = getMultipartBuilder(block);
+    private void wildCropTintable(DeferredBlock<?> block) {
+        wildCropTintable(block, block.getId().getPath());
+    }
 
-        DatagenUtils.trackModel(this.models().existingFileHelper, "block/crop_pole_lower_template");
-        DatagenUtils.trackModel(this.models().existingFileHelper, "block/crop_pole_upper_template");
+    private void wildCropTintable(DeferredBlock<?> block, String name) {
+        MultiPartBlockStateBuilder builder = getMultipartBuilder(block.get());
+        String tintPath = "block/" + name + "_tint";
+        String overlayPath = "block/" + name + "_overlay";
 
-        ModelFile poleLowerModel = models().getExistingFile(modLoc("block/crop_pole_lower_template"));
-        ModelFile poleUpperModel = models().getExistingFile(modLoc("block/crop_pole_upper_template"));
+        DatagenUtils.trackTexture(this.models().existingFileHelper, tintPath);
+        DatagenUtils.trackTexture(this.models().existingFileHelper, overlayPath);
+
+        ModelFile tintModel = models()
+                .withExistingParent(name + "_tint", mcLoc("block/tinted_cross"))
+                .texture("cross", modLoc(tintPath))
+                .renderType("minecraft:cutout");
+
+        ModelFile overlayModel = models()
+                .cross(name + "_overlay", modLoc(overlayPath))
+                .renderType("minecraft:cutout");
+
+        builder.part().modelFile(tintModel).addModel().end();
+        builder.part().modelFile(overlayModel).addModel().end();
+    }
+
+    private void tomatoCropPole(DeferredBlock<?> block, IntegerProperty ageProperty, int visualStages, int poleThreshold) {
+        tomatoCropPole(block, block.getId().getPath(), ageProperty, visualStages, poleThreshold);
+    }
+
+    private void tomatoCropPole(DeferredBlock<?> block, String baseName, IntegerProperty ageProperty, int visualStages, int poleThreshold) {
+        MultiPartBlockStateBuilder builder = getMultipartBuilder(block.get());
+
+        ModelFile poleLowerModel = getExistingBlockModel("crop_pole_lower_template");
+        ModelFile poleUpperModel = getExistingBlockModel("crop_pole_upper_template");
 
         builder.part()
                 .modelFile(poleLowerModel)
@@ -151,82 +222,11 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 .toArray(Integer[]::new);
     }
 
-    private void wildCropTintable(Block block, String name) {
-        MultiPartBlockStateBuilder builder = getMultipartBuilder(block);
-        String tintPath = "block/" + name + "_tint";
-        String overlayPath = "block/" + name + "_overlay";
+    private void grillTable(DeferredBlock<?> block, String litName, String unlitName, boolean ignoreLitProp) {
+        ModelFile litModel = getExistingBlockModel(litName);
+        ModelFile unlitModel = (unlitName != null) ? getExistingBlockModel(unlitName) : litModel;
 
-        DatagenUtils.trackTexture(this.models().existingFileHelper, tintPath);
-        DatagenUtils.trackTexture(this.models().existingFileHelper, overlayPath);
-
-        ModelFile tintModel = models()
-                .withExistingParent(name + "_tint", mcLoc("block/tinted_cross"))
-                .texture("cross", modLoc(tintPath))
-                .renderType("minecraft:cutout");
-
-        ModelFile overlayModel = models()
-                .cross(name + "_overlay", modLoc(overlayPath))
-                .renderType("minecraft:cutout");
-
-        builder.part().modelFile(tintModel).addModel().end();
-        builder.part().modelFile(overlayModel).addModel().end();
-    }
-
-    @SuppressWarnings("unused")
-    private void wildCrop(Block block, String name) {
-        String texturePath = "block/" + name;
-        DatagenUtils.trackTexture(this.models().existingFileHelper, texturePath);
-
-        ModelFile model = models()
-                .cross(name, modLoc(texturePath))
-                .renderType("minecraft:cutout");
-
-        simpleBlock(block, model);
-    }
-
-    private void manualCrop(Block block, String name) {
-        DatagenUtils.trackModel(this.models().existingFileHelper, "block/" + name);
-
-        String texturePath = "block/" + name;
-        ModelFile model = models().getExistingFile(modLoc(texturePath));
-
-        simpleBlock(block, model);
-    }
-
-    private void setupCrop(Block block, String name, IntegerProperty ageProperty, int visualStages, BiFunction<Integer, ResourceLocation, ModelFile> modelProvider) {
-        int maxAge = ageProperty.getPossibleValues().size() - 1;
-        ModelFile[] stageModels = new ModelFile[visualStages];
-
-        for (int stage = 0; stage < visualStages; stage++) {
-            ResourceLocation texturePath = ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, "block/" + name + "_stage" + stage);
-            DatagenUtils.trackTexture(this.models().existingFileHelper, "block/" + name + "_stage" + stage);
-
-            stageModels[stage] = modelProvider.apply(stage, texturePath);
-        }
-
-        getVariantBuilder(block).forAllStates(state -> {
-            int age = state.getValue(ageProperty);
-            int stage = Math.min(visualStages - 1, (age * visualStages) / Math.max(1, maxAge));
-
-            return ConfiguredModel.builder()
-                    .modelFile(stageModels[stage])
-                    .build();
-        });
-    }
-
-    private void grillTable(Block block, String litName, String unlitName, boolean ignoreLitProp) {
-        DatagenUtils.trackModel(this.models().existingFileHelper, "block/" + litName);
-        ModelFile litModel = models().getExistingFile(modLoc("block/" + litName));
-
-        ModelFile unlitModel;
-        if (unlitName != null) {
-            DatagenUtils.trackModel(this.models().existingFileHelper, "block/" + unlitName);
-            unlitModel = models().getExistingFile(modLoc("block/" + unlitName));
-        } else {
-            unlitModel = litModel;
-        }
-
-        var builder = getVariantBuilder(block);
+        var builder = getVariantBuilder(block.get());
         var ignoredProps = ignoreLitProp
                 ? new Property<?>[]{BlockStateProperties.WATERLOGGED, BlockStateProperties.LIT}
                 : new Property<?>[]{BlockStateProperties.WATERLOGGED};

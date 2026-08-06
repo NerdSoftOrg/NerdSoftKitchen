@@ -18,12 +18,12 @@ import com.nerdsoft.mods.nerdsoftkitchen.datagen.worldgen.ModConfiguredFeatures;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.worldgen.ModPlacedFeatures;
 import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
 //? if >=1.21.2 {
-import net.minecraft.data.DataProvider;
+/*import net.minecraft.data.DataProvider;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.data.DataMapProvider;
 import java.util.Set;
-//?}
+*///?}
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
@@ -54,7 +54,7 @@ public final class DataGenerators {
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
         //? if <1.21.2 {
-        /*generator.addProvider(event.includeClient(), new ModBlockStateProvider(packOutput, existingFileHelper));
+        generator.addProvider(event.includeClient(), new ModBlockStateProvider(packOutput, existingFileHelper));
         generator.addProvider(event.includeClient(), new ModItemModelProvider(packOutput, existingFileHelper));
         generator.addProvider(event.includeClient(), new ModEnUsLanguageProvider(packOutput));
         generator.addProvider(event.includeClient(), new ModEsEsLanguageProvider(packOutput));
@@ -77,8 +77,8 @@ public final class DataGenerators {
                     (output, lookup, blockTags) -> new ModItemTagsProvider(output, lookup, blockTags, existingFileHelper)
             );
         }
-        *///?} else {
-        DataProvider.Factory<ModBlockStateProvider> blockStateFactory = output -> new ModBlockStateProvider(output, existingFileHelper);
+        //?} else {
+        /*DataProvider.Factory<ModBlockStateProvider> blockStateFactory = output -> new ModBlockStateProvider(output, existingFileHelper);
         generator.addProvider(event.includeClient(), blockStateFactory);
 
         DataProvider.Factory<ModItemModelProvider> itemModelFactory = output -> new ModItemModelProvider(output, existingFileHelper);
@@ -121,6 +121,6 @@ public final class DataGenerators {
             DataProvider.Factory<ModItemTagsProvider> itemTagsFactory = output -> new ModItemTagsProvider(output, lookupProvider, blockTagsProvider.contentsGetter(), existingFileHelper);
             generator.addProvider(true, itemTagsFactory);
         }
-        //?}
+        *///?}
     }
 }

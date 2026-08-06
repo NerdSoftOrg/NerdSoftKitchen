@@ -9,9 +9,10 @@ build
 
 # IntelliJ
 out/
-.idea
+.idea/
 *.xml
 *.iml
+.kotlin/
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 
@@ -19,7 +20,7 @@ out/
 hs_err_pid*
 
 # Common working directory
-run
+run/
 generated
 .vscode/
 bin/

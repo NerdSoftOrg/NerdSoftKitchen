@@ -62,7 +62,6 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
         int[] cookTime = entity.cookTime;
         int totalSlots = entity.totalSlots;
         boolean dirty = false;
-        boolean anyCooking = false;
 
         for (int slot = 0; slot < totalSlots; slot++) {
             ItemStack output = cachedOutput[slot];
@@ -70,7 +69,6 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
                 continue;
             }
 
-            anyCooking = true;
             if (++cookProgress[slot] >= cookTime[slot]) {
                 entity.items.set(slot, ItemStack.EMPTY);
                 cookProgress[slot] = 0;
@@ -82,9 +80,6 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
             }
         }
 
-        if (anyCooking) {
-            entity.onAnyCooking(level, pos);
-        }
         if (dirty) {
             entity.setChanged();
             level.sendBlockUpdated(pos, state, state, 3);
@@ -101,9 +96,6 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
     protected abstract CookResult resolveRecipe(Level level, int slot, ItemStack stack);
 
     protected void onCookComplete(Level level, BlockPos pos, int slot, ItemStack result) {
-    }
-
-    protected void onAnyCooking(Level level, BlockPos pos) {
     }
 
     protected void onSlotSeedAssigned(int slot) {

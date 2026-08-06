@@ -38,7 +38,6 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
     private static final int[] CAMPFIRE_SLOTS = {4, 5, 6, 7};
     private static final int[] ALL_SLOTS = {0, 1, 2, 3, 4, 5, 6, 7};
 
-    private static final float SIZZLE_CHANCE_PER_TICK = 1.0F / 80.0F;
     private static final double GRILL_MAX_RANDOM_OFFSET = 0.03;
 
     private static final float HAY_BALE_MULTIPLIER = 1.25F;
@@ -59,11 +58,6 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
 
     private static boolean isGrillSlot(int slot) {
         return slot >= GRILL_SLOTS_START && slot < GRILL_SLOTS_START + GRILL_SLOTS_COUNT;
-    }
-
-    private static void playSizzle(Level level, BlockPos pos) {
-        float pitch = 0.85F + level.getRandom().nextFloat() * 0.3F;
-        level.playSound(null, pos, ModSounds.GRILL_SIZZLE.get(), SoundSource.BLOCKS, 0.8F, pitch);
     }
 
     private static void playPlaceFood(Level level, BlockPos pos) {
@@ -99,6 +93,7 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
         return angle * sign;
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static double[] computeShuffledOffset(long baseSeed, int localSlot, double maxRandomOffset) {
         RandomSource rand = RandomSource.create(baseSeed ^ 0x5a5a5a5a5a5a5a5aL);
 
@@ -196,14 +191,14 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
     }
 
     //? if <1.21.2 {
-    /*private boolean canCookAt(Level level, ItemStack stack) {
+    private boolean canCookAt(Level level, ItemStack stack) {
         if (grillRecipeCheck.getRecipeFor(new CookRecipeInput(stack), level).isPresent()) {
             return true;
         }
         return campfireRecipeCheck.getRecipeFor(new SingleRecipeInput(stack), level).isPresent();
     }
-    *///?} else {
-    private boolean canCookAt(Level level, ItemStack stack) {
+    //?} else {
+    /*private boolean canCookAt(Level level, ItemStack stack) {
         if (!(level instanceof net.minecraft.server.level.ServerLevel serverLevel)) {
             return false;
         }
@@ -212,10 +207,10 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
         }
         return campfireRecipeCheck.getRecipeFor(new SingleRecipeInput(stack), serverLevel).isPresent();
     }
-    //?}
+    *///?}
 
     //? if <1.21.2 {
-    /*@Override
+    @Override
     protected CookResult resolveRecipe(Level level, int slot, ItemStack stack) {
         CookRecipeInput cookInput = new CookRecipeInput(stack);
         Optional<RecipeHolder<CookRecipe>> cookRecipe = grillRecipeCheck.getRecipeFor(cookInput, level);
@@ -233,8 +228,8 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
         }
         return null;
     }
-    *///?} else {
-    @Override
+    //?} else {
+    /*@Override
     protected CookResult resolveRecipe(Level level, int slot, ItemStack stack) {
         if (!(level instanceof net.minecraft.server.level.ServerLevel serverLevel)) {
             return null;
@@ -255,11 +250,10 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
         }
         return null;
     }
-    //?}
+    *///?}
 
     @Override
     protected void onCookComplete(Level level, BlockPos pos, int slot, ItemStack result) {
-        playSizzle(level, pos);
         dropCookedItem(level, pos, slot, result);
     }
 
@@ -271,13 +265,6 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
             Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, result);
         } else {
             Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, result);
-        }
-    }
-
-    @Override
-    protected void onAnyCooking(Level level, BlockPos pos) {
-        if (!level.isClientSide && level.getRandom().nextFloat() < SIZZLE_CHANCE_PER_TICK) {
-            playSizzle(level, pos);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.nerdsoft.mods.nerdsoftkitchen.client;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
+import com.nerdsoft.mods.nerdsoftkitchen.client.renderer.CuttingBoardBlockEntityRenderer;
 import com.nerdsoft.mods.nerdsoftkitchen.client.renderer.GrillTableBlockEntityRenderer;
 import com.nerdsoft.mods.nerdsoftkitchen.item.IronCupItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
@@ -39,6 +40,7 @@ public final class ModClientSetup {
     @SubscribeEvent
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.GRILL_TABLE.get(), GrillTableBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.CUTTING_BOARD.get(), CuttingBoardBlockEntityRenderer::new);
     }
 
     @SubscribeEvent

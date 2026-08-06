@@ -10,7 +10,8 @@ import net.neoforged.bus.api.IEventBus;
 
 public final class ModItemTags {
 
-    public static final TagKey<Item> IRON_CUP = tag("iron_cup");
+    public static final TagKey<Item> IRON_CUP = tag(NerdSoftKitchen.MOD_ID, "iron_cup");
+    public static final TagKey<Item> KNIFE = tag("c", "tools/knife");
 
     private ModItemTags() {
     }
@@ -20,7 +21,7 @@ public final class ModItemTags {
         NerdSoftKitchenLogger.info("Item Tags registered successfully.");
     }
 
-    private static TagKey<Item> tag(String name) {
-        return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, name));
+    private static TagKey<Item> tag(String namespace, String name) {
+        return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(namespace, name));
     }
 }

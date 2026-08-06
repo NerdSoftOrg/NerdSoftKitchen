@@ -25,6 +25,10 @@ public final class ModFoods {
             new FoodProperties.Builder().nutrition(3).saturationModifier(0.6f).build();
     public static final FoodProperties STRAWBERRY_YOGURT =
             new FoodProperties.Builder().nutrition(5).saturationModifier(0.6f).build();
+    public static final FoodProperties CHEESE =
+            new FoodProperties.Builder().nutrition(6).saturationModifier(0.6f).build();
+    public static final FoodProperties CHEESE_SLICE =
+            new FoodProperties.Builder().nutrition(2).saturationModifier(0.4f).build();
 
     /// Cooked and Prepared Meals
     public static final FoodProperties COOKED_CHICKEN_PIECES =
@@ -33,6 +37,10 @@ public final class ModFoods {
             new FoodProperties.Builder().nutrition(2).saturationModifier(0.3f).build();
     public static final FoodProperties SALAD =
             new FoodProperties.Builder().nutrition(6).saturationModifier(0.5f).build();
+    public static final FoodProperties CHEESE_SANDWICH =
+            new FoodProperties.Builder().nutrition(4).saturationModifier(0.4f).build();
+    public static final FoodProperties GRILLED_CHEESE =
+            new FoodProperties.Builder().nutrition(8).saturationModifier(0.7f).build();
 
     private ModFoods() {
     }

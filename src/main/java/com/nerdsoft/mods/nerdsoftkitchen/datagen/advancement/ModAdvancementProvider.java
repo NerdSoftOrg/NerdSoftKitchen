@@ -66,7 +66,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
                 .save(saver, id("craft_iron_cup"));
 
 //? if <1.21.2 {
-        /*AdvancementHolder milkCup = Builder.advancement()
+        AdvancementHolder milkCup = Builder.advancement()
                 .parent(ironCup)
                 .display(
                         ironCupWith(IronCupContent.MILK),
@@ -100,8 +100,8 @@ public class ModAdvancementProvider extends AdvancementProvider {
                                 .hasComponents(DataComponentPredicate.allOf(ironCupWith(IronCupContent.STRAWBERRY_YOGURT).getComponents()))
                                 .build()))
                 .save(saver, id("make_strawberry_yogurt"));
-        *///?} else {
-        HolderLookup.RegistryLookup<Item> itemRegistry = registries.lookupOrThrow(Registries.ITEM);
+        //?} else {
+        /*HolderLookup.RegistryLookup<Item> itemRegistry = registries.lookupOrThrow(Registries.ITEM);
 
         AdvancementHolder milkCup = Builder.advancement()
                 .parent(ironCup)
@@ -137,7 +137,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
                                 .hasComponents(DataComponentPredicate.allOf(ironCupWith(IronCupContent.STRAWBERRY_YOGURT).getComponents()))
                                 .build()))
                 .save(saver, id("make_strawberry_yogurt"));
-        //?}
+        *///?}
 
         AdvancementHolder harvestAll = Builder.advancement()
                 .parent(root)

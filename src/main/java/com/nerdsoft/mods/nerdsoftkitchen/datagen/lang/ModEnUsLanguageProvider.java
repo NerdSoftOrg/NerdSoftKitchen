@@ -34,6 +34,12 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
         add(ModItems.COOKED_CHICKEN_PIECES.get(), "Cooked Chicken Pieces");
         add(ModItems.FRIED_EGG.get(), "Fried Egg");
         add(ModItems.SALAD.get(), "Salad");
+        add(ModItems.DIAMOND_KNIFE.get(), "Diamond Knife");
+        add(ModBlocks.CUTTING_BOARD.get(), "Cutting Board");
+        add(ModItems.CHEESE.get(), "Cheese");
+        add(ModItems.CHEESE_SLICE.get(), "Cheese Slice");
+        add(ModItems.CHEESE_SANDWICH.get(), "Cheese Sandwich");
+        add(ModItems.GRILLED_CHEESE.get(), "Grilled Cheese");
 
         addFilledNamePrefix("Iron Cup of ");
         addContainsPrefix("Contains: ");
@@ -42,7 +48,7 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
         addCupContent("strawberry_yogurt", "Strawberry Yogurt");
 
         add("itemGroup.nerdsoftkitchen.kitchen_tab", "NerdSoft Kitchen");
-        add("subtitles.block.nerdsoftkitchen.grill.sizzle", "Oil sizzles");
+        add("subtitles.block.nerdsoftkitchen.grill.place_food", "Grilling food");
 
         add("jade.nerdsoftkitchen.grill_table.slot_remaining", "%ss");
         add("config.jade.plugin_nerdsoftkitchen.grill_table_progress", "Cooking Time");
@@ -56,5 +62,14 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
         add("datapack.nerdsoftkitchen.description", "NerdSoft Kitchen Resources");
 
         add("jei.category.nerdsoftkitchen.grill_cooking", "Grill Cooking");
+
+        add("nerdsoftkitchen.jei.info.grill_table",
+                "Cook food directly on the grill grate, or use the campfire slots underneath like a regular campfire.");
+        add("nerdsoftkitchen.jei.info.grill_table_soul",
+                "Built with a Soul Campfire instead of a regular one. Crafts and cooks exactly like the regular Grill.");
+        add("nerdsoftkitchen.jei.info.iron_cup",
+                "Right-click a cow to fill with milk. Combine a filled cup with sugar on a crafting grid for yogurt.");
+        add("nerdsoftkitchen.jei.info.cutting_board",
+                "Right-click with a cuttable ingredient to place it, then right-click with any knife (tagged #c:tools/knife) to cut it. Cutting damages the knife by 1 durability.");
     }
 }

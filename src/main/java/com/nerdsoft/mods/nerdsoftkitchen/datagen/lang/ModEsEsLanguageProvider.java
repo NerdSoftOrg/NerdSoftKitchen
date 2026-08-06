@@ -42,7 +42,7 @@ public class ModEsEsLanguageProvider extends ModLanguageProvider {
         addCupContent("strawberry_yogurt", "Yogur de Fresa");
 
         add("itemGroup.nerdsoftkitchen.kitchen_tab", "NerdSoft Kitchen");
-        add("subtitles.block.nerdsoftkitchen.grill.sizzle", "Chisporroteo de aceite");
+        add("subtitles.block.nerdsoftkitchen.grill.place_food", "Asando comida");
 
         add("jade.nerdsoftkitchen.grill_table.slot_remaining", "%ss");
         add("config.jade.plugin_nerdsoftkitchen.grill_table_progress", "Tiempo de Cocción");
@@ -56,5 +56,14 @@ public class ModEsEsLanguageProvider extends ModLanguageProvider {
         add("datapack.nerdsoftkitchen.description", "Recursos de NerdSoft Kitchen");
 
         add("jei.category.nerdsoftkitchen.grill_cooking", "Cocción en Parrilla");
+
+        add("nerdsoftkitchen.jei.info.grill_table",
+                "Cook food directly on the grill grate, or use the campfire slots underneath like a regular campfire.");
+        add("nerdsoftkitchen.jei.info.grill_table_soul",
+                "Built with a Soul Campfire instead of a regular one. Crafts and cooks exactly like the regular Grill.");
+        add("nerdsoftkitchen.jei.info.iron_cup",
+                "Right-click a cow to fill with milk. Combine a filled cup with sugar on a crafting grid for yogurt.");
+        add("nerdsoftkitchen.jei.info.cutting_board",
+                "Right-click with a cuttable ingredient to place it, then right-click with any knife (tagged #c:tools/knife) to cut it. Cutting damages the knife by 1 durability.");
     }
 }

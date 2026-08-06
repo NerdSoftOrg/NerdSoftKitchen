@@ -1,4 +1,4 @@
-package com.nerdsoft.mods.nerdsoftkitchen.recipe.curdle;
+package com.nerdsoft.mods.nerdsoftkitchen.recipe.cutting;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -23,16 +23,15 @@ import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeBookCategories;
 *///?}
 
-public record CurdleRecipe(Ingredient base, Ingredient activator,
-                           ItemStack result) implements Recipe<CurdleRecipeInput> {
+public record CuttingRecipe(Ingredient input, ItemStack result) implements Recipe<CuttingRecipeInput> {
 
     @Override
-    public boolean matches(@NotNull CurdleRecipeInput recipeInput, @NotNull Level level) {
-        return base.test(recipeInput.base()) && activator.test(recipeInput.activator());
+    public boolean matches(@NotNull CuttingRecipeInput recipeInput, @NotNull Level level) {
+        return input.test(recipeInput.item());
     }
 
     @Override
-    public @NotNull ItemStack assemble(@NotNull CurdleRecipeInput recipeInput,
+    public @NotNull ItemStack assemble(@NotNull CuttingRecipeInput recipeInput,
                                        HolderLookup.@NotNull Provider registries) {
         return result.copy();
     }
@@ -45,22 +44,22 @@ public record CurdleRecipe(Ingredient base, Ingredient activator,
 
     @Override
     public @NotNull ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
-        return result;
+        return result.copy();
     }
 
     @Override
     public @NotNull RecipeSerializer<?> getSerializer() {
-        return ModRecipeSerializers.CURDLE_SERIALIZER.get();
+        return ModRecipeSerializers.CUT_SERIALIZER.get();
     }
 
     @Override
     public @NotNull RecipeType<?> getType() {
-        return ModRecipeTypes.CURDLE_TYPE.get();
+        return ModRecipeTypes.CUT_TYPE.get();
     }
     //?} else {
     /*@Override
     public @NotNull PlacementInfo placementInfo() {
-        return PlacementInfo.create(List.of(base, activator));
+        return PlacementInfo.create(List.of(input));
     }
 
     @Override
@@ -69,33 +68,35 @@ public record CurdleRecipe(Ingredient base, Ingredient activator,
     }
 
     @Override
-    public @NotNull RecipeSerializer<CurdleRecipe> getSerializer() {
-        return ModRecipeSerializers.CURDLE_SERIALIZER.get();
+    public @NotNull RecipeSerializer<CuttingRecipe> getSerializer() {
+        return ModRecipeSerializers.CUT_SERIALIZER.get();
     }
 
     @Override
-    public @NotNull RecipeType<CurdleRecipe> getType() {
-        return ModRecipeTypes.CURDLE_TYPE.get();
+    public @NotNull RecipeType<CuttingRecipe> getType() {
+        return ModRecipeTypes.CUT_TYPE.get();
     }
     *///?}
 
-    public static class Serializer implements RecipeSerializer<CurdleRecipe> {
+    public static class Serializer implements RecipeSerializer<CuttingRecipe> {
 
-        public static final MapCodec<CurdleRecipe> CODEC =
-                RecordCodecBuilder.mapCodec(instance -> instance.group(Ingredient.CODEC.fieldOf("base").forGetter(CurdleRecipe::base), Ingredient.CODEC.fieldOf("activator").forGetter(CurdleRecipe::activator), ItemStack.CODEC.fieldOf("result").forGetter(CurdleRecipe::result)).apply(instance, CurdleRecipe::new));
+        public static final MapCodec<CuttingRecipe> CODEC =
+                RecordCodecBuilder.mapCodec(instance -> instance.group(
+                                Ingredient.CODEC.fieldOf("input").forGetter(CuttingRecipe::input),
+                                ItemStack.CODEC.fieldOf("result").forGetter(CuttingRecipe::result))
+                        .apply(instance, CuttingRecipe::new));
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, CurdleRecipe> STREAM_CODEC =
-                StreamCodec.composite(Ingredient.CONTENTS_STREAM_CODEC, CurdleRecipe::base,
-                        Ingredient.CONTENTS_STREAM_CODEC, CurdleRecipe::activator, ItemStack.STREAM_CODEC,
-                        CurdleRecipe::result, CurdleRecipe::new);
+        public static final StreamCodec<RegistryFriendlyByteBuf, CuttingRecipe> STREAM_CODEC =
+                StreamCodec.composite(Ingredient.CONTENTS_STREAM_CODEC, CuttingRecipe::input,
+                        ItemStack.STREAM_CODEC, CuttingRecipe::result, CuttingRecipe::new);
 
         @Override
-        public @NotNull MapCodec<CurdleRecipe> codec() {
+        public @NotNull MapCodec<CuttingRecipe> codec() {
             return CODEC;
         }
 
         @Override
-        public @NotNull StreamCodec<RegistryFriendlyByteBuf, CurdleRecipe> streamCodec() {
+        public @NotNull StreamCodec<RegistryFriendlyByteBuf, CuttingRecipe> streamCodec() {
             return STREAM_CODEC;
         }
     }

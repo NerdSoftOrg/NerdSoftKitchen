@@ -5,24 +5,46 @@ import com.nerdsoft.mods.nerdsoftkitchen.food.ModFoods;
 import com.nerdsoft.mods.nerdsoftkitchen.item.CreativeOnlyBlockItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.GrillBlockItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.IronCupItem;
+import com.nerdsoft.mods.nerdsoftkitchen.item.KnifeItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.SeedItem;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.ModTiers;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+//? if <1.21.2 {
+import net.minecraft.world.item.Tiers;
+ //?} else {
+/*import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.item.component.Consumables;
+*///?}
+
 public final class ModItems {
 
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(NerdSoftKitchen.MOD_ID);
 
+    private static final float STONE_KNIFE_DAMAGE = 2.5F;
+    private static final float STONE_KNIFE_SPEED = -1.4F;
+    private static final float IRON_KNIFE_DAMAGE = 3.0F;
+    private static final float IRON_KNIFE_SPEED = -1.4F;
+    private static final float GOLD_KNIFE_DAMAGE = 2.0F;
+    private static final float GOLD_KNIFE_SPEED = -1.0F;
+    private static final float DIAMOND_KNIFE_DAMAGE = 3.5F;
+    private static final float DIAMOND_KNIFE_SPEED = -1.4F;
+    private static final float OBSIDIAN_KNIFE_DAMAGE = 4.0F;
+    private static final float OBSIDIAN_KNIFE_SPEED = -1.2F;
+
     //? if <1.21.2 {
-    /*/// Machine Items
+    /// Machine Items
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE = ITEMS.registerItem("grill_table",
             props -> new GrillBlockItem(ModBlocks.GRILL_TABLE.get(), props));
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE_SOUL = ITEMS.registerItem("grill_table_soul",
             props -> new GrillBlockItem(ModBlocks.GRILL_TABLE_SOUL.get(), props));
+    public static final DeferredItem<BlockItem> CUTTING_BOARD = ITEMS.registerSimpleBlockItem(ModBlocks.CUTTING_BOARD);
 
     /// Wild Crop Block Items
     public static final DeferredItem<CreativeOnlyBlockItem> WILD_STRAWBERRY =
@@ -43,18 +65,31 @@ public final class ModItems {
             ITEMS.register("lettuce_seeds", () -> new SeedItem(ModBlocks.LETTUCE_CROP.get(), new Item.Properties()));
     public static final DeferredItem<SeedItem> PURPLE_ONION_SEEDS =
             ITEMS.register("purple_onion_seeds", () -> new SeedItem(ModBlocks.PURPLE_ONION_CROP.get(), new Item.Properties()));
-    *///?} else {
-    /// Machine Items
+
+    /// Knives
+    public static final DeferredItem<KnifeItem> STONE_KNIFE = ITEMS.registerItem("stone_knife",
+            props -> new KnifeItem(Tiers.STONE, STONE_KNIFE_DAMAGE, STONE_KNIFE_SPEED, props));
+    public static final DeferredItem<KnifeItem> IRON_KNIFE = ITEMS.registerItem("iron_knife",
+            props -> new KnifeItem(Tiers.IRON, IRON_KNIFE_DAMAGE, IRON_KNIFE_SPEED, props));
+    public static final DeferredItem<KnifeItem> GOLD_KNIFE = ITEMS.registerItem("gold_knife",
+            props -> new KnifeItem(Tiers.GOLD, GOLD_KNIFE_DAMAGE, GOLD_KNIFE_SPEED, props));
+    public static final DeferredItem<KnifeItem> DIAMOND_KNIFE = ITEMS.registerItem("diamond_knife",
+            props -> new KnifeItem(Tiers.DIAMOND, DIAMOND_KNIFE_DAMAGE, DIAMOND_KNIFE_SPEED, props));
+    public static final DeferredItem<KnifeItem> OBSIDIAN_KNIFE = ITEMS.registerItem("obsidian_knife",
+            props -> new KnifeItem(ModTiers.OBSIDIAN, OBSIDIAN_KNIFE_DAMAGE, OBSIDIAN_KNIFE_SPEED, props));
+    //?} else {
+    /*/// Machine Items
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE = ITEMS.registerItem(
             "grill_table", props -> new GrillBlockItem(ModBlocks.GRILL_TABLE.get(), props));
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE_SOUL = ITEMS.registerItem(
             "grill_table_soul", props -> new GrillBlockItem(ModBlocks.GRILL_TABLE_SOUL.get(), props));
+    public static final DeferredItem<BlockItem> CUTTING_BOARD = ITEMS.registerSimpleBlockItem(ModBlocks.CUTTING_BOARD);
 
     /// Wild Crop Block Items
     public static final DeferredItem<CreativeOnlyBlockItem> WILD_STRAWBERRY = ITEMS.registerItem(
             "wild_strawberry", props -> new CreativeOnlyBlockItem(ModBlocks.WILD_STRAWBERRY.get(), props));
     public static final DeferredItem<CreativeOnlyBlockItem> WILD_TOMATO = ITEMS.registerItem(
-            "wild_tomato", props -> new CreativeOnlyBlockItem(ModBlocks.WILD_TOMATO.get(), props.food(ModFoods.WILD_TOMATO, net.minecraft.world.item.component.Consumables.DEFAULT_FOOD)));
+            "wild_tomato", props -> new CreativeOnlyBlockItem(ModBlocks.WILD_TOMATO.get(), props.food(ModFoods.WILD_TOMATO)));
     public static final DeferredItem<CreativeOnlyBlockItem> WILD_LETTUCE = ITEMS.registerItem(
             "wild_lettuce", props -> new CreativeOnlyBlockItem(ModBlocks.WILD_LETTUCE.get(), props));
     public static final DeferredItem<CreativeOnlyBlockItem> WILD_PURPLE_ONION = ITEMS.registerItem(
@@ -69,7 +104,19 @@ public final class ModItems {
             "lettuce_seeds", props -> new SeedItem(ModBlocks.LETTUCE_CROP.get(), props));
     public static final DeferredItem<SeedItem> PURPLE_ONION_SEEDS = ITEMS.registerItem(
             "purple_onion_seeds", props -> new SeedItem(ModBlocks.PURPLE_ONION_CROP.get(), props));
-    //?}
+
+    /// Knives
+public static final DeferredItem<KnifeItem> STONE_KNIFE = ITEMS.registerItem("stone_knife",
+            props -> new KnifeItem(ToolMaterial.STONE, STONE_KNIFE_DAMAGE, STONE_KNIFE_SPEED, props));
+    public static final DeferredItem<KnifeItem> IRON_KNIFE = ITEMS.registerItem("iron_knife",
+            props -> new KnifeItem(ToolMaterial.IRON, IRON_KNIFE_DAMAGE, IRON_KNIFE_SPEED, props));
+    public static final DeferredItem<KnifeItem> GOLD_KNIFE = ITEMS.registerItem("gold_knife",
+            props -> new KnifeItem(ToolMaterial.GOLD, GOLD_KNIFE_DAMAGE, GOLD_KNIFE_SPEED, props));
+    public static final DeferredItem<KnifeItem> DIAMOND_KNIFE = ITEMS.registerItem("diamond_knife",
+            props -> new KnifeItem(ToolMaterial.DIAMOND, DIAMOND_KNIFE_DAMAGE, DIAMOND_KNIFE_SPEED, props));
+    public static final DeferredItem<KnifeItem> OBSIDIAN_KNIFE = ITEMS.registerItem("obsidian_knife",
+            props -> new KnifeItem(ModTiers.OBSIDIAN, OBSIDIAN_KNIFE_DAMAGE, OBSIDIAN_KNIFE_SPEED, props));
+    *///?}
 
     /// Raw Ingredients
     public static final DeferredItem<Item> STRAWBERRY = ITEMS.registerItem("strawberry",
@@ -85,6 +132,12 @@ public final class ModItems {
     public static final DeferredItem<IronCupItem> IRON_CUP = ITEMS.registerItem("iron_cup",
             props -> new IronCupItem(props.stacksTo(16)));
 
+    /// Dairy
+    public static final DeferredItem<Item> CHEESE = ITEMS.registerItem("cheese",
+            props -> new Item(props.food(ModFoods.CHEESE)));
+    public static final DeferredItem<Item> CHEESE_SLICE = ITEMS.registerItem("cheese_slice",
+            props -> new Item(props.food(ModFoods.CHEESE_SLICE)));
+
     /// Cooked Foods
     public static final DeferredItem<Item> RAW_CHICKEN_PIECES = ITEMS.registerItem("raw_chicken_pieces",
             props -> new Item(props.food(ModFoods.RAW_CHICKEN_PIECES)));
@@ -94,6 +147,10 @@ public final class ModItems {
             props -> new Item(props.food(ModFoods.FRIED_EGG)));
     public static final DeferredItem<Item> SALAD = ITEMS.registerItem("salad",
             props -> new Item(props.food(ModFoods.SALAD)));
+    public static final DeferredItem<Item> CHEESE_SANDWICH = ITEMS.registerItem("cheese_sandwich",
+            props -> new Item(props.food(ModFoods.CHEESE_SANDWICH)));
+    public static final DeferredItem<Item> GRILLED_CHEESE = ITEMS.registerItem("grilled_cheese",
+            props -> new Item(props.food(ModFoods.GRILLED_CHEESE)));
 
     private ModItems() {
     }

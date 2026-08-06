@@ -53,8 +53,8 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
     protected void generate() {
         dropSelf(ModBlocks.GRILL_TABLE.get());
         dropSelf(ModBlocks.GRILL_TABLE_SOUL.get());
+        dropSelf(ModBlocks.CUTTING_BOARD.get());
 
-        // WILD_STRAWBERRY will not drop WILD item consumable like WILD_TOMATO
         add(ModBlocks.WILD_STRAWBERRY.get(), block -> createWildCropDrops(ModItems.STRAWBERRY.get(), ModItems.STRAWBERRY_SEEDS.get()));
         add(ModBlocks.WILD_TOMATO.get(), block -> createWildCropDrops(ModItems.WILD_TOMATO.get(), ModItems.TOMATO_SEEDS.get()));
         add(ModBlocks.WILD_LETTUCE.get(), block -> createWildCropDrops(ModItems.LETTUCE.get(), ModItems.LETTUCE_SEEDS.get()));
@@ -73,8 +73,8 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         add(ModBlocks.TOMATO_CROP_POLE.get(), block -> {
             LootItemCondition.Builder isLower = LootItemBlockStatePropertyCondition.hasBlockStateProperties(block)
                     .setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(TomatoCropPoleBlock.HALF, DoubleBlockHalf.LOWER));
-            LootItemCondition.Builder maduro = isMaxAge(block, BlockStateProperties.AGE_5);
-            LootItemCondition.Builder isLowerAndMature = isLower.and(maduro);
+            LootItemCondition.Builder mature = isMaxAge(block, BlockStateProperties.AGE_5);
+            LootItemCondition.Builder isLowerAndMature = isLower.and(mature);
 
             return LootTable.lootTable()
                     .withPool(LootPool.lootPool().when(isLowerAndMature)
@@ -88,10 +88,10 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
 
     private LootTable.Builder createMatureCropDrops(Block block, IntegerProperty ageProperty,
                                                     ItemLike cropItem, float cropMin, float cropMax, ItemLike seedItem) {
-        LootItemCondition.Builder maduro = isMaxAge(block, ageProperty);
+        LootItemCondition.Builder mature = isMaxAge(block, ageProperty);
 
         return LootTable.lootTable()
-                .withPool(LootPool.lootPool().when(maduro)
+                .withPool(LootPool.lootPool().when(mature)
                         .add(LootItem.lootTableItem(cropItem)
                                 .apply(SetItemCountFunction.setCount(UniformGenerator.between(cropMin, cropMax)))))
                 .withPool(LootPool.lootPool()
@@ -120,6 +120,7 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         return List.of(
                 ModBlocks.GRILL_TABLE.get(),
                 ModBlocks.GRILL_TABLE_SOUL.get(),
+                ModBlocks.CUTTING_BOARD.get(),
                 ModBlocks.WILD_STRAWBERRY.get(),
                 ModBlocks.WILD_TOMATO.get(),
                 ModBlocks.WILD_LETTUCE.get(),

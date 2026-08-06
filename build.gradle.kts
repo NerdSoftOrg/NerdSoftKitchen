@@ -1,3 +1,8 @@
+@file:Suppress("RedundantSuppression")
+
+import dev.nerdsoft.build.JsonMinifier
+import dev.nerdsoft.build.OptimizeTexturesTask
+
 plugins {
     id("net.neoforged.moddev")
     id("neoforge-mutex")
@@ -36,6 +41,7 @@ allprojects {
     }
 }
 
+@Suppress("AvoidDuplicateDependencies")
 dependencies {
     val jadeVersion = property("deps.jade.version") as String
 
@@ -109,6 +115,12 @@ java {
     }
 }
 
+if (project.hasProperty("release")) {
+    tasks.withType<JavaCompile>().configureEach {
+        options.compilerArgs.add("-g:none")
+    }
+}
+
 tasks {
     processResources {
         fun MutableMap<String, String>.register(key: String, property: String) {
@@ -149,18 +161,44 @@ tasks {
 
         val mixinJava = "JAVA_${requiredJava.majorVersion}"
         filesMatching("*.mixins.json") { expand("java" to mixinJava) }
+
+        doLast {
+            JsonMinifier.minifyInPlace(destinationDir, setOf(".json", ".mcmeta"))
+        }
     }
 
     named("createMinecraftArtifacts") {
         dependsOn("stonecutterGenerate")
     }
 
+    register<OptimizeTexturesTask>("optimizeTextures") {
+        group = "build"
+        description = "Losslessly recompresses PNG textures with oxipng after resource processing"
+        resourcesDir.set(layout.buildDirectory.dir("resources/main"))
+
+        rootCacheDir.set(rootProject.layout.projectDirectory.dir(".gradle"))
+
+        if (project.hasProperty("deps.oxipng.version")) {
+            oxipngVersion.set(project.property("deps.oxipng.version") as String)
+        }
+        if (project.hasProperty("deps.oxipng.enabled")) {
+            oxipngEnabled.set((project.property("deps.oxipng.enabled") as String).toBoolean())
+        }
+
+        dependsOn("processResources")
+    }
+
+    named("jar") {
+        dependsOn("optimizeTextures")
+    }
+
     register<Copy>("buildAndCollect") {
         group = "build"
         description = "Build mod jar and copy result to `build/libs/{mod version}/`"
 
+        dependsOn("jar")
+        from(project.tasks.named("jar"))
         inputs.property("version", project.property("mod.version"))
         into(rootProject.layout.buildDirectory.file("libs/${project.property("mod.version")}"))
     }
 }
-

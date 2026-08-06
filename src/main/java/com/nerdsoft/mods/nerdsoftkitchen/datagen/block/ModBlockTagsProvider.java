@@ -3,10 +3,12 @@ package com.nerdsoft.mods.nerdsoftkitchen.datagen.block;
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -53,10 +55,11 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                 ModBlocks.TOMATO_CROP.get(),
                 ModBlocks.TOMATO_CROP_POLE.get()
         );
+    }
 
-        tag(BlockTags.SAPLINGS).add(
-                ModBlocks.TOMATO_CROP_POLE.get(),
-                ModBlocks.TOMATO_CROP.get()
-        );
+    @SuppressWarnings("unused")
+    private static TagKey<Block> create(String namespace, String path) {
+        return TagKey.create(Registries.BLOCK,
+                ResourceLocation.fromNamespaceAndPath(namespace, path));
     }
 }
