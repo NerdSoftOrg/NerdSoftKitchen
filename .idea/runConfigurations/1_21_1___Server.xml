@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="1.21.1 - Server" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="net.neoforged.devlaunch.Main" />
+    <module name="NerdSoft_Kitchen.1_21_1.main" />
+    <option name="PROGRAM_PARAMETERS" value="&quot;@C:\\Users\\vtorr\\IdeaProjects\\NerdSoft Kitchen\\versions\\1.21.1\\build\\moddev\\serverRunProgramArgs.txt&quot;" />
+    <option name="VM_PARAMETERS" value="&quot;@C:\\Users\\vtorr\\IdeaProjects\\NerdSoft Kitchen\\versions\\1.21.1\\build\\moddev\\serverRunVmArgs.txt&quot; &quot;-Dfml.modFolders=nerdsoftkitchen%%C:\\Users\\vtorr\\IdeaProjects\\NerdSoft Kitchen\\versions\\1.21.1\\build\\classes\\java\\main;nerdsoftkitchen%%C:\\Users\\vtorr\\IdeaProjects\\NerdSoft Kitchen\\versions\\1.21.1\\build\\resources\\main&quot;" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/versions/1.21.1/run" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

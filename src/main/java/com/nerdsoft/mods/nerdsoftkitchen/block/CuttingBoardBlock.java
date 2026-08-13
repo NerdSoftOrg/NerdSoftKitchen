@@ -242,11 +242,12 @@ public class CuttingBoardBlock extends BaseEntityBlock {
                 player.drop(result, false);
             }
 
-            if (!player.getAbilities().instabuild) {
+            if (!player.getAbilities().instabuild && level instanceof ServerLevel serverLevel) {
                 //? if <1.21.2 {
-                knife.hurtAndBreak(1, (ServerLevel) level, (ServerPlayer) player, item -> player.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
+                knife.hurtAndBreak(1, serverLevel, player instanceof ServerPlayer serverPlayer ? serverPlayer : null,
+                        item -> player.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
                 //?} else {
-                /*knife.hurtAndBreak(1, (ServerLevel) level, player, item -> player.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
+                /*knife.hurtAndBreak(1, serverLevel, player, item -> player.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
                  *///?}
             }
 

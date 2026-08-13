@@ -1,0 +1,63 @@
+# Mod Metadata
+mod_id = "nerdsoftkitchen"
+mod_name = "NerdSoft Kitchen"
+mod_group = "com.nerdsoft.mods"
+mod_version = "0.2.0"
+mod_license = "AGPLv3"
+mod_resources_license = "CC-BY-NC-SA-4.0"
+mod_authors = "Bichal & Hugo"
+mod_description = "A fresh, lightweight cooking and farming expansion adding wild crops, pole-grown tomatoes, grill workstations, and delicious new recipes to Minecraft."
+mod_side = "BOTH"
+mod_issues = "https://github.com/NerdSoftOrg/NerdSoftKitchen/issues"
+mod_banner = "banner.png"
+
+# Mod Integration
+deps_jade_id = "jade"
+deps_jade_type = "optional"
+deps_jade_ordering = "AFTER"
+deps_jade_side = "CLIENT"
+
+deps_jei_id = "jei"
+deps_jei_type = "optional"
+deps_jei_ordering = "AFTER"
+deps_jei_side = "CLIENT"
+
+# Tooling & Optimization
+deps_oxipng_enabled = "true"
+deps_oxipng_version = "10.1.1"
+
+["1.21.1"]
+minecraft_version = "1.21.1"
+minecraft_version_range = "[1.21,1.21.2)"
+
+neo_version = "21.1.248"
+neo_version_range = "[21.0,21.2)"
+loader_version_range = "[1,)"
+
+parchment_minecraft_version = "1.21.1"
+parchment_mappings_version = "2024.11.17"
+
+deps_jei_version = "19.43.0.392"
+deps_jei_version_range = "[19,20)"
+
+deps_jade_version = "15.1.6+neoforge"
+deps_jade_version_range = "[15,16)"
+
+["1.21.3"]
+minecraft_version = "1.21.3"
+minecraft_version_range = "[1.21.2,1.21.4)"
+
+neo_version = "21.3.97"
+neo_version_range = "[21.2,21.4)"
+
+loader_version_range = "[1,)"
+
+parchment_minecraft_version = "1.21.3"
+parchment_mappings_version = "2024.12.07"
+
+# JEI is not compatible with 1.21.2 and .3
+deps_jei_version = "0"
+deps_jei_version_range = "[0,)"
+
+deps_jade_version = "16.0.1+neoforge"
+deps_jade_version_range = "[16,17)"

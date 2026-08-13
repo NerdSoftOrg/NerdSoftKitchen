@@ -1,6 +1,7 @@
 modLoader = "javafml"
 loaderVersion = "${loader_version_range}"
 license = "${mod_license}"
+issueTrackerURL = "${mod_issues}"
 
 [[mods]]
 modId = "${mod_id}"
@@ -38,3 +39,4 @@ type = "${jei_type}"
 versionRange = "${jei_version_range}"
 ordering = "${jei_ordering}"
 side = "${jei_side}"
+#?}

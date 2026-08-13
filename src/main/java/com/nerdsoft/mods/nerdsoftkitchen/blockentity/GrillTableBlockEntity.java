@@ -270,7 +270,7 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
 
     public boolean hasCookableRecipe(ItemStack stack) {
         Level level = getLevel();
-        if (!canCookAt(level, stack)) {
+        if (level == null || !canCookAt(level, stack)) {
             return false;
         }
         return hasFreeSlot(GRILL_SLOTS_START, GRILL_SLOTS_COUNT) || hasFreeSlot(CAMPFIRE_SLOTS_START, CAMPFIRE_SLOTS_COUNT);

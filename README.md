@@ -5,7 +5,7 @@
 [![NeoForge](https://img.shields.io/badge/NeoForge-1.21--.3-orange?style=for-the-badge&logo=curseforge)](https://neoforged.net/)
 [![Modrinth](https://img.shields.io/badge/Modrinth-Download-1bd96a?style=for-the-badge&logo=modrinth)](https://modrinth.com/mod/nerdsoftkitchen)
 [![CurseForge](https://img.shields.io/badge/CurseForge-Download-f16436?style=for-the-badge&logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/nerdsoftkitchen)
-[![License](https://img.shields.io/badge/License-CC--BY--NC--SA--4%2E0-lightgrey?style=for-the-badge)](#license)
+[![License](https://img.shields.io/badge/Code-AGPLv3-blueviolet?style=for-the-badge)](#license)
 
 **A cooking overhaul for NeoForge 1.21**
 <br>
@@ -72,7 +72,7 @@ so the mod stays lightweight and easy to extend or add compatibility for.
 
 | Requirement | Version                                            |
 |-------------|----------------------------------------------------|
-| Minecraft   | `1.21.1-1.21.3`                                           |
+| Minecraft   | `1.21-1.21.3`                                      |
 | Mod Loader  | [NeoForge](https://neoforged.net/) `21.X` or later |
 | Java        | `21+`                                              |
 
@@ -83,7 +83,7 @@ so the mod stays lightweight and easy to extend or add compatibility for.
 4. (Optional) Install [JEI](https://modrinth.com/mod/jei/versions?l=neoforge)
    and/or [Jade](https://modrinth.com/mod/jade/versions?c=release&g=neoforge) for the integrations described
    below.
-6. Launch the game.
+5. Launch the game.
 
 > This mod is a **client + server** mod — install it on both sides for multiplayer.
 
@@ -135,9 +135,27 @@ Please be respectful and constructive when opening issues or discussing changes.
 
 ## License
 
-This mod is licensed under
-**[Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/)**
-(CC-BY-NC-SA-4.0).
+NerdSoft Kitchen uses a **dual-license model**:
+
+| Content                             | License                                                                                                                              |
+|-------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| Source code (Java, Rust, C++)       | [GNU Affero General Public License v3.0 (AGPLv3)](https://www.gnu.org/licenses/agpl-3.0.html) — see [`LICENSE-AGPL`](./LICENSE-AGPL) |
+| Artwork, logos, and branding assets | [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) — see [`LICENSE-CC`](./LICENSE-CC)                             |
+
+In short, for the **source code**:
+
+- **Share & Adapt** — you're free to study, modify, and redistribute it under AGPLv3 terms.
+- **Network copyleft** — if you run a modified version as a network service, you must make your modifications' source
+  available to users of that service.
+
+And for **artwork, logos, and branding**:
+
+- **Attribution** — credit NerdSoft and link back to the original.
+- **NonCommercial** — no selling the assets or derivatives, or using them commercially, without permission.
+- **ShareAlike** — if you remix or build on them, your version must carry the same license.
+
+See [`LICENSE`](./LICENSE) for the full summary and links to both license texts, or open an issue if you'd like to
+discuss usage outside these terms.
 
 In short, you're free to:
 
@@ -158,8 +176,7 @@ See [`LICENSE`](LICENSE) for the full legal text, or open an issue if you'd like
 
 ![Logo](docs/media/logo_small.png)
 
-Made by **[NerdSoft](https://github.com/NerdSoftOrg)** — **[Bichal](https://github.com/Bichal)** &
-**[Hugo](https://github.com/HugobesugoXD)**
+Made by **[NerdSoft](https://github.com/NerdSoftOrg)**
 
 [![Modrinth](https://img.shields.io/badge/Modrinth-Download-1bd96a?style=for-the-badge&logo=modrinth)](https://modrinth.com/mod/nerdsoftkitchen)
 [![CurseForge](https://img.shields.io/badge/CurseForge-Download-f16436?style=for-the-badge&logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/nerdsoftkitchen)

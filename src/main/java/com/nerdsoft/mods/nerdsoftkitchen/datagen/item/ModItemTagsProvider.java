@@ -62,7 +62,8 @@ public class ModItemTagsProvider extends ItemTagsProvider {
                 ModItems.IRON_KNIFE.get(),
                 ModItems.GOLD_KNIFE.get(),
                 ModItems.DIAMOND_KNIFE.get(),
-                ModItems.OBSIDIAN_KNIFE.get()
+                ModItems.OBSIDIAN_KNIFE.get(),
+                ModItems.NETHERITE_KNIFE.get()
         );
 
         tag(ModTiers.REPAIRS_OBSIDIAN_KNIFE).add(Items.OBSIDIAN);

@@ -19,28 +19,39 @@ public final class ModCreativeTabs {
 
     @SuppressWarnings("unused")
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> KITCHEN_TAB = CREATIVE_TABS.register("kitchen_tab", () -> CreativeModeTab.builder().title(Component.translatable("itemGroup.nerdsoftkitchen" + ".kitchen_tab")).icon(() -> new ItemStack(ModItems.GRILL_TABLE.get())).displayItems((parameters, output) -> {
-        output.accept(ModItems.GRILL_TABLE.get());
-        output.accept(ModItems.GRILL_TABLE_SOUL.get());
-        output.accept(ModItems.WILD_STRAWBERRY.get());
-        output.accept(ModItems.WILD_TOMATO.get());
-        output.accept(ModItems.WILD_LETTUCE.get());
-        output.accept(ModItems.WILD_PURPLE_ONION.get());
-        output.accept(ModItems.STRAWBERRY_SEEDS.get());
-        output.accept(ModItems.TOMATO_SEEDS.get());
-        output.accept(ModItems.LETTUCE_SEEDS.get());
-        output.accept(ModItems.PURPLE_ONION_SEEDS.get());
-        output.accept(ModItems.STRAWBERRY.get());
-        output.accept(ModItems.TOMATO.get());
-        output.accept(ModItems.LETTUCE.get());
-        output.accept(ModItems.PURPLE_ONION.get());
-        output.accept(ModItems.IRON_CUP.get());
+        output.accept(ModItems.GRILL_TABLE);
+        output.accept(ModItems.GRILL_TABLE_SOUL);
+        output.accept(ModItems.CUTTING_BOARD);
+        output.accept(ModItems.WILD_STRAWBERRY);
+        output.accept(ModItems.WILD_TOMATO);
+        output.accept(ModItems.WILD_LETTUCE);
+        output.accept(ModItems.WILD_PURPLE_ONION);
+        output.accept(ModItems.STRAWBERRY_SEEDS);
+        output.accept(ModItems.TOMATO_SEEDS);
+        output.accept(ModItems.LETTUCE_SEEDS);
+        output.accept(ModItems.PURPLE_ONION_SEEDS);
+        output.accept(ModItems.STRAWBERRY);
+        output.accept(ModItems.TOMATO);
+        output.accept(ModItems.LETTUCE);
+        output.accept(ModItems.PURPLE_ONION);
+        output.accept(ModItems.IRON_CUP);
         output.accept(IronCupItem.filled(ModItems.IRON_CUP.get(), IronCupContent.MILK));
         output.accept(IronCupItem.filled(ModItems.IRON_CUP.get(), IronCupContent.YOGURT));
         output.accept(IronCupItem.filled(ModItems.IRON_CUP.get(), IronCupContent.STRAWBERRY_YOGURT));
-        output.accept(ModItems.RAW_CHICKEN_PIECES.get());
-        output.accept(ModItems.COOKED_CHICKEN_PIECES.get());
-        output.accept(ModItems.FRIED_EGG.get());
-        output.accept(ModItems.SALAD.get());
+        output.accept(ModItems.RAW_CHICKEN_PIECES);
+        output.accept(ModItems.COOKED_CHICKEN_PIECES);
+        output.accept(ModItems.FRIED_EGG);
+        output.accept(ModItems.SALAD);
+        output.accept(ModItems.CHEESE);
+        output.accept(ModItems.CHEESE_SANDWICH);
+        output.accept(ModItems.CHEESE_SLICE);
+        output.accept(ModItems.GRILLED_CHEESE);
+        output.accept(ModItems.STONE_KNIFE);
+        output.accept(ModItems.IRON_KNIFE);
+        output.accept(ModItems.GOLD_KNIFE);
+        output.accept(ModItems.DIAMOND_KNIFE);
+        output.accept(ModItems.OBSIDIAN_KNIFE);
+        output.accept(ModItems.NETHERITE_KNIFE);
     }).build());
 
     private ModCreativeTabs() {
