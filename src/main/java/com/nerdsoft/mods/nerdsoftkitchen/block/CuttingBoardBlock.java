@@ -2,12 +2,16 @@ package com.nerdsoft.mods.nerdsoftkitchen.block;
 
 import com.mojang.serialization.MapCodec;
 import com.nerdsoft.mods.nerdsoftkitchen.blockentity.CuttingBoardBlockEntity;
+import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipe;
+import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipeInput;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cutting.CuttingRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cutting.CuttingRecipeInput;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.item.ModItemTags;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.recipe.ModRecipeTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -17,6 +21,9 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -86,12 +93,13 @@ public class CuttingBoardBlock extends BaseEntityBlock {
             //return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
 
-        // Si usas un cuchillo y la tabla tiene algo, procesa la receta de corte
         if (stack.is(ModItemTags.KNIFE) && !board.isEmpty()) {
+            if (player.isShiftKeyDown()) {
+                return handleItemInteraction(level, board, stack, player, hand);
+            }
             return tryCut(level, pos, board, stack, player);
         }
 
-        // Interacción genérica con cualquier ítem
         if (!stack.isEmpty()) {
             return handleItemInteraction(level, board, stack, player, hand);
         }
@@ -122,7 +130,6 @@ public class CuttingBoardBlock extends BaseEntityBlock {
         ItemStack stored = board.getStoredItem();
 
         if (stored.isEmpty()) {
-            // Tabla vacía: Colocar el stack
             if (!level.isClientSide) {
                 board.setStoredItem(heldStack.copy());
                 if (!player.getAbilities().instabuild) {
@@ -137,7 +144,6 @@ public class CuttingBoardBlock extends BaseEntityBlock {
         }
 
         if (ItemStack.isSameItemSameComponents(stored, heldStack)) {
-            // Mismo ítem: Intentar apilar hasta el límite máximo
             int maxStack = stored.getMaxStackSize();
             if (stored.getCount() < maxStack) {
                 if (!level.isClientSide) {
@@ -158,7 +164,6 @@ public class CuttingBoardBlock extends BaseEntityBlock {
                 //return InteractionResult.SUCCESS;
             }
         } else {
-            // Ítem diferente: Intercambiar (Swap) el de la mano con el de la tabla
             if (!level.isClientSide) {
                 ItemStack newHeld = stored.copy();
                 board.setStoredItem(heldStack.copy());
@@ -238,9 +243,11 @@ public class CuttingBoardBlock extends BaseEntityBlock {
             ItemStack result = match.get().value().assemble(new CuttingRecipeInput(board.getStoredItem()), level.registryAccess());
             board.clearStoredItem();
 
-            if (!player.getInventory().add(result)) {
-                player.drop(result, false);
+            if (hasFireAspect(knife, level)) {
+                result = applyFireAspectCooking(result, level);
             }
+
+            level.addFreshEntity(new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 0.2, pos.getZ() + 0.5, result));
 
             if (!player.getAbilities().instabuild && level instanceof ServerLevel serverLevel) {
                 //? if <1.21.2 {
@@ -258,6 +265,32 @@ public class CuttingBoardBlock extends BaseEntityBlock {
         return ItemInteractionResult.sidedSuccess(level.isClientSide);
         //?} else
         //return InteractionResult.SUCCESS;
+    }
+
+    @SuppressWarnings("deprecation")
+    private boolean hasFireAspect(ItemStack knife, Level level) {
+        Holder<Enchantment> fireAspect = level.registryAccess()
+                .lookupOrThrow(Registries.ENCHANTMENT)
+                .getOrThrow(Enchantments.FIRE_ASPECT);
+        return EnchantmentHelper.getItemEnchantmentLevel(fireAspect, knife) > 0;
+    }
+
+    private ItemStack applyFireAspectCooking(ItemStack result, Level level) {
+        RecipeManager recipeManager = getRecipeManager(level);
+        if (recipeManager == null) {
+            return result;
+        }
+
+        Optional<RecipeHolder<CookRecipe>> cookMatch = recipeManager
+                .getRecipeFor(ModRecipeTypes.COOK_TYPE.get(), new CookRecipeInput(result), level);
+
+        if (cookMatch.isEmpty()) {
+            return result;
+        }
+
+        ItemStack cooked = cookMatch.get().value().assemble(new CookRecipeInput(result), level.registryAccess());
+        cooked.setCount(result.getCount());
+        return cooked;
     }
 
     @Override

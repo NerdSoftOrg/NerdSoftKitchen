@@ -2,7 +2,6 @@ package com.nerdsoft.mods.nerdsoftkitchen.registry.recipe;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipe;
-import com.nerdsoft.mods.nerdsoftkitchen.recipe.curdle.CurdleRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cutting.CuttingRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.mix.MixRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
@@ -19,7 +18,6 @@ public final class ModRecipeTypes {
 
     public static final DeferredHolder<RecipeType<?>, RecipeType<CookRecipe>> COOK_TYPE = registerType("cook");
     public static final DeferredHolder<RecipeType<?>, RecipeType<MixRecipe>> MIX_TYPE = registerType("mix");
-    public static final DeferredHolder<RecipeType<?>, RecipeType<CurdleRecipe>> CURDLE_TYPE = registerType("curdle");
     public static final DeferredHolder<RecipeType<?>, RecipeType<CuttingRecipe>> CUT_TYPE = registerType("cutting");
 
     private ModRecipeTypes() {

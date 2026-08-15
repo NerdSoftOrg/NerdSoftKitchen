@@ -68,9 +68,10 @@ public class GrillTableBlockEntityRenderer implements BlockEntityRenderer<GrillT
         }
     }
 
-    private void renderGrillSlot(GrillTableBlockEntity blockEntity, int slot, ItemStack stack, int facing2D, int seedBase, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, ClientLevel renderLevel) {
+    private void renderGrillSlot(GrillTableBlockEntity blockEntity, int slot, ItemStack stack, int facing2D,
+                                 int seedBase, PoseStack poseStack, MultiBufferSource bufferSource,
+                                 int packedLight, int packedOverlay, ClientLevel renderLevel) {
         int dirIndex = (slot + facing2D) & 3;
-
         double x = 0.5 + CORNER_X[dirIndex] + blockEntity.getGrillOffsetX(slot);
         double z = 0.5 + CORNER_Z[dirIndex] + blockEntity.getGrillOffsetZ(slot);
         float rotation = CORNER_YAW[dirIndex] + blockEntity.getGrillRotation(slot);

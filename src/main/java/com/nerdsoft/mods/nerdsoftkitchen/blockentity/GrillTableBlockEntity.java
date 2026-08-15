@@ -41,7 +41,7 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
     private static final double GRILL_MAX_RANDOM_OFFSET = 0.03;
 
     private static final float HAY_BALE_MULTIPLIER = 1.25F;
-    private static final float SOUL_BONUS_MULTIPLIER = 0.10F;
+    private static final float SOUL_MULTIPLIER = 1.10F;
     private static final float BASE_MULTIPLIER = 1.0F;
     private final RecipeManager.CachedCheck<CookRecipeInput, CookRecipe> grillRecipeCheck = RecipeManager.createCheck(ModRecipeTypes.COOK_TYPE.get());
     private final RecipeManager.CachedCheck<SingleRecipeInput, CampfireCookingRecipe> campfireRecipeCheck = RecipeManager.createCheck(RecipeType.CAMPFIRE_COOKING);
@@ -163,13 +163,11 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
             return;
         }
         boolean hayBelow = level.getBlockState(worldPosition.below()).is(Blocks.HAY_BLOCK);
+
         float multiplier = BASE_MULTIPLIER;
-        if (hayBelow) {
-            multiplier = HAY_BALE_MULTIPLIER;
-            if (soul) {
-                multiplier += SOUL_BONUS_MULTIPLIER;
-            }
-        }
+        if (soul) multiplier *= SOUL_MULTIPLIER;
+        if (hayBelow) multiplier *= HAY_BALE_MULTIPLIER;
+
         if (multiplier != speedMultiplier) {
             speedMultiplier = multiplier;
             refreshAllSlotRecipes();

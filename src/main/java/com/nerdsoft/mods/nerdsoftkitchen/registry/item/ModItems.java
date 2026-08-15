@@ -6,6 +6,7 @@ import com.nerdsoft.mods.nerdsoftkitchen.item.CreativeOnlyBlockItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.GrillBlockItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.IronCupItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.KnifeItem;
+import com.nerdsoft.mods.nerdsoftkitchen.item.OrganicMixtureItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.SeedItem;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.ModTiers;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
@@ -22,27 +23,23 @@ import net.minecraft.world.item.Tiers;
 /*import net.minecraft.world.item.ToolMaterial;
  *///?}
 
+@SuppressWarnings("CommentedOutCode")
 public final class ModItems {
 
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(NerdSoftKitchen.MOD_ID);
 
-    private static final float STONE_KNIFE_DAMAGE = 2.5F;
-    private static final float STONE_KNIFE_SPEED = -1.4F;
+    private static final float STONE_KNIFE_DAMAGE = 0.5F; // 2.5
     @SuppressWarnings("InvariantValue")
     //? if > 1.21.8 {
-    /*private static final float COPPER_KNIFE_DAMAGE = 2.75F;
-    private static final float COPPER_KNIFE_SPEED = -1.4F;
+    /*private static final float COPPER_KNIFE_DAMAGE = 0.75F; // 2.75 - 1.0 (copper tier)
     *///?}
-    private static final float IRON_KNIFE_DAMAGE = 3.0F;
-    private static final float IRON_KNIFE_SPEED = -1.4F;
-    private static final float GOLD_KNIFE_DAMAGE = 2.0F;
-    private static final float GOLD_KNIFE_SPEED = -1.0F;
-    private static final float DIAMOND_KNIFE_DAMAGE = 3.5F;
-    private static final float DIAMOND_KNIFE_SPEED = -1.3F;
-    private static final float OBSIDIAN_KNIFE_DAMAGE = 4.0F;
-    private static final float OBSIDIAN_KNIFE_SPEED = -1.3F;
-    private static final float NETHERITE_KNIFE_DAMAGE = 4.5F;
-    private static final float NETHERITE_KNIFE_SPEED = -1.25F;
+    private static final float IRON_KNIFE_DAMAGE = 0.0F; // 3.0
+    private static final float GOLD_KNIFE_DAMAGE = 1.0F; // 2.0
+    private static final float DIAMOND_KNIFE_DAMAGE = -0.5F; // 3.5
+    private static final float OBSIDIAN_KNIFE_DAMAGE = -1.25F; // 3.75
+    private static final float NETHERITE_KNIFE_DAMAGE = -1.0F; // 4.0
+
+    private static final float DEFAULT_KNIFE_SPEED = -1.4F; // 2.6
 
     //? if <1.21.2 {
     /// Machine Items
@@ -51,6 +48,8 @@ public final class ModItems {
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE_SOUL = ITEMS.registerItem("grill_table_soul",
             props -> new GrillBlockItem(ModBlocks.GRILL_TABLE_SOUL.get(), props));
     public static final DeferredItem<BlockItem> CUTTING_BOARD = ITEMS.registerSimpleBlockItem(ModBlocks.CUTTING_BOARD);
+    public static final DeferredItem<BlockItem> FERTILE_FARMLAND = ITEMS.registerSimpleBlockItem(ModBlocks.FERTILE_FARMLAND);
+    public static final DeferredItem<BlockItem> ORGANIC_SOIL = ITEMS.registerSimpleBlockItem(ModBlocks.ORGANIC_SOIL);
 
     /// Wild Crop Block Items
     public static final DeferredItem<CreativeOnlyBlockItem> WILD_STRAWBERRY =
@@ -74,17 +73,17 @@ public final class ModItems {
 
     /// Knives
     public static final DeferredItem<KnifeItem> STONE_KNIFE = ITEMS.registerItem("stone_knife",
-            props -> new KnifeItem(Tiers.STONE, STONE_KNIFE_DAMAGE, STONE_KNIFE_SPEED, props));
+            props -> new KnifeItem(Tiers.STONE, STONE_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> IRON_KNIFE = ITEMS.registerItem("iron_knife",
-            props -> new KnifeItem(Tiers.IRON, IRON_KNIFE_DAMAGE, IRON_KNIFE_SPEED, props));
+            props -> new KnifeItem(Tiers.IRON, IRON_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> GOLD_KNIFE = ITEMS.registerItem("gold_knife",
-            props -> new KnifeItem(Tiers.GOLD, GOLD_KNIFE_DAMAGE, GOLD_KNIFE_SPEED, props));
+            props -> new KnifeItem(Tiers.GOLD, GOLD_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> DIAMOND_KNIFE = ITEMS.registerItem("diamond_knife",
-            props -> new KnifeItem(Tiers.DIAMOND, DIAMOND_KNIFE_DAMAGE, DIAMOND_KNIFE_SPEED, props));
+            props -> new KnifeItem(Tiers.DIAMOND, DIAMOND_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> OBSIDIAN_KNIFE = ITEMS.registerItem("obsidian_knife",
-            props -> new KnifeItem(ModTiers.OBSIDIAN, OBSIDIAN_KNIFE_DAMAGE, OBSIDIAN_KNIFE_SPEED, props));
+            props -> new KnifeItem(ModTiers.OBSIDIAN, OBSIDIAN_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> NETHERITE_KNIFE = ITEMS.registerItem("netherite_knife",
-            props -> new KnifeItem(ModTiers.OBSIDIAN, NETHERITE_KNIFE_DAMAGE, NETHERITE_KNIFE_SPEED, props));
+            props -> new KnifeItem(Tiers.NETHERITE, NETHERITE_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     //?} else {
     /*/// Machine Items
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE = ITEMS.registerItem(
@@ -92,6 +91,8 @@ public final class ModItems {
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE_SOUL = ITEMS.registerItem(
             "grill_table_soul", props -> new GrillBlockItem(ModBlocks.GRILL_TABLE_SOUL.get(), props));
     public static final DeferredItem<BlockItem> CUTTING_BOARD = ITEMS.registerSimpleBlockItem(ModBlocks.CUTTING_BOARD);
+    public static final DeferredItem<BlockItem> FERTILE_FARMLAND = ITEMS.registerSimpleBlockItem(ModBlocks.FERTILE_FARMLAND);
+    public static final DeferredItem<BlockItem> ORGANIC_SOIL = ITEMS.registerSimpleBlockItem(ModBlocks.ORGANIC_SOIL);
 
     /// Wild Crop Block Items
     public static final DeferredItem<CreativeOnlyBlockItem> WILD_STRAWBERRY = ITEMS.registerItem(
@@ -115,17 +116,17 @@ public final class ModItems {
 
     /// Knives
     public static final DeferredItem<KnifeItem> STONE_KNIFE = ITEMS.registerItem("stone_knife",
-            props -> new KnifeItem(ToolMaterial.STONE, STONE_KNIFE_DAMAGE, STONE_KNIFE_SPEED, props));
+            props -> new KnifeItem(ToolMaterial.STONE, STONE_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> IRON_KNIFE = ITEMS.registerItem("iron_knife",
-            props -> new KnifeItem(ToolMaterial.IRON, IRON_KNIFE_DAMAGE, IRON_KNIFE_SPEED, props));
+            props -> new KnifeItem(ToolMaterial.IRON, IRON_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> GOLD_KNIFE = ITEMS.registerItem("gold_knife",
-            props -> new KnifeItem(ToolMaterial.GOLD, GOLD_KNIFE_DAMAGE, GOLD_KNIFE_SPEED, props));
+            props -> new KnifeItem(ToolMaterial.GOLD, GOLD_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> DIAMOND_KNIFE = ITEMS.registerItem("diamond_knife",
-            props -> new KnifeItem(ToolMaterial.DIAMOND, DIAMOND_KNIFE_DAMAGE, DIAMOND_KNIFE_SPEED, props));
+            props -> new KnifeItem(ToolMaterial.DIAMOND, DIAMOND_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> OBSIDIAN_KNIFE = ITEMS.registerItem("obsidian_knife",
-            props -> new KnifeItem(ModTiers.OBSIDIAN, OBSIDIAN_KNIFE_DAMAGE, OBSIDIAN_KNIFE_SPEED, props));
+            props -> new KnifeItem(ModTiers.OBSIDIAN, OBSIDIAN_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> NETHERITE_KNIFE = ITEMS.registerItem("netherite_knife",
-            props -> new KnifeItem(ToolMaterial.NETHERITE, NETHERITE_KNIFE_DAMAGE, NETHERITE_KNIFE_SPEED, props));
+            props -> new KnifeItem(ToolMaterial.NETHERITE, NETHERITE_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     *///?}
 
     @SuppressWarnings("InvariantValue")
@@ -143,6 +144,11 @@ public final class ModItems {
             props -> new Item(props.food(ModFoods.LETTUCE)));
     public static final DeferredItem<Item> PURPLE_ONION = ITEMS.registerItem("purple_onion",
             props -> new Item(props.food(ModFoods.PURPLE_ONION_RAW)));
+    public static final DeferredItem<Item> RAW_SANDWICH_BREAD = ITEMS.registerItem("raw_sandwich_bread",
+            props -> new Item(props.food(ModFoods.RAW_SANDWICH_BREAD)));
+
+    public static final DeferredItem<OrganicMixtureItem> ORGANIC_MIXTURE = ITEMS.registerItem("organic_mixture",
+            props -> new OrganicMixtureItem(props.stacksTo(64)));
 
     /// Tools and Utensils
     public static final DeferredItem<IronCupItem> IRON_CUP = ITEMS.registerItem("iron_cup",
@@ -163,8 +169,12 @@ public final class ModItems {
             props -> new Item(props.food(ModFoods.FRIED_EGG)));
     public static final DeferredItem<Item> SALAD = ITEMS.registerItem("salad",
             props -> new Item(props.food(ModFoods.SALAD)));
-    public static final DeferredItem<Item> CHEESE_SANDWICH = ITEMS.registerItem("cheese_sandwich",
-            props -> new Item(props.food(ModFoods.CHEESE_SANDWICH)));
+    public static final DeferredItem<Item> TOASTED_SANDWICH_BREAD = ITEMS.registerItem("toasted_sandwich_bread",
+            props -> new Item(props.food(ModFoods.TOASTED_SANDWICH_BREAD)));
+    public static final DeferredItem<Item> CHEESE_RAW_SANDWICH = ITEMS.registerItem("cheese_raw_sandwich",
+            props -> new Item(props.food(ModFoods.CHEESE_RAW_SANDWICH)));
+    public static final DeferredItem<Item> CHEESE_TOASTED_SANDWICH = ITEMS.registerItem("cheese_toasted_sandwich",
+            props -> new Item(props.food(ModFoods.CHEESE_TOASTED_SANDWICH)));
     public static final DeferredItem<Item> GRILLED_CHEESE = ITEMS.registerItem("grilled_cheese",
             props -> new Item(props.food(ModFoods.GRILLED_CHEESE)));
 

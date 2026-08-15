@@ -12,64 +12,211 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
 
     @Override
     protected void addTranslations() {
-        add(ModBlocks.GRILL_TABLE.get(), "Grill");
-        add(ModBlocks.GRILL_TABLE_SOUL.get(), "Soul Grill");
-        add(ModBlocks.WILD_STRAWBERRY.get(), "Wild Strawberry");
-        add(ModBlocks.WILD_TOMATO.get(), "Wild Tomato");
-        add(ModBlocks.WILD_LETTUCE.get(), "Wild Lettuce");
-        add(ModBlocks.WILD_PURPLE_ONION.get(), "Wild Onion");
-        add(ModBlocks.TOMATO_CROP_POLE.get(), "Staked Tomato Vine");
+        // Blocks
+        add(ModBlocks.GRILL_TABLE, "Grill");
+        add(ModBlocks.GRILL_TABLE_SOUL, "Soul Grill");
+        add(ModBlocks.TOMATO_CROP_POLE, "Staked Tomato Vine");
+        add(ModBlocks.FERTILE_FARMLAND, "Fertile Farmland");
+        add(ModBlocks.ORGANIC_SOIL, "Organic Soil");
+        add(ModBlocks.CUTTING_BOARD, "Cutting Board");
 
-        add(ModItems.STRAWBERRY_SEEDS.get(), "Strawberry Seeds");
-        add(ModItems.TOMATO_SEEDS.get(), "Tomato Seeds");
-        add(ModItems.LETTUCE_SEEDS.get(), "Lettuce Seeds");
-        add(ModItems.PURPLE_ONION_SEEDS.get(), "Onion Seeds");
+        // Crops & Seeds
+        addWildCropPrefix("Wild %s");
+        addCropSeedsPrefix("%s Seeds");
 
-        add(ModItems.STRAWBERRY.get(), "Strawberry");
-        add(ModItems.TOMATO.get(), "Tomato");
-        add(ModItems.LETTUCE.get(), "Lettuce");
-        add(ModItems.PURPLE_ONION.get(), "Onion");
-        add(ModItems.IRON_CUP.get(), "Iron Cup");
-        add(ModItems.RAW_CHICKEN_PIECES.get(), "Raw Chicken Pieces");
-        add(ModItems.COOKED_CHICKEN_PIECES.get(), "Cooked Chicken Pieces");
-        add(ModItems.FRIED_EGG.get(), "Fried Egg");
-        add(ModItems.SALAD.get(), "Salad");
-        add(ModItems.DIAMOND_KNIFE.get(), "Diamond Knife");
-        add(ModBlocks.CUTTING_BOARD.get(), "Cutting Board");
-        add(ModItems.CHEESE.get(), "Cheese");
-        add(ModItems.CHEESE_SLICE.get(), "Cheese Slice");
-        add(ModItems.CHEESE_SANDWICH.get(), "Cheese Sandwich");
-        add(ModItems.GRILLED_CHEESE.get(), "Grilled Cheese");
+        addCrop(
+                ModBlocks.WILD_STRAWBERRY,
+                ModItems.STRAWBERRY_SEEDS,
+                ModItems.STRAWBERRY,
+                "Strawberry"
+        );
+        addCrop(
+                ModBlocks.WILD_TOMATO,
+                ModItems.TOMATO_SEEDS,
+                ModItems.TOMATO,
+                "Tomato"
+        );
+        addCrop(
+                ModBlocks.WILD_LETTUCE,
+                ModItems.LETTUCE_SEEDS,
+                ModItems.LETTUCE,
+                "Lettuce"
+        );
+        addCrop(
+                ModBlocks.WILD_PURPLE_ONION,
+                ModItems.PURPLE_ONION_SEEDS,
+                ModItems.PURPLE_ONION,
+                "Onion"
+        );
 
+        // Knifes
+        addKnifePattern("%s Knife");
+
+        addKnife(ModItems.STONE_KNIFE, "Stone");
+        addKnife(ModItems.IRON_KNIFE, "Iron");
+        addKnife(ModItems.GOLD_KNIFE, "Gold");
+        addKnife(ModItems.DIAMOND_KNIFE, "Diamond");
+        addKnife(ModItems.OBSIDIAN_KNIFE, "Obsidian");
+        addKnife(ModItems.NETHERITE_KNIFE, "Netherite");
+
+        // Items & Foods
+        add(ModItems.IRON_CUP, "Iron Cup");
+        add(ModItems.RAW_CHICKEN_PIECES, "Raw Chicken Pieces");
+        add(ModItems.COOKED_CHICKEN_PIECES, "Cooked Chicken Pieces");
+        add(ModItems.FRIED_EGG, "Fried Egg");
+        add(ModItems.RAW_SANDWICH_BREAD, "Sandwich Bread");
+        add(ModItems.TOASTED_SANDWICH_BREAD, "Toasted Sandwich Bread");
+        add(ModItems.SALAD, "Salad");
+        add(ModItems.CHEESE, "Cheese");
+        add(ModItems.CHEESE_SLICE, "Cheese Slice");
+        add(ModItems.CHEESE_RAW_SANDWICH, "Cheese Sandwich");
+        add(ModItems.CHEESE_TOASTED_SANDWICH, "Toasted Cheese Sandwich");
+        add(ModItems.GRILLED_CHEESE, "Grilled Cheese");
+        add(ModItems.ORGANIC_MIXTURE, "Organic Mixture");
+
+        // Iron Cups
         addFilledNamePrefix("Iron Cup of ");
         addContainsPrefix("Contains: ");
         addCupContent("milk", "Milk");
         addCupContent("yogurt", "Yogurt");
         addCupContent("strawberry_yogurt", "Strawberry Yogurt");
+        add("nerdsoftkitchen.iron_cup.tooltip.empty", "Right-click a cow to fill with milk");
 
+        // Tooltips
         add("itemGroup.nerdsoftkitchen.kitchen_tab", "NerdSoft Kitchen");
         add("subtitles.block.nerdsoftkitchen.grill.place_food", "Grilling food");
-
         add("jade.nerdsoftkitchen.grill_table.slot_remaining", "%ss");
         add("config.jade.plugin_nerdsoftkitchen.grill_table_progress", "Cooking Time");
 
-        addAdvancement("root", "NerdSoft Kitchen", "Craft a Grill");
-        addAdvancement("iron_cup", "MiniBucket", "Craft an Iron Cup");
-        addAdvancement("milk_cup", "Got Milk?", "Fill an Iron Cup with milk");
-        addAdvancement("strawberry_yogurt", "Sweet Treat", "Make Strawberry Yogurt");
-        addAdvancement("harvest_all", "Garden Variety", "Harvest every wild crop at least once");
+        // Advancements
+        addAdvancement(
+                "root",
+                "NerdSoft Kitchen",
+                "Craft a Grill"
+        );
+        addAdvancement(
+                "iron_cup",
+                "Mini-Bucket",
+                "Craft an Iron Cup"
+        );
+        addAdvancement(
+                "cutting_board",
+                "Chef's Prep Station",
+                "Craft a Cutting Board"
+        );
+        addAdvancement(
+                "grill_soul",
+                "Spooky Barbecue",
+                "Craft a Soul Grill"
+        );
+        addAdvancement(
+                "master_knife",
+                "Bladesmith",
+                "Craft a Diamond, Obsidian, or Netherite Knife"
+        );
+        addAdvancement(
+                "milk_cup",
+                "Got Milk?",
+                "Fill an Iron Cup with milk"
+        );
+        addAdvancement(
+                "yogurt",
+                "Cultured",
+                "Make plain Yogurt"
+        );
+        addAdvancement(
+                "strawberry_yogurt",
+                "Sweet Treat",
+                "Make Strawberry Yogurt"
+        );
+        addAdvancement(
+                "grow_strawberry",
+                "Berry Patch",
+                "Harvest a Strawberry"
+        );
+        addAdvancement(
+                "grow_lettuce",
+                "Leafy Greens",
+                "Harvest Lettuce"
+        );
+        addAdvancement(
+                "grow_purple_onion",
+                "Tearjerker",
+                "Harvest a Purple Onion"
+        );
+        addAdvancement(
+                "grow_tomato",
+                "Vine Ripened",
+                "Harvest a Tomato"
+        );
+        addAdvancement(
+                "trellis_master",
+                "Up the Trellis",
+                "Grow a Tomato Vine on its pole"
+        );
+        addAdvancement(
+                "harvest_all",
+                "Garden Variety",
+                "Harvest every crop at least once"
+        );
+        addAdvancement(
+                "make_salad",
+                "Fresh & Crisp",
+                "Make a Salad"
+        );
+        addAdvancement(
+                "cook_chicken_pieces",
+                "Diced and Grilled",
+                "Cook Chicken Pieces on the Grill"
+        );
+        addAdvancement(
+                "fry_egg",
+                "Sunny Side Up",
+                "Fry an Egg on the Grill"
+        );
+        addAdvancement(
+                "grilled_cheese",
+                "Melty Goodness",
+                "Make a Grilled Cheese sandwich"
+        );
+        addAdvancement(
+                "gourmet",
+                "Gourmet Chef",
+                "Master every kitchen discipline: farming, cutting, grilling, and dairy"
+        );
 
-        add("datapack.nerdsoftkitchen.description", "NerdSoft Kitchen Resources");
-
+        // JEI Info
         add("jei.category.nerdsoftkitchen.grill_cooking", "Grill Cooking");
+        addJeiInfo(
+                "grill_table",
+                "Cook food directly on the grill grate, or use the campfire slots underneath like a regular campfire. Place a Hay Block beneath it to cook 25% faster!"
+        );
+        addJeiInfo(
+                "grill_table_soul",
+                "Built with a Soul Campfire instead of a regular one. Works like the regular Grill, but cooks 10% faster!"
+        );
+        addJeiInfo(
+                "iron_cup",
+                "Right-click a cow to fill with milk. Combine a filled cup with sugar on a crafting grid to make yogurt."
+        );
+        addJeiInfo(
+                "iron_cup_milk",
+                "Cannot be crafted: right-click an empty Iron Cup on a cow (not a Mooshroom) to fill it with milk."
+        );
+        addJeiInfo(
+                "iron_cup_yogurt",
+                "Craft a Milk-filled Iron Cup with Sugar to make plain Yogurt."
+        );
+        addJeiInfo(
+                "iron_cup_strawberry_yogurt",
+                "Craft a Milk-filled Iron Cup with Sugar and a Strawberry, or a plain Yogurt Cup with a Strawberry."
+        );
+        addJeiInfo(
+                "cutting_board",
+                "Right-click with a cuttable ingredient to place it, then right-click with any knife (tagged #c:tools/knife) to cut it. Cutting damages the knife by 1 durability."
+        );
 
-        add("nerdsoftkitchen.jei.info.grill_table",
-                "Cook food directly on the grill grate, or use the campfire slots underneath like a regular campfire.");
-        add("nerdsoftkitchen.jei.info.grill_table_soul",
-                "Built with a Soul Campfire instead of a regular one. Crafts and cooks exactly like the regular Grill.");
-        add("nerdsoftkitchen.jei.info.iron_cup",
-                "Right-click a cow to fill with milk. Combine a filled cup with sugar on a crafting grid for yogurt.");
-        add("nerdsoftkitchen.jei.info.cutting_board",
-                "Right-click with a cuttable ingredient to place it, then right-click with any knife (tagged #c:tools/knife) to cut it. Cutting damages the knife by 1 durability.");
+        // Datapack
+        add("datapack.nerdsoftkitchen.description", "NerdSoft Kitchen Resources");
     }
 }

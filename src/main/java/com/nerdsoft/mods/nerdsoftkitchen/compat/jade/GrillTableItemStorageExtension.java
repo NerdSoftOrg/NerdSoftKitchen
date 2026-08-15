@@ -1,27 +1,29 @@
 package com.nerdsoft.mods.nerdsoftkitchen.compat.jade;
 
-import com.google.common.collect.Lists;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
+import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.blockentity.GrillTableBlockEntity;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
-import snownee.jade.api.Accessor;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.IBlockComponentProvider;
+import snownee.jade.api.IServerDataProvider;
+import snownee.jade.api.ITooltip;
+import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.api.view.*;
+import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.impl.ui.ItemStackElement;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-public enum GrillTableItemStorageExtension implements IServerExtensionProvider<ItemStack>, IClientExtensionProvider<ItemStack, ItemView> {
+public enum GrillTableItemStorageExtension implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
     INSTANCE;
 
-    private static final String COOKING_TIME_KEY = "nerdsoftkitchen:cooking";
-    private static final MapCodec<Integer> COOKING_TIME_CODEC = Codec.INT.fieldOf(COOKING_TIME_KEY);
-    private static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath("nerdsoftkitchen", "grill_table_progress");
+    private static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, "grill_table_progress");
 
     @Override
     public ResourceLocation getUid() {
@@ -29,67 +31,92 @@ public enum GrillTableItemStorageExtension implements IServerExtensionProvider<I
     }
 
     @Override
-    public List<ViewGroup<ItemStack>> getGroups(Accessor<?> accessor) {
-        if (!(accessor.getTarget() instanceof GrillTableBlockEntity grill)) {
-            return null;
+    public void appendServerData(CompoundTag data, BlockAccessor accessor) {
+        if (!(accessor.getBlockEntity() instanceof GrillTableBlockEntity grill)) {
+            return;
         }
-        ViewGroup<ItemStack> grillRow = buildRow(grill, GrillTableBlockEntity.GRILL_SLOTS_START, GrillTableBlockEntity.GRILL_SLOTS_COUNT);
-        ViewGroup<ItemStack> campfireRow = buildRow(grill, GrillTableBlockEntity.CAMPFIRE_SLOTS_START, GrillTableBlockEntity.CAMPFIRE_SLOTS_COUNT);
-        if (grillRow == null && campfireRow == null) {
-            return List.of();
-        }
-        List<ViewGroup<ItemStack>> rows = Lists.newArrayListWithCapacity(2);
-        if (grillRow != null) {
-            rows.add(grillRow);
-        }
-        if (campfireRow != null) {
-            rows.add(campfireRow);
-        }
-        return rows;
-    }
 
-    private ViewGroup<ItemStack> buildRow(GrillTableBlockEntity grill, int start, int count) {
-        List<ItemStack> views = Lists.newArrayListWithCapacity(count);
-        for (int i = 0; i < count; i++) {
-            int slot = start + i;
+        ListTag itemsList = new ListTag();
+        for (int slot = 0; slot < GrillTableBlockEntity.TOTAL_SLOTS; slot++) {
             ItemStack stack = grill.getItem(slot);
             if (stack.isEmpty()) {
                 continue;
             }
-            views.add(buildView(grill, slot, stack));
-        }
-        if (views.isEmpty()) {
-            return null;
-        }
-        return new ViewGroup<>(views);
-    }
 
-    private ItemStack buildView(GrillTableBlockEntity grill, int slot, ItemStack stack) {
-        int cookTime = grill.getCookTime(slot);
-        if (cookTime <= 0) {
-            return stack.copy();
+            CompoundTag itemTag = new CompoundTag();
+            itemTag.putInt("Slot", slot);
+
+            Tag customStackTag = stack.save(accessor.getLevel().registryAccess());
+            itemTag.put("Item", customStackTag);
+
+            int cookTime = grill.getCookTime(slot);
+            int remainingTicks = (cookTime > 0) ? Math.max(0, cookTime - grill.getCookProgress(slot)) : 0;
+            itemTag.putInt("Remaining", remainingTicks);
+
+            itemsList.add(itemTag);
         }
-        int remainingTicks = Math.max(0, cookTime - grill.getCookProgress(slot));
-        ItemStack tagged = stack.copy();
-        CompoundTag tag = new CompoundTag();
-        tag.putInt(COOKING_TIME_KEY, remainingTicks);
-        tagged.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-        return tagged;
+
+        data.put("GrillItems", itemsList);
     }
 
     @Override
-    public List<ClientViewGroup<ItemView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<ItemStack>> groups) {
-        return ClientViewGroup.map(groups, stack -> {
-            CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-            if (customData.isEmpty()) {
-                return new ItemView(stack);
+    public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+        CompoundTag data = accessor.getServerData();
+        if (!data.contains("GrillItems")) {
+            return;
+        }
+
+        ListTag itemsList = data.getList("GrillItems", 10);
+        if (itemsList.isEmpty()) {
+            return;
+        }
+
+        IElementHelper elements = IElementHelper.get();
+
+        List<IElement> topRow = new ArrayList<>();
+        List<IElement> bottomRow = new ArrayList<>();
+
+        for (int i = 0; i < itemsList.size(); i++) {
+            CompoundTag itemTag = itemsList.getCompound(i);
+            int slot = itemTag.getInt("Slot");
+
+            ItemStack stack = ItemStack.parse(accessor.getLevel().registryAccess(), itemTag.getCompound("Item")).orElse(ItemStack.EMPTY);
+            if (stack.isEmpty()) {
+                continue;
             }
-            Optional<Integer> remainingTicks = customData.read(COOKING_TIME_CODEC).result();
-            if (remainingTicks.isEmpty()) {
-                return new ItemView(stack);
+
+            int remainingTicks = itemTag.getInt("Remaining");
+
+            IElement itemElement;
+            if (remainingTicks > 0) {
+                String secondsText = IThemeHelper.get().seconds(remainingTicks, accessor.tickRate()).getString();
+                itemElement = ItemStackElement.of(stack, 1.0f, secondsText);
+            } else {
+                itemElement = elements.item(stack);
             }
-            String text = IThemeHelper.get().seconds(remainingTicks.get(), accessor.tickRate()).getString();
-            return new ItemView(stack).amountText(text);
-        }, null);
+
+            if (slot < 4) {
+                topRow.add(itemElement);
+            } else {
+                bottomRow.add(itemElement);
+            }
+        }
+
+        appendRowToTooltip(tooltip, topRow);
+        appendRowToTooltip(tooltip, bottomRow);
+    }
+
+    private void appendRowToTooltip(ITooltip tooltip, List<IElement> rowElements) {
+        if (rowElements.isEmpty()) {
+            return;
+        }
+
+        for (int i = 0; i < rowElements.size(); i++) {
+            if (i == 0) {
+                tooltip.add(rowElements.get(i));
+            } else {
+                tooltip.append(rowElements.get(i));
+            }
+        }
     }
 }

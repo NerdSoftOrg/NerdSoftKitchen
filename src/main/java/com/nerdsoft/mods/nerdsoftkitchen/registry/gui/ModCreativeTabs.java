@@ -42,8 +42,11 @@ public final class ModCreativeTabs {
         output.accept(ModItems.COOKED_CHICKEN_PIECES);
         output.accept(ModItems.FRIED_EGG);
         output.accept(ModItems.SALAD);
+        output.accept(ModItems.RAW_SANDWICH_BREAD);
+        output.accept(ModItems.CHEESE_RAW_SANDWICH);
+        output.accept(ModItems.TOASTED_SANDWICH_BREAD);
+        output.accept(ModItems.CHEESE_TOASTED_SANDWICH);
         output.accept(ModItems.CHEESE);
-        output.accept(ModItems.CHEESE_SANDWICH);
         output.accept(ModItems.CHEESE_SLICE);
         output.accept(ModItems.GRILLED_CHEESE);
         output.accept(ModItems.STONE_KNIFE);
@@ -52,6 +55,9 @@ public final class ModCreativeTabs {
         output.accept(ModItems.DIAMOND_KNIFE);
         output.accept(ModItems.OBSIDIAN_KNIFE);
         output.accept(ModItems.NETHERITE_KNIFE);
+//        output.accept(ModItems.ORGANIC_MIXTURE);
+//        output.accept(ModItems.FERTILE_FARMLAND);
+//        output.accept(ModItems.ORGANIC_SOIL);
     }).build());
 
     private ModCreativeTabs() {

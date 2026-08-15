@@ -1,6 +1,7 @@
 package com.nerdsoft.mods.nerdsoftkitchen.datagen.block;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
+import com.nerdsoft.mods.nerdsoftkitchen.block.FertileFarmlandBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.crop.TomatoCropPoleBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.util.DatagenUtils;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
@@ -52,6 +53,10 @@ public class ModBlockStateProvider extends BlockStateProvider {
         tomatoCropPole(ModBlocks.TOMATO_CROP_POLE, BlockStateProperties.AGE_5, VISUAL_AGE_6, POLE_THRESHOLD_2);
 
         hybridCrop(ModBlocks.LETTUCE_CROP, 2);
+
+        fertileFarmland(ModBlocks.FERTILE_FARMLAND);
+
+        manualBlock(ModBlocks.ORGANIC_SOIL);
     }
 
     private ModelFile getExistingBlockModel(String name) {
@@ -220,6 +225,26 @@ public class ModBlockStateProvider extends BlockStateProvider {
                     return greaterOrEqual == (stage >= poleThreshold);
                 })
                 .toArray(Integer[]::new);
+    }
+
+    private void fertileFarmland(DeferredBlock<?> block) {
+        String name = block.getId().getPath();
+        ModelFile[] fertilityModels = new ModelFile[FertileFarmlandBlock.MAX_FERTILITY + 1];
+
+        for (int fertility = 0; fertility <= FertileFarmlandBlock.MAX_FERTILITY; fertility++) {
+            String topTexturePath = "block/" + name + "_top_" + fertility;
+            DatagenUtils.trackTexture(this.models().existingFileHelper, topTexturePath);
+
+            fertilityModels[fertility] = models()
+                    .withExistingParent(name + "_" + fertility, mcLoc("block/template_farmland"))
+                    .texture("dirt", mcLoc("block/dirt"))
+                    .texture("top", modLoc(topTexturePath))
+                    .renderType("minecraft:cutout");
+        }
+
+        getVariantBuilder(block.get()).forAllStates(state -> ConfiguredModel.builder()
+                .modelFile(fertilityModels[state.getValue(FertileFarmlandBlock.FERTILITY)])
+                .build());
     }
 
     private void grillTable(DeferredBlock<?> block, String litName, String unlitName, boolean ignoreLitProp) {

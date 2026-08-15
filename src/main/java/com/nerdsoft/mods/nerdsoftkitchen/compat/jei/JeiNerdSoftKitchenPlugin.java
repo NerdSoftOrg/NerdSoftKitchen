@@ -4,6 +4,7 @@ package com.nerdsoft.mods.nerdsoftkitchen.compat.jei;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.compat.jei.category.GrillCookingCategory;
+import com.nerdsoft.mods.nerdsoftkitchen.item.IronCupItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.data.ModDataComponents;
@@ -85,6 +86,18 @@ public class JeiNerdSoftKitchenPlugin implements IModPlugin {
         registration.addItemStackInfo(
                 new ItemStack(ModItems.IRON_CUP.get()),
                 Component.translatable("nerdsoftkitchen.jei.info.iron_cup")
+        );
+        registration.addItemStackInfo(
+                IronCupItem.filled(ModItems.IRON_CUP.get(), IronCupContent.MILK),
+                Component.translatable("nerdsoftkitchen.jei.info.iron_cup_milk")
+        );
+        registration.addItemStackInfo(
+                IronCupItem.filled(ModItems.IRON_CUP.get(), IronCupContent.YOGURT),
+                Component.translatable("nerdsoftkitchen.jei.info.iron_cup_yogurt")
+        );
+        registration.addItemStackInfo(
+                IronCupItem.filled(ModItems.IRON_CUP.get(), IronCupContent.STRAWBERRY_YOGURT),
+                Component.translatable("nerdsoftkitchen.jei.info.iron_cup_strawberry_yogurt")
         );
         registration.addItemStackInfo(
                 new ItemStack(ModItems.CUTTING_BOARD.get()),

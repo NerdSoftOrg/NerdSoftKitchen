@@ -1,10 +1,12 @@
 package com.nerdsoft.mods.nerdsoftkitchen.crop;
 
 import com.mojang.serialization.MapCodec;
+import com.nerdsoft.mods.nerdsoftkitchen.block.FertileFarmlandBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -15,6 +17,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public abstract class ModCropBlock extends CropBlock {
@@ -49,7 +52,7 @@ public abstract class ModCropBlock extends CropBlock {
     }
 
     @Override
-    public final int getMaxAge() {
+    public int getMaxAge() {
         return this.maxAge;
     }
 
@@ -69,32 +72,47 @@ public abstract class ModCropBlock extends CropBlock {
         return this.shapes[Math.min(this.shapes.length - 1, state.getValue(this.getAgeProperty()))];
     }
 
+    @Override
+    protected boolean mayPlaceOn(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos) {
+        return super.mayPlaceOn(state, level, pos)
+                || state.getBlock() instanceof FertileFarmlandBlock
+                || state.is(Blocks.MUD);
+    }
+
     public static final class Ages extends ModCropBlock {
-        private static final IntegerProperty[] AGE_PROPERTIES = buildAgeProperties();
-        private static int bootstrapMaxAge = -1;
+
+        private static final ThreadLocal<Integer> PENDING_MAX_AGE = new ThreadLocal<>();
 
         private final IntegerProperty ageProperty;
         private final MapCodec<Ages> codec;
 
         public Ages(BlockBehaviour.Properties properties, int maxAge, VoxelShape[] shapes,
                     Supplier<? extends ItemLike> seedSupplier) {
-            super(properties, bootstrap(maxAge), shapes, seedSupplier);
-            this.ageProperty = AGE_PROPERTIES[maxAge];
+            // super() -> createBlockStateDefinition()
+            this(properties, maxAge, shapes, seedSupplier, setPendingMaxAge(maxAge));
+        }
+
+        private Ages(BlockBehaviour.Properties properties, int maxAge, VoxelShape[] shapes,
+                     Supplier<? extends ItemLike> seedSupplier, IntegerProperty ageProperty) {
+            super(properties, maxAge, shapes, seedSupplier);
+            this.ageProperty = ageProperty;
             this.codec = simpleCodec(props -> new Ages(props, maxAge, shapes, seedSupplier));
+            PENDING_MAX_AGE.remove();
         }
 
-        private static int bootstrap(int maxAge) {
-            bootstrapMaxAge = maxAge;
-            return maxAge;
+        private static IntegerProperty setPendingMaxAge(int maxAge) {
+            PENDING_MAX_AGE.set(maxAge);
+            return resolveAgeProperty(maxAge);
         }
 
-        private static IntegerProperty[] buildAgeProperties() {
-            IntegerProperty[] properties = new IntegerProperty[8];
-            properties[3] = BlockStateProperties.AGE_3;
-            properties[4] = BlockStateProperties.AGE_4;
-            properties[5] = BlockStateProperties.AGE_5;
-            properties[7] = BlockStateProperties.AGE_7;
-            return properties;
+        private static IntegerProperty resolveAgeProperty(int maxAge) {
+            return switch (maxAge) {
+                case 3 -> BlockStateProperties.AGE_3;
+                case 4 -> BlockStateProperties.AGE_4;
+                case 5 -> BlockStateProperties.AGE_5;
+                case 7 -> BlockStateProperties.AGE_7;
+                default -> throw new IllegalArgumentException("Unsupported crop maxAge: " + maxAge);
+            };
         }
 
         @Override
@@ -104,7 +122,12 @@ public abstract class ModCropBlock extends CropBlock {
 
         @Override
         protected @NotNull IntegerProperty getAgeProperty() {
-            return this.ageProperty != null ? this.ageProperty : AGE_PROPERTIES[bootstrapMaxAge];
+            if (this.ageProperty != null) {
+                return this.ageProperty;
+            }
+
+            int ageToResolve = Objects.requireNonNullElseGet(PENDING_MAX_AGE.get(), this::getMaxAge);
+            return resolveAgeProperty(ageToResolve);
         }
 
         @Override

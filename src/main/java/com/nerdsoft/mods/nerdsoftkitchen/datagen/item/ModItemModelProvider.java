@@ -24,6 +24,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         blockItemModel(ModItems.GRILL_TABLE_SOUL, "grill_table_soul_lit");
 
         blockItemModel(ModItems.CUTTING_BOARD);
+        blockItemModel(ModItems.ORGANIC_SOIL);
+        blockItemModel(ModItems.FERTILE_FARMLAND, "fertile_farmland_3");
 
         // 2D Items
         customItem2D(
@@ -31,13 +33,18 @@ public class ModItemModelProvider extends ItemModelProvider {
                 ModItems.STRAWBERRY_SEEDS, ModItems.TOMATO_SEEDS, ModItems.LETTUCE_SEEDS, ModItems.PURPLE_ONION_SEEDS,
                 ModItems.STRAWBERRY, ModItems.TOMATO, ModItems.LETTUCE, ModItems.PURPLE_ONION,
                 ModItems.RAW_CHICKEN_PIECES, ModItems.COOKED_CHICKEN_PIECES, ModItems.FRIED_EGG, ModItems.SALAD,
-                ModItems.CHEESE, ModItems.CHEESE_SLICE, ModItems.CHEESE_SANDWICH, ModItems.GRILLED_CHEESE
+                ModItems.CHEESE, ModItems.CHEESE_SLICE, ModItems.GRILLED_CHEESE,
+                ModItems.ORGANIC_MIXTURE,
+                ModItems.RAW_SANDWICH_BREAD, ModItems.TOASTED_SANDWICH_BREAD,
+                ModItems.OBSIDIAN_KNIFE, ModItems.NETHERITE_KNIFE
         );
 
+        // SandwichItems (3 layers)
+        sandwichItemPair(ModItems.CHEESE_RAW_SANDWICH, ModItems.CHEESE_TOASTED_SANDWICH, "cheese_sandwich_content");
+
         // Tintable Handheld
-        tintableKnives("knife_handle", "knife_blade", "knife_highlight",
-                ModItems.STONE_KNIFE, ModItems.IRON_KNIFE, ModItems.GOLD_KNIFE,
-                ModItems.DIAMOND_KNIFE, ModItems.OBSIDIAN_KNIFE, ModItems.NETHERITE_KNIFE
+        tintableKnives(
+                ModItems.STONE_KNIFE, ModItems.IRON_KNIFE, ModItems.GOLD_KNIFE, ModItems.DIAMOND_KNIFE
         );
 
         ironCup();
@@ -61,6 +68,11 @@ public class ModItemModelProvider extends ItemModelProvider {
         }
     }
 
+    @SuppressWarnings("SameParameterValue")
+    private void tintableKnives(DeferredItem<?>... items) {
+        tintableKnives("knife_handle", "knife_blade", "knife_highlight", items);
+    }
+
     private void customItem2D(DeferredItem<?>... items) {
         for (DeferredItem<?> item : items) {
             String path = "item/" + item.getId().getPath();
@@ -69,6 +81,33 @@ public class ModItemModelProvider extends ItemModelProvider {
             withExistingParent(item.getId().getPath(), mcLoc("item/generated"))
                     .texture("layer0", modLoc(path));
         }
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private void sandwichItemPair(DeferredItem<?> rawItem, DeferredItem<?> toastedItem, String breadName, String contentTexture) {
+        sandwichItem(rawItem.getId().getPath(), "raw_" + breadName, contentTexture);
+        sandwichItem(toastedItem.getId().getPath(), "toasted_" + breadName, contentTexture);
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private void sandwichItemPair(DeferredItem<?> rawItem, DeferredItem<?> toastedItem, String contentTexture) {
+        sandwichItemPair(rawItem, toastedItem, "sandwich_bread", contentTexture);
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    private ItemModelBuilder sandwichItem(String modelName, String breadStagePrefix, String contentTexture) {
+        String lowerPath = "item/" + breadStagePrefix + "_lower";
+        String contentPath = "item/" + contentTexture;
+        String upperPath = "item/" + breadStagePrefix + "_upper";
+
+        DatagenUtils.trackTexture(existingFileHelper, lowerPath);
+        DatagenUtils.trackTexture(existingFileHelper, contentPath);
+        DatagenUtils.trackTexture(existingFileHelper, upperPath);
+
+        return withExistingParent(modelName, mcLoc("item/generated"))
+                .texture("layer0", modLoc(lowerPath))
+                .texture("layer1", modLoc(contentPath))
+                .texture("layer2", modLoc(upperPath));
     }
 
     @SuppressWarnings("SameParameterValue")

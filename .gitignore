@@ -7,6 +7,8 @@ run/
 generated/
 versions/
 
+*.bbmodel
+
 *.config.json
 *.xml
 

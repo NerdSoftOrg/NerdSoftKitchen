@@ -1,6 +1,7 @@
 package com.nerdsoft.mods.nerdsoftkitchen;
 
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.DataGenerators;
+import com.nerdsoft.mods.nerdsoftkitchen.item.KnifeItem;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.data.ModCapabilities;

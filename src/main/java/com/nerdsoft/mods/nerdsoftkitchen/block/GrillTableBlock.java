@@ -17,7 +17,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -93,13 +92,6 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
                         .setValue(WATERLOGGED, false)
                         .setValue(FACING, Direction.NORTH)
         );
-    }
-
-    @SuppressWarnings("unused")
-    public static boolean canLight(BlockState state) {
-        return state.is(BlockTags.CAMPFIRES, p -> p.hasProperty(WATERLOGGED) && p.hasProperty(LIT))
-                && !state.getValue(WATERLOGGED)
-                && !state.getValue(LIT);
     }
 
     public boolean isSoul() {

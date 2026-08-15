@@ -9,6 +9,7 @@ import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
@@ -54,9 +55,13 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.GRILL_TABLE.get());
         dropSelf(ModBlocks.GRILL_TABLE_SOUL.get());
         dropSelf(ModBlocks.CUTTING_BOARD.get());
+        dropSelf(ModBlocks.ORGANIC_SOIL.get());
+
+        add(ModBlocks.FERTILE_FARMLAND.get(), block -> LootTable.lootTable()
+                .withPool(LootPool.lootPool().add(LootItem.lootTableItem(Blocks.DIRT))));
 
         add(ModBlocks.WILD_STRAWBERRY.get(), block -> createWildCropDrops(ModItems.STRAWBERRY.get(), ModItems.STRAWBERRY_SEEDS.get()));
-        add(ModBlocks.WILD_TOMATO.get(), block -> createWildCropDrops(ModItems.WILD_TOMATO.get(), ModItems.TOMATO_SEEDS.get()));
+        add(ModBlocks.WILD_TOMATO.get(), block -> createWildCropDrops(ModItems.TOMATO.get(), ModItems.TOMATO_SEEDS.get()));
         add(ModBlocks.WILD_LETTUCE.get(), block -> createWildCropDrops(ModItems.LETTUCE.get(), ModItems.LETTUCE_SEEDS.get()));
         add(ModBlocks.WILD_PURPLE_ONION.get(), block -> createWildCropDrops(ModItems.PURPLE_ONION.get(), ModItems.PURPLE_ONION_SEEDS.get()));
 
@@ -129,7 +134,9 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
                 ModBlocks.LETTUCE_CROP.get(),
                 ModBlocks.PURPLE_ONION_CROP.get(),
                 ModBlocks.TOMATO_CROP.get(),
-                ModBlocks.TOMATO_CROP_POLE.get()
+                ModBlocks.TOMATO_CROP_POLE.get(),
+                ModBlocks.FERTILE_FARMLAND.get(),
+                ModBlocks.ORGANIC_SOIL.get()
         );
     }
 }

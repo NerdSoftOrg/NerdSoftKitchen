@@ -16,7 +16,9 @@ public final class ModFoods {
     public static final FoodProperties PURPLE_ONION_RAW =
             new FoodProperties.Builder().nutrition(1).saturationModifier(0.1f).alwaysEdible().build();
     public static final FoodProperties RAW_CHICKEN_PIECES =
-            new FoodProperties.Builder().nutrition(2).saturationModifier(0.5f).alwaysEdible().build();
+            new FoodProperties.Builder().nutrition(2).saturationModifier(0.3f).alwaysEdible().build();
+    public static final FoodProperties RAW_SANDWICH_BREAD =
+            new FoodProperties.Builder().nutrition(1).saturationModifier(0.1f).alwaysEdible().build();
 
     /// Dairy products
     public static final FoodProperties MILK =
@@ -26,21 +28,25 @@ public final class ModFoods {
     public static final FoodProperties STRAWBERRY_YOGURT =
             new FoodProperties.Builder().nutrition(5).saturationModifier(0.6f).build();
     public static final FoodProperties CHEESE =
-            new FoodProperties.Builder().nutrition(6).saturationModifier(0.6f).build();
+            new FoodProperties.Builder().nutrition(5).saturationModifier(0.5f).build();
     public static final FoodProperties CHEESE_SLICE =
-            new FoodProperties.Builder().nutrition(2).saturationModifier(0.4f).build();
+            new FoodProperties.Builder().nutrition(2).saturationModifier(0.2f).build();
 
     /// Cooked and Prepared Meals
     public static final FoodProperties COOKED_CHICKEN_PIECES =
-            new FoodProperties.Builder().nutrition(6).saturationModifier(0.5f).build();
+            new FoodProperties.Builder().nutrition(6).saturationModifier(0.6f).build();
     public static final FoodProperties FRIED_EGG =
-            new FoodProperties.Builder().nutrition(2).saturationModifier(0.3f).build();
+            new FoodProperties.Builder().nutrition(3).saturationModifier(0.3f).build();
     public static final FoodProperties SALAD =
+            new FoodProperties.Builder().nutrition(5).saturationModifier(0.4f).build();
+    public static final FoodProperties TOASTED_SANDWICH_BREAD =
+            new FoodProperties.Builder().nutrition(3).saturationModifier(0.3f).build();
+    public static final FoodProperties CHEESE_RAW_SANDWICH =
             new FoodProperties.Builder().nutrition(6).saturationModifier(0.5f).build();
-    public static final FoodProperties CHEESE_SANDWICH =
-            new FoodProperties.Builder().nutrition(4).saturationModifier(0.4f).build();
+    public static final FoodProperties CHEESE_TOASTED_SANDWICH =
+            new FoodProperties.Builder().nutrition(9).saturationModifier(0.7f).build();
     public static final FoodProperties GRILLED_CHEESE =
-            new FoodProperties.Builder().nutrition(8).saturationModifier(0.7f).build();
+            new FoodProperties.Builder().nutrition(4).saturationModifier(0.5f).build();
 
     private ModFoods() {
     }

@@ -2,7 +2,9 @@ package com.nerdsoft.mods.nerdsoftkitchen.registry.block;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.block.CuttingBoardBlock;
+import com.nerdsoft.mods.nerdsoftkitchen.block.FertileFarmlandBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.block.GrillTableBlock;
+import com.nerdsoft.mods.nerdsoftkitchen.block.OrganicSoilBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.crop.ModCropBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.crop.TomatoCropBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.crop.TomatoCropPoleBlock;
@@ -11,6 +13,7 @@ import com.nerdsoft.mods.nerdsoftkitchen.registry.item.ModItems;
 import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
@@ -60,6 +63,20 @@ public final class ModBlocks {
                             .instrument(NoteBlockInstrument.BASS)
                             .strength(2.5F).sound(SoundType.WOOD)
                             .noOcclusion()));
+
+    public static final DeferredBlock<FertileFarmlandBlock> FERTILE_FARMLAND = BLOCKS.register(
+            "fertile_farmland",
+            () -> new FertileFarmlandBlock(
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.FARMLAND)
+                            .mapColor(MapColor.PODZOL)
+                            .randomTicks()));
+
+    public static final DeferredBlock<OrganicSoilBlock> ORGANIC_SOIL = BLOCKS.register(
+            "organic_soil",
+            () -> new OrganicSoilBlock(
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.DIRT)
+                            .mapColor(MapColor.PODZOL)
+                            .strength(0.5F).sound(SoundType.MUD)));
     //?} else {
     /*public static final DeferredBlock<GrillTableBlock> GRILL_TABLE = BLOCKS.registerBlock(
             "grill_table",
@@ -94,6 +111,21 @@ public final class ModBlocks {
                     .strength(2.5F)
                     .sound(SoundType.WOOD)
                     .noOcclusion()
+    );
+    public static final DeferredBlock<FertileFarmlandBlock> FERTILE_FARMLAND = BLOCKS.registerBlock(
+            "fertile_farmland",
+            FertileFarmlandBlock::new,
+            BlockBehaviour.Properties.ofFullCopy(Blocks.FARMLAND)
+                    .mapColor(MapColor.PODZOL)
+                    .randomTicks()
+    );
+    public static final DeferredBlock<OrganicSoilBlock> ORGANIC_SOIL = BLOCKS.registerBlock(
+            "organic_soil",
+            OrganicSoilBlock::new,
+            BlockBehaviour.Properties.ofFullCopy(Blocks.DIRT)
+                    .mapColor(MapColor.PODZOL)
+                    .strength(0.5F)
+                    .sound(SoundType.MUD)
     );
     *///?}
 

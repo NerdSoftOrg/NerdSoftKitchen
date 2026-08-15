@@ -3,7 +3,6 @@ package com.nerdsoft.mods.nerdsoftkitchen.registry.recipe;
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cup.ShapelessCupCraftingRecipe;
-import com.nerdsoft.mods.nerdsoftkitchen.recipe.curdle.CurdleRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cutting.CuttingRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.mix.MixRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
@@ -22,8 +21,6 @@ public final class ModRecipeSerializers {
             RECIPE_SERIALIZERS.register("cook", CookRecipe.Serializer::new);
     public static final DeferredHolder<RecipeSerializer<?>, MixRecipe.Serializer> MIX_SERIALIZER =
             RECIPE_SERIALIZERS.register("mix", MixRecipe.Serializer::new);
-    public static final DeferredHolder<RecipeSerializer<?>, CurdleRecipe.Serializer> CURDLE_SERIALIZER =
-            RECIPE_SERIALIZERS.register("curdle", CurdleRecipe.Serializer::new);
     public static final DeferredHolder<RecipeSerializer<?>, ShapelessCupCraftingRecipe.Serializer> SHAPELESS_CUP_SERIALIZER =
             RECIPE_SERIALIZERS.register("shapeless_cup_crafting", ShapelessCupCraftingRecipe.Serializer::new);
     public static final DeferredHolder<RecipeSerializer<?>, CuttingRecipe.Serializer> CUT_SERIALIZER =

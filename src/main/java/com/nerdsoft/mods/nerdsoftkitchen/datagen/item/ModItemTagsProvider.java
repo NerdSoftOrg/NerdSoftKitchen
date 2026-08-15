@@ -51,7 +51,7 @@ public class ModItemTagsProvider extends ItemTagsProvider {
                 ModItems.FRIED_EGG.get(),
                 ModItems.CHEESE.get(),
                 ModItems.CHEESE_SLICE.get(),
-                ModItems.CHEESE_SANDWICH.get(),
+                ModItems.CHEESE_RAW_SANDWICH.get(),
                 ModItems.GRILLED_CHEESE.get()
         );
 

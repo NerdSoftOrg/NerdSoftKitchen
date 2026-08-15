@@ -1,5 +1,6 @@
 package com.nerdsoft.mods.nerdsoftkitchen.blockentity;
 
+import com.nerdsoft.mods.nerdsoftkitchen.registry.data.ModDataComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -7,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
@@ -69,7 +71,11 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
                 continue;
             }
 
-            if (++cookProgress[slot] >= cookTime[slot]) {
+            cookProgress[slot]++;
+            float progress = Mth.clamp((float) cookProgress[slot] / cookTime[slot], 0.0f, 1.0f);
+            entity.items.get(slot).set(ModDataComponents.COOK_PROGRESS.get(), progress);
+
+            if (cookProgress[slot] >= cookTime[slot]) {
                 entity.items.set(slot, ItemStack.EMPTY);
                 cookProgress[slot] = 0;
                 cachedOutput[slot] = null;
@@ -256,11 +262,37 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
     }
 
     public void dropContents(Level level, BlockPos pos) {
-        Containers.dropContents(level, pos, items);
+        NonNullList<ItemStack> merged = mergeStacksForDrop(items);
+        Containers.dropContents(level, pos, merged);
         items.clear();
         Arrays.fill(cachedOutput, null);
         cookingSlotCount = 0;
         nonEmptySlotCount = 0;
+    }
+
+    private static NonNullList<ItemStack> mergeStacksForDrop(NonNullList<ItemStack> source) {
+        NonNullList<ItemStack> merged = NonNullList.create();
+        for (ItemStack stack : source) {
+            if (stack.isEmpty()) {
+                continue;
+            }
+            ItemStack clean = stack.copy();
+            clean.remove(ModDataComponents.COOK_PROGRESS.get());
+
+            boolean addedToExisting = false;
+            for (ItemStack existing : merged) {
+                if (ItemStack.isSameItemSameComponents(existing, clean)
+                        && existing.getCount() + clean.getCount() <= existing.getMaxStackSize()) {
+                    existing.grow(clean.getCount());
+                    addedToExisting = true;
+                    break;
+                }
+            }
+            if (!addedToExisting) {
+                merged.add(clean);
+            }
+        }
+        return merged;
     }
 
     private void readTagInto(CompoundTag tag, HolderLookup.Provider registries, boolean reseedOnMismatch) {

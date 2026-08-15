@@ -1,10 +1,12 @@
 package com.nerdsoft.mods.nerdsoftkitchen.registry.data;
 
+import com.mojang.serialization.Codec;
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
 import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -19,6 +21,13 @@ public final class ModDataComponents {
                     () -> DataComponentType.<IronCupContent>builder()
                             .persistent(IronCupContent.CODEC)
                             .networkSynchronized(IronCupContent.STREAM_CODEC)
+                            .build());
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Float>> COOK_PROGRESS =
+            DATA_COMPONENTS.register("cook_progress",
+                    () -> DataComponentType.<Float>builder()
+                            .persistent(Codec.FLOAT)
+                            .networkSynchronized(ByteBufCodecs.FLOAT)
                             .build());
 
     private ModDataComponents() {

@@ -1,5 +1,6 @@
 package com.nerdsoft.mods.nerdsoftkitchen.compat.jei.client;
 
+//? if <1.21.2 {
 import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
 import net.minecraft.client.Minecraft;
 
@@ -71,3 +72,4 @@ public final class JeiCategorySorter {
         return newLines;
     }
 }
+//?}

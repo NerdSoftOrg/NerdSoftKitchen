@@ -30,8 +30,6 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
-        tag(BlockTags.CAMPFIRES).add(ModBlocks.GRILL_TABLE.get(), ModBlocks.GRILL_TABLE_SOUL.get());
-
         tag(BlockTags.CROPS).add(
                 ModBlocks.WILD_STRAWBERRY.get(),
                 ModBlocks.WILD_TOMATO.get(),
@@ -55,6 +53,8 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                 ModBlocks.TOMATO_CROP.get(),
                 ModBlocks.TOMATO_CROP_POLE.get()
         );
+
+        tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.ORGANIC_SOIL.get(), ModBlocks.FERTILE_FARMLAND.get());
     }
 
     @SuppressWarnings("unused")
