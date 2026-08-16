@@ -9,8 +9,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 //? if <1.21.2 {
-import net.minecraft.world.ItemInteractionResult;
-//?}
+/*import net.minecraft.world.ItemInteractionResult;
+*///?}
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -60,9 +60,9 @@ public final class TomatoCropBlock extends ModCropBlock {
 
     @Override
     //? if <1.21.2 {
-    protected @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state,
-                                                       //?} else
-            //protected @NotNull InteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state,
+    /*protected @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state,
+                                                       *///?} else
+            protected @NotNull InteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state,
                                                        @NotNull Level level, @NotNull BlockPos pos,
                                                        @NotNull Player player, @NotNull InteractionHand hand,
                                                        @NotNull BlockHitResult hitResult) {
@@ -71,9 +71,9 @@ public final class TomatoCropBlock extends ModCropBlock {
         }
         if (level.isClientSide()) {
             //? if <1.21.2 {
-            return ItemInteractionResult.SUCCESS;
-            //?} else
-            //return InteractionResult.SUCCESS;
+            /*return ItemInteractionResult.SUCCESS;
+            *///?} else
+            return InteractionResult.SUCCESS;
         }
 
         int age = state.getValue(this.getAgeProperty());
@@ -91,8 +91,8 @@ public final class TomatoCropBlock extends ModCropBlock {
                 pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 8, 0.2, 0.3, 0.2, 0.05);
 
         //? if <1.21.2 {
-        return ItemInteractionResult.SUCCESS;
-        //?} else
-        //return InteractionResult.SUCCESS;
+        /*return ItemInteractionResult.SUCCESS;
+        *///?} else
+        return InteractionResult.SUCCESS;
     }
 }

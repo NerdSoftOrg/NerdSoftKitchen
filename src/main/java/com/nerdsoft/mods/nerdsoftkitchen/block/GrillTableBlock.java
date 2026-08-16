@@ -39,17 +39,17 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 //? if >=1.21.2 {
-/*import net.minecraft.world.level.redstone.Orientation;
-*///?}
+import net.minecraft.world.level.redstone.Orientation;
+//?}
 //? if <1.21.2 {
 
-import net.minecraft.world.ItemInteractionResult;
+/*import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
- //?} else {
-/*import net.minecraft.world.level.block.state.properties.EnumProperty;
-*///?}
+ *///?} else {
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+//?}
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
@@ -65,10 +65,10 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     //? if <1.21.2 {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-     //?} else {
-    /*public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-    *///?}
+    /*public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+     *///?} else {
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+    //?}
 
     public static final MapCodec<GrillTableBlock> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
@@ -106,9 +106,9 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
 
     @Override
     //? if <1.21.2 {
-    protected @NotNull ItemInteractionResult useItemOn(
-     //?} else
-    //protected @NotNull InteractionResult useItemOn(
+    /*protected @NotNull ItemInteractionResult useItemOn(
+     *///?} else
+    protected @NotNull InteractionResult useItemOn(
             @NotNull ItemStack stack, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult
     ) {
         if (level.getBlockEntity(pos) instanceof GrillTableBlockEntity grillTableBlockEntity) {
@@ -117,22 +117,22 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
                 if (!level.isClientSide && grillTableBlockEntity.placeFood(player, itemstack)) {
                     player.awardStat(Stats.INTERACT_WITH_CAMPFIRE);
                     //? if <1.21.2 {
-                    return ItemInteractionResult.SUCCESS;
-                     //?} else
-                    //return InteractionResult.SUCCESS;
+                    /*return ItemInteractionResult.SUCCESS;
+                     *///?} else
+                    return InteractionResult.SUCCESS;
                 }
 
                 //? if <1.21.2 {
-                return ItemInteractionResult.CONSUME;
-                 //?} else
-                //return InteractionResult.CONSUME;
+                /*return ItemInteractionResult.CONSUME;
+                 *///?} else
+                return InteractionResult.CONSUME;
             }
         }
 
         //? if <1.21.2 {
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-         //?} else
-        //return InteractionResult.PASS;
+        /*return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+         *///?} else
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -140,16 +140,16 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
         if (!level.isClientSide && entity instanceof LivingEntity && !entity.fireImmune() && state.getValue(LIT)) {
             DamageSource source = level.damageSources().source(ModDamageTypes.GRILL_BURN, entity);
             //? if <1.21.2 {
-            entity.hurt(source, STEP_DAMAGE);
-            //?} else
-             //entity.hurtServer((ServerLevel) level, source, STEP_DAMAGE);
+            /*entity.hurt(source, STEP_DAMAGE);
+            *///?} else
+             entity.hurtServer((ServerLevel) level, source, STEP_DAMAGE);
         }
 
         super.stepOn(level, pos, state, entity);
     }
 
     //? if <1.21.2 {
-    @Override
+    /*@Override
     protected void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!state.is(newState.getBlock())) {
             BlockEntity blockentity = level.getBlockEntity(pos);
@@ -160,8 +160,8 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
             super.onRemove(state, level, pos, newState, movedByPiston);
         }
     }
-    //?} else {
-    /*@Override
+    *///?} else {
+    @Override
     protected void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
             BlockEntity blockentity = level.getBlockEntity(pos);
@@ -172,7 +172,7 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
             super.onRemove(state, level, pos, newState, isMoving);
         }
     }
-    *///?}
+    //?}
 
     @Nullable
     @Override
@@ -187,7 +187,7 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
     }
 
     //? if <1.21.2 {
-    @Override
+    /*@Override
     protected void neighborChanged(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Block neighborBlock, @NotNull BlockPos neighborPos, boolean movedByPiston) {
         super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston);
         if (!level.isClientSide && neighborPos.equals(pos.below())) {
@@ -196,8 +196,8 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
             }
         }
     }
-    //?} else {
-    /*@Override
+    *///?} else {
+    @Override
     protected void neighborChanged(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston) {
         super.neighborChanged(state, level, pos, neighborBlock, orientation, movedByPiston);
         if (!level.isClientSide) {
@@ -206,7 +206,7 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
             }
         }
     }
-    *///?}
+    //?}
 
     @Override
     public void setPlacedBy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @Nullable LivingEntity placer, @NotNull ItemStack stack) {
@@ -329,16 +329,16 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
     }
 
     //? if <1.21.2 {
-    @Override
+    /*@Override
     protected boolean propagatesSkylightDown(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos) {
         return true;
     }
-    //?} else {
-    /*@Override
+    *///?} else {
+    @Override
     protected boolean propagatesSkylightDown(@NotNull BlockState state) {
         return true;
     }
-    *///?}
+    //?}
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
@@ -363,12 +363,12 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
 
     @Override
     //? if <1.21.2 {
-    protected boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType type) {
+    /*protected boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType type) {
         return false;
     }
-    //?} else {
-    /*protected boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType pathComputationType) {
+    *///?} else {
+    protected boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType pathComputationType) {
         return false;
     }
-    *///?}
+    //?}
 }

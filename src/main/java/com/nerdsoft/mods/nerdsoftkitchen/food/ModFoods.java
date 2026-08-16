@@ -1,9 +1,12 @@
 package com.nerdsoft.mods.nerdsoftkitchen.food;
 
-import net.minecraft.world.effect.MobEffectInstance;
+//? if <1.21.2 {
+/*import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+*///?}
 import net.minecraft.world.food.FoodProperties;
 
+@SuppressWarnings("CommentedOutCode")
 public final class ModFoods {
 
     /// Raw Ingredients
@@ -17,10 +20,15 @@ public final class ModFoods {
             new FoodProperties.Builder().nutrition(1).saturationModifier(0.2f).alwaysEdible().build();
     public static final FoodProperties PURPLE_ONION_RAW =
             new FoodProperties.Builder().nutrition(1).saturationModifier(0.1f).alwaysEdible().build();
-    @SuppressWarnings("deprecation")
+    //? if <1.21.2 {
+    /*@SuppressWarnings("deprecation")
     public static final FoodProperties RAW_CHICKEN_PIECES =
             new FoodProperties.Builder().nutrition(1).saturationModifier(0.15f).alwaysEdible()
                     .effect(new MobEffectInstance(MobEffects.HUNGER, 300, 0), 0.15F).build();
+    *///? } else {
+    public static final FoodProperties RAW_CHICKEN_PIECES =
+            new FoodProperties.Builder().nutrition(1).saturationModifier(0.15f).alwaysEdible().build();
+    //?}
     public static final FoodProperties RAW_SANDWICH_BREAD =
             new FoodProperties.Builder().nutrition(1).saturationModifier(0.1f).alwaysEdible().build();
 

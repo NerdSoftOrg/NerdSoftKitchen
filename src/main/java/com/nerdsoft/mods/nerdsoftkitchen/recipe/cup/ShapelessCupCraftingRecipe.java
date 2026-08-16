@@ -77,7 +77,7 @@ public record ShapelessCupCraftingRecipe(List<Ingredient> ingredients,
     }
 
     //? if <1.21.2 {
-    @Override
+    /*@Override
     public boolean canCraftInDimensions(int width, int height) {
         return width * height >= ingredients.size();
     }
@@ -101,8 +101,8 @@ public record ShapelessCupCraftingRecipe(List<Ingredient> ingredients,
     public @NotNull RecipeType<?> getType() {
         return RecipeType.CRAFTING;
     }
-    //?} else {
-    /*@Override
+    *///?} else {
+    @Override
     public @NotNull PlacementInfo placementInfo() {
         return PlacementInfo.create(ingredients);
     }
@@ -116,7 +116,7 @@ public record ShapelessCupCraftingRecipe(List<Ingredient> ingredients,
     public @NotNull RecipeType<CraftingRecipe> getType() {
         return RecipeType.CRAFTING;
     }
-    *///?}
+    //?}
 
     public static class Serializer implements RecipeSerializer<ShapelessCupCraftingRecipe> {
 

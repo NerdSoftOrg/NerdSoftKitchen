@@ -34,7 +34,7 @@ public record CookRecipe(Ingredient input, ItemStack result, int cookingTime) im
     }
 
     //? if <1.21.2 {
-    @Override
+    /*@Override
     public boolean canCraftInDimensions(int width, int height) {
         return true;
     }
@@ -53,8 +53,8 @@ public record CookRecipe(Ingredient input, ItemStack result, int cookingTime) im
     public @NotNull RecipeType<? extends Recipe<CookRecipeInput>> getType() {
         return ModRecipeTypes.COOK_TYPE.get();
     }
-    //?} else {
-    /*@Override
+    *///?} else {
+    @Override
     public @NotNull PlacementInfo placementInfo() {
         return PlacementInfo.NOT_PLACEABLE;
     }
@@ -74,7 +74,7 @@ public record CookRecipe(Ingredient input, ItemStack result, int cookingTime) im
     public @NotNull RecipeType<CookRecipe> getType() {
         return ModRecipeTypes.COOK_TYPE.get();
     }
-    *///?}
+    //?}
 
     public static class Serializer implements RecipeSerializer<CookRecipe> {
 

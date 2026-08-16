@@ -112,10 +112,10 @@ public class FertileFarmlandBlock extends FarmBlock {
     public void fallOn(Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull Entity entity, float fallDistance) {
         if (!level.isClientSide) {
             //? if >=1.21.3 {
-            /*boolean trampling = CommonHooks.onFarmlandTrample((ServerLevel) level, pos, Blocks.DIRT.defaultBlockState(), fallDistance, entity);
-            *///?} else {
-            boolean trampling = CommonHooks.onFarmlandTrample(level, pos, Blocks.DIRT.defaultBlockState(), fallDistance, entity);
-             //?}
+            boolean trampling = CommonHooks.onFarmlandTrample((ServerLevel) level, pos, Blocks.DIRT.defaultBlockState(), fallDistance, entity);
+            //?} else {
+            /*boolean trampling = CommonHooks.onFarmlandTrample(level, pos, Blocks.DIRT.defaultBlockState(), fallDistance, entity);
+             *///?}
 
             if (trampling) {
                 degradeFertility(level, pos, state);

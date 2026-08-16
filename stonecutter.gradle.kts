@@ -3,7 +3,7 @@ plugins {
     id("net.neoforged.moddev") version "2.0.143" apply false
 }
 
-stonecutter active "1.21.1"
+stonecutter active "1.21.3"
 
 stonecutter parameters {
     swaps["mod_version"] = "\"${properties.get<String>("mod_version")}\";"

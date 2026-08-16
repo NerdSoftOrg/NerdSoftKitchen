@@ -18,10 +18,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 //? if >=1.21.2 {
-/*import net.minecraft.world.item.crafting.PlacementInfo;
+import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeBookCategories;
-*///?}
+//?}
 
 public record CuttingRecipe(Ingredient input, ItemStack result) implements Recipe<CuttingRecipeInput> {
 
@@ -37,7 +37,7 @@ public record CuttingRecipe(Ingredient input, ItemStack result) implements Recip
     }
 
     //? if <1.21.2 {
-    @Override
+    /*@Override
     public boolean canCraftInDimensions(int width, int height) {
         return true;
     }
@@ -56,8 +56,8 @@ public record CuttingRecipe(Ingredient input, ItemStack result) implements Recip
     public @NotNull RecipeType<?> getType() {
         return ModRecipeTypes.CUT_TYPE.get();
     }
-    //?} else {
-    /*@Override
+    *///?} else {
+    @Override
     public @NotNull PlacementInfo placementInfo() {
         return PlacementInfo.create(List.of(input));
     }
@@ -76,7 +76,7 @@ public record CuttingRecipe(Ingredient input, ItemStack result) implements Recip
     public @NotNull RecipeType<CuttingRecipe> getType() {
         return ModRecipeTypes.CUT_TYPE.get();
     }
-    *///?}
+    //?}
 
     public static class Serializer implements RecipeSerializer<CuttingRecipe> {
 

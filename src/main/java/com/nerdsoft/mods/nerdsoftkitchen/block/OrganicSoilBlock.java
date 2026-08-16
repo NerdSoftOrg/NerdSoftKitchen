@@ -25,8 +25,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 //? if <1.21.2 {
-import net.minecraft.world.ItemInteractionResult;
-//?}
+/*import net.minecraft.world.ItemInteractionResult;
+*///?}
 
 public class OrganicSoilBlock extends BaseEntityBlock {
 
@@ -61,24 +61,24 @@ public class OrganicSoilBlock extends BaseEntityBlock {
 
     @Override
     //? if <1.21.2 {
-    protected @NotNull ItemInteractionResult useItemOn(
-            //?} else
-            //protected @NotNull InteractionResult useItemOn(
+    /*protected @NotNull ItemInteractionResult useItemOn(
+            *///?} else
+            protected @NotNull InteractionResult useItemOn(
             @NotNull ItemStack stack, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos,
             @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult
     ) {
         if (!stack.is(Items.ROTTEN_FLESH)) {
             //? if <1.21.2 {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-            //?} else
-            //return InteractionResult.TRY_WITH_EMPTY_HAND;
+            /*return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            *///?} else
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
 
         if (!(level.getBlockState(pos.above()).getBlock() instanceof MushroomBlock)) {
             //? if <1.21.2 {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-            //?} else
-            //return InteractionResult.TRY_WITH_EMPTY_HAND;
+            /*return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            *///?} else
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
 
         if (level.getBlockEntity(pos) instanceof OrganicSoilBlockEntity soilEntity && !soilEntity.isNourished()) {
@@ -93,30 +93,30 @@ public class OrganicSoilBlock extends BaseEntityBlock {
                 }
             }
             //? if <1.21.2 {
-            return ItemInteractionResult.sidedSuccess(level.isClientSide);
-            //?} else
-            //return InteractionResult.SUCCESS;
+            /*return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            *///?} else
+            return InteractionResult.SUCCESS;
         }
 
         //? if <1.21.2 {
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        //?} else
-        //return InteractionResult.TRY_WITH_EMPTY_HAND;
+        /*return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        *///?} else
+        return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
     //? if <1.21.2 {
-    @Override
+    /*@Override
     protected void neighborChanged(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Block neighborBlock, @NotNull BlockPos neighborPos, boolean movedByPiston) {
         super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston);
         handleMushroomHarvest(level, pos, neighborPos);
     }
-    //?} else {
-    /*@Override
+    *///?} else {
+    @Override
     protected void neighborChanged(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Block neighborBlock, @Nullable net.minecraft.world.level.redstone.Orientation orientation, boolean movedByPiston) {
         super.neighborChanged(state, level, pos, neighborBlock, orientation, movedByPiston);
         handleMushroomHarvest(level, pos, pos.above());
     }
-    *///?}
+    //?}
 
     private void handleMushroomHarvest(Level level, BlockPos pos, BlockPos neighborPos) {
         if (level.isClientSide || !neighborPos.equals(pos.above())) {

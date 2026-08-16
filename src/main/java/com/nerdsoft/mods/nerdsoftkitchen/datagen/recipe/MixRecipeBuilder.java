@@ -7,13 +7,13 @@ import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 //? if >=1.21.2 {
-/*import net.minecraft.resources.ResourceKey;
-*///?}
+import net.minecraft.resources.ResourceKey;
+//?}
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
 //? if <=1.21.1 {
-import net.minecraft.resources.ResourceLocation;
-//?}
+/*import net.minecraft.resources.ResourceLocation;
+*///?}
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -68,7 +68,7 @@ public class MixRecipeBuilder implements RecipeBuilder {
     }
 
     //? if <1.21.2 {
-    @Override
+    /*@Override
     public void save(@NotNull RecipeOutput output, @NotNull ResourceLocation id) {
         Advancement.Builder advancement = output.advancement()
                 .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
@@ -79,8 +79,8 @@ public class MixRecipeBuilder implements RecipeBuilder {
         MixRecipe recipe = new MixRecipe(inputs, result);
         output.accept(id, recipe, advancement.build(id.withPrefix("recipes/")));
     }
-    //?} else {
-    /*@Override
+    *///?} else {
+    @Override
     public void save(@NotNull RecipeOutput output, @NotNull ResourceKey<Recipe<?>> key) {
         Advancement.Builder advancement = output.advancement()
                 .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(key))
@@ -91,5 +91,5 @@ public class MixRecipeBuilder implements RecipeBuilder {
         MixRecipe recipe = new MixRecipe(inputs, result);
         output.accept(key, recipe, advancement.build(key.location().withPrefix("recipes/")));
     }
-    *///?}
+    //?}
 }

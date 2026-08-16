@@ -266,7 +266,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
                 .save(saver, id("make_scrambled_eggs"));
 
 //? if <1.21.2 {
-        AdvancementHolder milkCup = Builder.advancement()
+        /*AdvancementHolder milkCup = Builder.advancement()
                 .parent(ironCup)
                 .display(
                         ironCupWith(IronCupContent.MILK),
@@ -341,8 +341,8 @@ public class ModAdvancementProvider extends AdvancementProvider {
                 .addCriterion("has_salad", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.SALAD.get()))
                 .requirements(AdvancementRequirements.Strategy.AND)
                 .save(saver, id("gourmet_chef"));
-        //?} else {
-        /*HolderLookup.RegistryLookup<Item> itemRegistry = registries.lookupOrThrow(Registries.ITEM);
+        *///?} else {
+        HolderLookup.RegistryLookup<Item> itemRegistry = registries.lookupOrThrow(Registries.ITEM);
 
         AdvancementHolder milkCup = Builder.advancement()
                 .parent(ironCup)
@@ -420,7 +420,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
                 .addCriterion("has_salad", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.SALAD.get()))
                 .requirements(AdvancementRequirements.Strategy.AND)
                 .save(saver, id("gourmet_chef"));
-         *///?}
+         //?}
     }
 
     private static ItemStack ironCupWith(IronCupContent content) {

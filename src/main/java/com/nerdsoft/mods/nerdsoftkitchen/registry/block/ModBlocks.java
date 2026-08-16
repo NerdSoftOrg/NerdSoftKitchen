@@ -30,7 +30,7 @@ public final class ModBlocks {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(NerdSoftKitchen.MOD_ID);
 
     //? if <1.21.2 {
-    public static final DeferredBlock<GrillTableBlock> GRILL_TABLE = BLOCKS.register(
+    /*public static final DeferredBlock<GrillTableBlock> GRILL_TABLE = BLOCKS.register(
             "grill_table",
             () -> new GrillTableBlock(
                     false,
@@ -87,8 +87,8 @@ public final class ModBlocks {
                             .noOcclusion()
                             .lightLevel(state -> state.getValue(SkilletBlock.LIT) ? 6 : 0)
                             .ignitedByLava()));
-    //?} else {
-    /*public static final DeferredBlock<GrillTableBlock> GRILL_TABLE = BLOCKS.registerBlock(
+    *///?} else {
+    public static final DeferredBlock<GrillTableBlock> GRILL_TABLE = BLOCKS.registerBlock(
             "grill_table",
             props -> new GrillTableBlock(false, props),
             BlockBehaviour.Properties.of()
@@ -149,7 +149,7 @@ public final class ModBlocks {
                     .lightLevel(state -> state.getValue(SkilletBlock.LIT) ? 6 : 0)
                     .ignitedByLava()
     );
-    *///?}
+    //?}
 
     /// Wild Crops
     private static final BlockBehaviour.Properties WILD_CROP_PROPERTIES = BlockBehaviour.Properties.of()

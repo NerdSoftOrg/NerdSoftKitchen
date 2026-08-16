@@ -5,8 +5,8 @@ import com.nerdsoft.mods.nerdsoftkitchen.client.renderer.CuttingBoardBlockEntity
 import com.nerdsoft.mods.nerdsoftkitchen.client.renderer.GrillTableBlockEntityRenderer;
 import com.nerdsoft.mods.nerdsoftkitchen.client.renderer.SkilletBlockEntityRenderer;
 //? if <1.21.2 {
-import com.nerdsoft.mods.nerdsoftkitchen.compat.jei.client.JeiCategorySorter;
-//?}
+/*import com.nerdsoft.mods.nerdsoftkitchen.compat.jei.client.JeiCategorySorter;
+*///?}
 import com.nerdsoft.mods.nerdsoftkitchen.item.IronCupItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
@@ -41,8 +41,8 @@ public final class ModClientSetup {
                     return content == null ? 0.0F : content.modelIndex() + 1;
                 }));
         //? if <1.21.2 {
-        JeiCategorySorter.forceGrillAfterCampfire();
-        //?}
+        /*JeiCategorySorter.forceGrillAfterCampfire();
+        *///?}
     }
 
     @SubscribeEvent
