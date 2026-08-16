@@ -23,6 +23,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -109,12 +110,26 @@ public class ModRecipeProvider extends RecipeProvider implements DataProvider {
                 .unlockedBy(getHasName(ModItems.CHEESE_SLICE.get()), has(ModItems.CHEESE_SLICE.get()))
                 .save(output);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.SKILLET.get())
+                .pattern("III").pattern("I I").pattern(" S ")
+                .define('I', Items.IRON_INGOT)
+                .define('S', Items.STICK)
+                .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
+                .save(output);
+
         GRILL_COOKING_RECIPES.forEach((input, entry) ->
                 grillCookingRecipe(output, input, entry.result(), entry.cookTime())
         );
 
         cuttingRecipe(output, Ingredient.of(ModItems.CHEESE.get()), new ItemStack(ModItems.CHEESE_SLICE.get(), 4));
         cuttingRecipe(output, Ingredient.of(Items.CHICKEN), new ItemStack(ModItems.RAW_CHICKEN_PIECES.get(), 2));
+
+        // Pan-exclusive stir-fry: egg + cheese slice -> scrambled eggs. Only matches in the
+        // Skillet (MixRecipe is never checked by GrillTableBlockEntity), demonstrating the
+        // "exclusive recipes for stir-fries and mixed dishes" requirement.
+        panMixRecipe(output, "scrambled_eggs",
+                new ItemStack(ModItems.SCRAMBLED_EGGS.get()),
+                Ingredient.of(Items.EGG), Ingredient.of(ModItems.CHEESE_SLICE.get()));
 
         cupYogurtRecipe(output, IronCupContent.MILK,
                 List.of(CupContentIngredient.of(IronCupContent.MILK), Ingredient.of(Items.SUGAR)),
@@ -150,6 +165,13 @@ public class ModRecipeProvider extends RecipeProvider implements DataProvider {
 
     private void cuttingRecipe(RecipeOutput output, Ingredient input, ItemStack result) {
         output.accept(id(recipeNameFor(result.getItem()) + "_cutting"), new CuttingRecipe(input, result), null);
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private void panMixRecipe(RecipeOutput output, String name, ItemStack result, Ingredient... inputs) {
+        com.nerdsoft.mods.nerdsoftkitchen.datagen.recipe.MixRecipeBuilder.mixing(result, inputs)
+                .unlockedBy(getHasName(inputs[0].getItems()[0].getItem()), has(inputs[0].getItems()[0].getItem()))
+                .save(output, id(name + "_skillet"));
     }
 
     private void cupYogurtRecipe(RecipeOutput output, IronCupContent sourceContent, List<Ingredient> ingredients, IronCupContent resultContent) {
@@ -243,6 +265,13 @@ public class ModRecipeProvider extends RecipeProvider implements DataProvider {
                 .unlockedBy(getHasName(ModItems.RAW_SANDWICH_BREAD.get()), has(ModItems.RAW_SANDWICH_BREAD.get()))
                 .save(this.output);
 
+        shaped(RecipeCategory.TOOLS, ModItems.SKILLET.get())
+                .pattern("III").pattern("I I").pattern(" S ")
+                .define('I', Items.IRON_INGOT)
+                .define('S', Items.STICK)
+                .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
+                .save(this.output);
+
         // --- Procesamiento Automático de Recetas de Grill ---
         GRILL_COOKING_RECIPES.forEach((input, entry) ->
                 grillCookingRecipe(this.output, input, entry.result(), entry.cookTime())
@@ -250,6 +279,10 @@ public class ModRecipeProvider extends RecipeProvider implements DataProvider {
 
         cuttingRecipe(this.output, Ingredient.of(ModItems.CHEESE.get()), new ItemStack(ModItems.CHEESE_SLICE.get(), 4));
         cuttingRecipe(this.output, Ingredient.of(Items.CHICKEN), new ItemStack(ModItems.RAW_CHICKEN_PIECES.get(), 2));
+
+        panMixRecipe(this.output, "scrambled_eggs",
+                new ItemStack(ModItems.SCRAMBLED_EGGS.get()),
+                Ingredient.of(Items.EGG), Ingredient.of(ModItems.CHEESE_SLICE.get()));
 
         cupYogurtRecipe(this.output, IronCupContent.MILK,
                 List.of(CupContentIngredient.of(IronCupContent.MILK), Ingredient.of(Items.SUGAR)),
@@ -285,6 +318,14 @@ public class ModRecipeProvider extends RecipeProvider implements DataProvider {
 
     private void cuttingRecipe(RecipeOutput output, Ingredient input, ItemStack result) {
         output.accept(recipeKey(recipeNameFor(result.getItem()) + "_cutting"), new CuttingRecipe(input, result), null);
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private void panMixRecipe(RecipeOutput output, String name, ItemStack result, Ingredient... inputs) {
+        ItemLike firstItem = inputs[0].items().getFirst().value();
+        MixRecipeBuilder.mixing(result, inputs)
+                .unlockedBy(getHasName(firstItem), has(firstItem))
+                .save(output, recipeKey(name + "_skillet"));
     }
 
     private void cupYogurtRecipe(RecipeOutput output, IronCupContent sourceContent, List<Ingredient> ingredients, IronCupContent resultContent) {

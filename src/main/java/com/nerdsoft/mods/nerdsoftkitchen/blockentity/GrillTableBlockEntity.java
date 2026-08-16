@@ -6,6 +6,7 @@ import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipeInput;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.recipe.ModRecipeTypes;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.sound.ModSounds;
+import com.nerdsoft.mods.nerdsoftkitchen.util.RandomUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -23,7 +24,6 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.Optional;
 
 public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements WorldlyContainer {
@@ -61,34 +61,25 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
     }
 
     private static void playPlaceFood(Level level, BlockPos pos) {
-        float pitch = 0.9F + level.getRandom().nextFloat() * 0.2F;
+        float pitch = RandomUtil.jitteredPitch(level.getRandom(), 0.9F, 0.2F);
         level.playSound(null, pos, ModSounds.GRILL_PLACE_FOOD.get(), SoundSource.BLOCKS, 0.7F, pitch);
-    }
-
-    private static void shuffleArray(int[] arr, RandomSource rand) {
-        for (int i = arr.length - 1; i > 0; i--) {
-            int j = rand.nextInt(i + 1);
-            int temp = arr[i];
-            arr[i] = arr[j];
-            arr[j] = temp;
-        }
     }
 
     private static float computeShuffledRotation(long baseSeed, int localSlot) {
         RandomSource rand = RandomSource.create(baseSeed);
 
         int[] ranges = {0, 1, 2, 3};
-        shuffleArray(ranges, rand);
+        RandomUtil.shuffle(ranges, rand);
 
         int[] signs = {1, -1, 1, -1};
-        shuffleArray(signs, rand);
+        RandomUtil.shuffle(signs, rand);
 
         int rangeIndex = ranges[localSlot % 4];
         int sign = signs[localSlot % 4];
 
         RandomSource slotRand = RandomSource.create(baseSeed + localSlot + 99);
         float minAngle = 30.0F + rangeIndex * 3.75F;
-        float angle = minAngle + slotRand.nextFloat() * 3.75F;
+        float angle = RandomUtil.jitter(slotRand, minAngle, 3.75F);
 
         return angle * sign;
     }
@@ -98,7 +89,7 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
         RandomSource rand = RandomSource.create(baseSeed ^ 0x5a5a5a5a5a5a5a5aL);
 
         int[] quadrants = {0, 1, 2, 3};
-        shuffleArray(quadrants, rand);
+        RandomUtil.shuffle(quadrants, rand);
 
         int quadrant = quadrants[localSlot % 4];
 
@@ -141,9 +132,6 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
         for (int slot = GRILL_SLOTS_START; slot < GRILL_SLOTS_START + GRILL_SLOTS_COUNT; slot++) {
             cacheGrillTransform(slot);
         }
-        if (level != null && getBlockState().getBlock() instanceof GrillTableBlock grillTableBlock) {
-            refreshSpeedMultiplier(grillTableBlock.isSoul());
-        }
     }
 
     public float getGrillRotation(int localSlot) {
@@ -158,15 +146,27 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
         return grillOffsetZ[localSlot];
     }
 
+    @Override
+    public void onLoad() {
+        if (getBlockState().getBlock() instanceof GrillTableBlock grillTableBlock) {
+            speedMultiplier = resolveSpeedMultiplier(grillTableBlock.isSoul());
+        }
+        super.onLoad();
+    }
+
+    private float resolveSpeedMultiplier(boolean soul) {
+        boolean hayBelow = level != null && level.getBlockState(worldPosition.below()).is(Blocks.HAY_BLOCK);
+        float multiplier = BASE_MULTIPLIER;
+        if (soul) multiplier *= SOUL_MULTIPLIER;
+        if (hayBelow) multiplier *= HAY_BALE_MULTIPLIER;
+        return multiplier;
+    }
+
     public void refreshSpeedMultiplier(boolean soul) {
         if (level == null) {
             return;
         }
-        boolean hayBelow = level.getBlockState(worldPosition.below()).is(Blocks.HAY_BLOCK);
-
-        float multiplier = BASE_MULTIPLIER;
-        if (soul) multiplier *= SOUL_MULTIPLIER;
-        if (hayBelow) multiplier *= HAY_BALE_MULTIPLIER;
+        float multiplier = resolveSpeedMultiplier(soul);
 
         if (multiplier != speedMultiplier) {
             speedMultiplier = multiplier;
@@ -324,11 +324,6 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
             return true;
         }
         return false;
-    }
-
-    private void markUpdated() {
-        setChanged();
-        Objects.requireNonNull(getLevel()).sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
     }
 
     @Override

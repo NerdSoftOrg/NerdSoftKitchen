@@ -12,6 +12,7 @@ public final class ModItemTags {
 
     public static final TagKey<Item> IRON_CUP = tag(NerdSoftKitchen.MOD_ID, "iron_cup");
     public static final TagKey<Item> KNIFE = tag("c", "tools/knife");
+    public static final TagKey<Item> FRYING_PANS = tag("c", "tools/frying_pans");
 
     private ModItemTags() {
     }

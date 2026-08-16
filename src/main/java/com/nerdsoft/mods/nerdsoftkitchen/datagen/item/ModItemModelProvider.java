@@ -26,6 +26,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         blockItemModel(ModItems.CUTTING_BOARD);
         blockItemModel(ModItems.ORGANIC_SOIL);
         blockItemModel(ModItems.FERTILE_FARMLAND, "fertile_farmland_3");
+        blockItemModel(ModItems.SKILLET, "skillet_unlit");
 
         // 2D Items
         customItem2D(
@@ -33,7 +34,7 @@ public class ModItemModelProvider extends ItemModelProvider {
                 ModItems.STRAWBERRY_SEEDS, ModItems.TOMATO_SEEDS, ModItems.LETTUCE_SEEDS, ModItems.PURPLE_ONION_SEEDS,
                 ModItems.STRAWBERRY, ModItems.TOMATO, ModItems.LETTUCE, ModItems.PURPLE_ONION,
                 ModItems.RAW_CHICKEN_PIECES, ModItems.COOKED_CHICKEN_PIECES, ModItems.FRIED_EGG, ModItems.SALAD,
-                ModItems.CHEESE, ModItems.CHEESE_SLICE, ModItems.GRILLED_CHEESE,
+                ModItems.CHEESE, ModItems.CHEESE_SLICE, ModItems.GRILLED_CHEESE, ModItems.SCRAMBLED_EGGS,
                 ModItems.ORGANIC_MIXTURE,
                 ModItems.RAW_SANDWICH_BREAD, ModItems.TOASTED_SANDWICH_BREAD,
                 ModItems.OBSIDIAN_KNIFE, ModItems.NETHERITE_KNIFE

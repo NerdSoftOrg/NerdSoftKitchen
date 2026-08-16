@@ -1,0 +1,107 @@
+{
+	"parent": "minecraft:block/block",
+	"render_type": "minecraft:cutout",
+	"textures": {
+		"particle": "nerdsoftkitchen:block/skillet_bottom_lit",
+		"bottom": "nerdsoftkitchen:block/skillet_bottom_lit",
+		"rim": "nerdsoftkitchen:block/skillet_rim_lit",
+		"handle": "nerdsoftkitchen:block/skillet_handle"
+	},
+	"elements": [
+		{
+			"comment": "Shallow pan base - matches SkilletBlock.SHAPE (0.0625,0,0.0625 -> 0.9375,0.125,0.9375). Bottom texture uses a heat-glow variant while LIT.",
+			"from": [1, 0, 1],
+			"to": [15, 2, 15],
+			"faces": {
+				"north": {"uv": [1, 14, 15, 16], "texture": "#rim", "cullface": "north"},
+				"east": {"uv": [1, 14, 15, 16], "texture": "#rim", "cullface": "east"},
+				"south": {"uv": [1, 14, 15, 16], "texture": "#rim", "cullface": "south"},
+				"west": {"uv": [1, 14, 15, 16], "texture": "#rim", "cullface": "west"},
+				"up": {"uv": [1, 1, 15, 15], "texture": "#bottom"},
+				"down": {"uv": [1, 1, 15, 15], "texture": "#bottom", "cullface": "down"}
+			}
+		},
+		{
+			"from": [1, 2, 1],
+			"to": [15, 3, 2],
+			"faces": {
+				"north": {"uv": [1, 13, 15, 14], "texture": "#rim", "cullface": "north"},
+				"up": {"uv": [1, 0, 15, 1], "texture": "#rim"}
+			}
+		},
+		{
+			"from": [1, 2, 14],
+			"to": [15, 3, 15],
+			"faces": {
+				"south": {"uv": [1, 13, 15, 14], "texture": "#rim", "cullface": "south"},
+				"up": {"uv": [1, 0, 15, 1], "texture": "#rim"}
+			}
+		},
+		{
+			"from": [1, 2, 1],
+			"to": [2, 3, 15],
+			"faces": {
+				"west": {"uv": [1, 13, 15, 14], "texture": "#rim", "cullface": "west"},
+				"up": {"uv": [1, 0, 15, 1], "texture": "#rim"}
+			}
+		},
+		{
+			"from": [14, 2, 1],
+			"to": [15, 3, 15],
+			"faces": {
+				"east": {"uv": [1, 13, 15, 14], "texture": "#rim", "cullface": "east"},
+				"up": {"uv": [1, 0, 15, 1], "texture": "#rim"}
+			}
+		},
+		{
+			"from": [15, 1, 6],
+			"to": [22, 2, 10],
+			"faces": {
+				"north": {"uv": [0, 0, 7, 1], "texture": "#handle"},
+				"east": {"uv": [6, 0, 10, 1], "texture": "#handle"},
+				"south": {"uv": [0, 0, 7, 1], "texture": "#handle"},
+				"west": {"uv": [6, 0, 10, 1], "texture": "#handle"},
+				"up": {"uv": [0, 6, 7, 10], "texture": "#handle"},
+				"down": {"uv": [0, 6, 7, 10], "texture": "#handle"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, 135, 0],
+			"translation": [0, 3, 0],
+			"scale": [0.45, 0.45, 0.45]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, 135, 0],
+			"translation": [0, 3, 0],
+			"scale": [0.45, 0.45, 0.45]
+		},
+		"gui": {
+			"rotation": [30, -135, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.55, 0.55, 0.55]
+		},
+		"head": {
+			"scale": [1, -1, 1]
+		},
+		"fixed": {
+			"rotation": [90, 0, 0],
+			"translation": [0, 0, 6]
+		},
+		"ground": {
+			"translation": [0, 3, 0],
+			"scale": [0.4, 0.4, 0.4]
+		}
+	}
+}

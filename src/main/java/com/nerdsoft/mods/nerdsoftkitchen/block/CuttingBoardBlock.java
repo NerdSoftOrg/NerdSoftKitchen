@@ -2,10 +2,12 @@ package com.nerdsoft.mods.nerdsoftkitchen.block;
 
 import com.mojang.serialization.MapCodec;
 import com.nerdsoft.mods.nerdsoftkitchen.blockentity.CuttingBoardBlockEntity;
+import com.nerdsoft.mods.nerdsoftkitchen.lod.LodBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipeInput;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cutting.CuttingRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cutting.CuttingRecipeInput;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.item.ModItemTags;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.recipe.ModRecipeTypes;
 import net.minecraft.core.BlockPos;
@@ -42,6 +44,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,15 +55,29 @@ import java.util.Optional;
 import net.minecraft.world.ItemInteractionResult;
 //?}
 
-public class CuttingBoardBlock extends BaseEntityBlock {
+public class CuttingBoardBlock extends BaseEntityBlock implements LodBlock {
 
     public static final MapCodec<CuttingBoardBlock> CODEC = simpleCodec(CuttingBoardBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     protected static final VoxelShape SHAPE = Block.box(1.0, 0.0, 1.0, 15.0, 1.0, 15.0);
+    protected static final VoxelShape SHAPE_SIMPLE = Shapes.block();
+
+    private static final int LOD_MAX_TIER = 1;
+    private static final int LOD_SIMPLE_TIER_DISTANCE_CHUNKS = 2;
 
     public CuttingBoardBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    public int tierDistanceChunks(int tier) {
+        return LOD_SIMPLE_TIER_DISTANCE_CHUNKS;
+    }
+
+    @Override
+    public int maxLodTier() {
+        return LOD_MAX_TIER;
     }
 
     @Override
@@ -295,12 +312,15 @@ public class CuttingBoardBlock extends BaseEntityBlock {
 
     @Override
     protected @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {
+        if (level.getBlockEntity(pos) instanceof CuttingBoardBlockEntity board && board.isSimplifyCollision()) {
+            return SHAPE_SIMPLE;
+        }
         return SHAPE;
     }
 
     @Override
     protected @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
-        return RenderShape.MODEL;
+        return RenderShape.INVISIBLE;
     }
 
     @Override
@@ -322,6 +342,10 @@ public class CuttingBoardBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> blockEntityType) {
-        return null;
+        if (level.isClientSide) {
+            return null;
+        }
+        return createTickerHelper(blockEntityType, ModBlockEntities.CUTTING_BOARD.get(),
+                (lvl, pos, st, be) -> CuttingBoardBlockEntity.serverTick((ServerLevel) lvl, pos, st, be));
     }
 }

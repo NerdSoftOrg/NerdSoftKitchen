@@ -23,6 +23,12 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> GRILL_PLACE_FOOD = SOUNDS.register("block.grill.place_food",
             () -> SoundEvent.createVariableRangeEvent(id("block/grill/place_food")));
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> SKILLET_SIZZLE_LOOP = SOUNDS.register("block.skillet.sizzle_loop",
+            () -> SoundEvent.createVariableRangeEvent(id("block/skillet/sizzle_loop")));
+
+    public static final DeferredHolder<SoundEvent, SoundEvent> SKILLET_CLANG = SOUNDS.register("item.skillet.clang",
+            () -> SoundEvent.createVariableRangeEvent(id("item/skillet/clang")));
+
     private ModSounds() {
     }
 

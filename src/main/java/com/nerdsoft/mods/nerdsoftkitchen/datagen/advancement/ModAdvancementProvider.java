@@ -251,6 +251,20 @@ public class ModAdvancementProvider extends AdvancementProvider {
                 .addCriterion("has_grilled_cheese", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.GRILLED_CHEESE.get()))
                 .save(saver, id("make_grilled_cheese"));
 
+        AdvancementHolder scrambledEggs = Builder.advancement()
+                .parent(cuttingBoard)
+                .display(
+                        ModItems.SCRAMBLED_EGGS.get(),
+                        Component.translatable("advancements.nerdsoftkitchen.scrambled_eggs.title"),
+                        Component.translatable("advancements.nerdsoftkitchen.scrambled_eggs.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true, true, false
+                )
+                .rewards(AdvancementRewards.Builder.experience(10))
+                .addCriterion("has_scrambled_eggs", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.SCRAMBLED_EGGS.get()))
+                .save(saver, id("make_scrambled_eggs"));
+
 //? if <1.21.2 {
         AdvancementHolder milkCup = Builder.advancement()
                 .parent(ironCup)

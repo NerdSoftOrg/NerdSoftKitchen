@@ -3,6 +3,7 @@ package com.nerdsoft.mods.nerdsoftkitchen.registry.data;
 import com.mojang.serialization.Codec;
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
+import com.nerdsoft.mods.nerdsoftkitchen.item.component.SkilletHotState;
 import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -28,6 +29,13 @@ public final class ModDataComponents {
                     () -> DataComponentType.<Float>builder()
                             .persistent(Codec.FLOAT)
                             .networkSynchronized(ByteBufCodecs.FLOAT)
+                            .build());
+    
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<SkilletHotState>> SKILLET_HOT_STATE =
+            DATA_COMPONENTS.register("skillet_hot_state",
+                    () -> DataComponentType.<SkilletHotState>builder()
+                            .persistent(SkilletHotState.CODEC)
+                            .networkSynchronized(SkilletHotState.STREAM_CODEC)
                             .build());
 
     private ModDataComponents() {

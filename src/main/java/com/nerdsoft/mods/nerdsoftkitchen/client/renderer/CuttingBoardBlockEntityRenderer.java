@@ -2,19 +2,30 @@ package com.nerdsoft.mods.nerdsoftkitchen.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.block.CuttingBoardBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.blockentity.CuttingBoardBlockEntity;
+import com.nerdsoft.mods.nerdsoftkitchen.lod.ClientLodResolver;
+import com.nerdsoft.mods.nerdsoftkitchen.lod.LodBlock;
+import com.nerdsoft.mods.nerdsoftkitchen.lod.LodModelSet;
+import com.nerdsoft.mods.nerdsoftkitchen.lod.LodModelStates;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.model.data.ModelData;
 import org.jetbrains.annotations.NotNull;
 
 public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<CuttingBoardBlockEntity> {
@@ -38,14 +49,59 @@ public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<Cutt
 
     private final ItemRenderer itemRenderer;
 
+    private final BakedModel[] lodTierModels;
+
     public CuttingBoardBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
         this.itemRenderer = context.getItemRenderer();
+
+        LodBlock lodBlock = ModBlocks.CUTTING_BOARD.get();
+        this.lodTierModels = LodModelStates.forBlock(
+                NerdSoftKitchen.MOD_ID, "cutting_board", lodBlock.maxLodTier(), LodModelSet.DEFAULT_SUFFIX);
+    }
+
+    private static LodBlock resolveLodBlock() {
+        return ModBlocks.CUTTING_BOARD.get();
     }
 
     @Override
     public void render(@NotNull CuttingBoardBlockEntity board, float partialTick, @NotNull PoseStack poseStack,
                        @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
 
+        renderLodModelSwap(board, poseStack, bufferSource, packedLight, packedOverlay);
+        renderStoredItems(board, poseStack, bufferSource, packedLight);
+    }
+
+    private void renderLodModelSwap(CuttingBoardBlockEntity board, PoseStack poseStack,
+                                     MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+        LodBlock lodBlock = resolveLodBlock();
+        int tier = ClientLodResolver.resolveTier(lodBlock, board.getBlockPos());
+
+        BakedModel model;
+        if (tier == 0) {
+            model = Minecraft.getInstance().getBlockRenderer().getBlockModel(board.getBlockState());
+        } else {
+            model = lodTierModels[tier];
+        }
+
+        if (model == null) return;
+
+        BlockRenderDispatcher dispatcher = Minecraft.getInstance().getBlockRenderer();
+
+        poseStack.pushPose();
+        dispatcher.getModelRenderer().renderModel(
+                poseStack.last(),
+                bufferSource.getBuffer(RenderType.cutout()),
+                board.getBlockState(),
+                model,
+                1f, 1f, 1f,
+                packedLight, packedOverlay,
+                ModelData.EMPTY,
+                RenderType.cutout());
+        poseStack.popPose();
+    }
+
+    private void renderStoredItems(CuttingBoardBlockEntity board, PoseStack poseStack,
+                                    MultiBufferSource bufferSource, int packedLight) {
         ItemStack stack = board.getStoredItem();
         if (stack.isEmpty()) return;
 
@@ -110,5 +166,15 @@ public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<Cutt
 
     private long seedFor(BlockPos pos) {
         return pos.asLong();
+    }
+
+    @Override
+    public boolean shouldRenderOffScreen(@NotNull CuttingBoardBlockEntity board) {
+        return false;
+    }
+
+    @Override
+    public int getViewDistance() {
+        return 128;
     }
 }

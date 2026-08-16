@@ -4,6 +4,7 @@ import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.blockentity.CuttingBoardBlockEntity;
 import com.nerdsoft.mods.nerdsoftkitchen.blockentity.GrillTableBlockEntity;
 import com.nerdsoft.mods.nerdsoftkitchen.blockentity.OrganicSoilBlockEntity;
+import com.nerdsoft.mods.nerdsoftkitchen.blockentity.SkilletBlockEntity;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
 import net.minecraft.core.registries.Registries;
@@ -34,6 +35,10 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<OrganicSoilBlockEntity>> ORGANIC_SOIL =
             BLOCK_ENTITIES.register("organic_soil", () -> BlockEntityType.Builder.of(OrganicSoilBlockEntity::new,
                     ModBlocks.ORGANIC_SOIL.get()).build(null));
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SkilletBlockEntity>> SKILLET =
+            BLOCK_ENTITIES.register("skillet", () -> BlockEntityType.Builder.of(SkilletBlockEntity::new,
+                    ModBlocks.SKILLET.get()).build(null));
     //?} else {
     /*public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GrillTableBlockEntity>> GRILL_TABLE =
             BLOCK_ENTITIES.register("grill_table", () -> new BlockEntityType<>(
@@ -49,6 +54,11 @@ public final class ModBlockEntities {
             BLOCK_ENTITIES.register("organic_soil", () -> new BlockEntityType<>(
                     OrganicSoilBlockEntity::new,
                     Set.of(ModBlocks.ORGANIC_SOIL.get())
+            ));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SkilletBlockEntity>> SKILLET =
+            BLOCK_ENTITIES.register("skillet", () -> new BlockEntityType<>(
+                    SkilletBlockEntity::new,
+                    Set.of(ModBlocks.SKILLET.get())
             ));
     *///?}
 

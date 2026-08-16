@@ -19,6 +19,7 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
         add(ModBlocks.FERTILE_FARMLAND, "Fertile Farmland");
         add(ModBlocks.ORGANIC_SOIL, "Organic Soil");
         add(ModBlocks.CUTTING_BOARD, "Cutting Board");
+        add(ModBlocks.SKILLET, "Skillet");
 
         // Crops & Seeds
         addWildCropPrefix("Wild %s");
@@ -72,6 +73,7 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
         add(ModItems.CHEESE_RAW_SANDWICH, "Cheese Sandwich");
         add(ModItems.CHEESE_TOASTED_SANDWICH, "Toasted Cheese Sandwich");
         add(ModItems.GRILLED_CHEESE, "Grilled Cheese");
+        add(ModItems.SCRAMBLED_EGGS, "Scrambled Eggs");
         add(ModItems.ORGANIC_MIXTURE, "Organic Mixture");
 
         // Iron Cups
@@ -85,6 +87,8 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
         // Tooltips
         add("itemGroup.nerdsoftkitchen.kitchen_tab", "NerdSoft Kitchen");
         add("subtitles.block.nerdsoftkitchen.grill.place_food", "Grilling food");
+        add("subtitles.block.nerdsoftkitchen.skillet.sizzle_loop", "Skillet sizzling");
+        add("subtitles.item.nerdsoftkitchen.skillet.clang", "Skillet clangs");
         add("jade.nerdsoftkitchen.grill_table.slot_remaining", "%ss");
         add("config.jade.plugin_nerdsoftkitchen.grill_table_progress", "Cooking Time");
 
@@ -180,6 +184,11 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
                 "Make a Grilled Cheese sandwich"
         );
         addAdvancement(
+                "scrambled_eggs",
+                "Stir It Up",
+                "Cook a stir-fried dish in the Skillet"
+        );
+        addAdvancement(
                 "gourmet",
                 "Gourmet Chef",
                 "Master every kitchen discipline: farming, cutting, grilling, and dairy"
@@ -214,6 +223,10 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
         addJeiInfo(
                 "cutting_board",
                 "Right-click with a cuttable ingredient to place it, then right-click with any knife (tagged #c:tools/knife) to cut it. Cutting damages the knife by 1 durability."
+        );
+        addJeiInfo(
+                "skillet",
+                "Place on top of a lit Grill, Campfire, Fire, or Magma Block. Cooks the same simple recipes as the Grill, plus exclusive stir-fried dishes when multiple ingredients are combined. Doubles as a heavy melee weapon - picking it up while hot lets it set enemies alight."
         );
 
         // Datapack

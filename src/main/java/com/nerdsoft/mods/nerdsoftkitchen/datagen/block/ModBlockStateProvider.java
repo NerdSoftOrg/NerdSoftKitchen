@@ -4,6 +4,8 @@ import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.block.FertileFarmlandBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.crop.TomatoCropPoleBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.util.DatagenUtils;
+import com.nerdsoft.mods.nerdsoftkitchen.lod.LodBlock;
+import com.nerdsoft.mods.nerdsoftkitchen.lod.LodModelSet;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -34,10 +36,11 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        grillTable(ModBlocks.GRILL_TABLE, "grill_table_lit", "grill_table_unlit", false);
-        grillTable(ModBlocks.GRILL_TABLE_SOUL, "grill_table_soul_lit", null, true);
+        litModel(ModBlocks.GRILL_TABLE, "grill_table_lit", "grill_table_unlit", false);
+        litModel(ModBlocks.GRILL_TABLE_SOUL, "grill_table_soul_lit", null, true);
+        litModel(ModBlocks.SKILLET, "skillet_lit", "skillet_unlit", false);
 
-        manualYRotatedBlock(ModBlocks.CUTTING_BOARD);
+        lodBlockYRotated(ModBlocks.CUTTING_BOARD);
 
         wildCropTintable(ModBlocks.WILD_PURPLE_ONION);
 
@@ -74,6 +77,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         simpleBlock(block.get(), getExistingBlockModel(name));
     }
 
+    @SuppressWarnings("unused")
     private void manualYRotatedBlock(DeferredBlock<?> block) {
         manualYRotatedBlock(block, block.getId().getPath());
     }
@@ -247,7 +251,44 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 .build());
     }
 
-    private void grillTable(DeferredBlock<?> block, String litName, String unlitName, boolean ignoreLitProp) {
+    // LODs
+    private void lodBlockYRotated(DeferredBlock<?> block) {
+        lodBlockYRotated(block, block.getId().getPath(), LodModelSet.DEFAULT_SUFFIX);
+    }
+
+    private void lodBlockYRotated(DeferredBlock<?> block, String baseName, String suffix) {
+        LodBlock lodBlock = asLodBlock(block);
+        horizontalBlock(block.get(), getExistingBlockModel(baseName));
+
+        for (int tier = 1; tier <= lodBlock.maxLodTier(); tier++) {
+            getExistingBlockModel(LodModelSet.modelName(baseName, tier, suffix));
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private void lodBlock(DeferredBlock<?> block) {
+        lodBlock(block, block.getId().getPath(), LodModelSet.DEFAULT_SUFFIX);
+    }
+
+    @SuppressWarnings("unused")
+    private void lodBlock(DeferredBlock<?> block, String baseName, String suffix) {
+        LodBlock lodBlock = asLodBlock(block);
+        simpleBlock(block.get(), getExistingBlockModel(baseName));
+
+        for (int tier = 1; tier <= lodBlock.maxLodTier(); tier++) {
+            getExistingBlockModel(LodModelSet.modelName(baseName, tier, suffix));
+        }
+    }
+
+    private LodBlock asLodBlock(DeferredBlock<?> block) {
+        if (block.get() instanceof LodBlock lodBlock) {
+            return lodBlock;
+        }
+        throw new IllegalArgumentException(block.getId() + " is not a LodBlock - cannot resolve its LOD property");
+    }
+
+    // Lit/Unlit Models
+    private void litModel(DeferredBlock<?> block, String litName, String unlitName, boolean ignoreLitProp) {
         ModelFile litModel = getExistingBlockModel(litName);
         ModelFile unlitModel = (unlitName != null) ? getExistingBlockModel(unlitName) : litModel;
 

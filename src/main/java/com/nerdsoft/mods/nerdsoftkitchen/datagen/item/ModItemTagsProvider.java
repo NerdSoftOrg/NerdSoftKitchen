@@ -52,7 +52,8 @@ public class ModItemTagsProvider extends ItemTagsProvider {
                 ModItems.CHEESE.get(),
                 ModItems.CHEESE_SLICE.get(),
                 ModItems.CHEESE_RAW_SANDWICH.get(),
-                ModItems.GRILLED_CHEESE.get()
+                ModItems.GRILLED_CHEESE.get(),
+                ModItems.SCRAMBLED_EGGS.get()
         );
 
         tag(ModItemTags.IRON_CUP).add(ModItems.IRON_CUP.get());
@@ -65,6 +66,8 @@ public class ModItemTagsProvider extends ItemTagsProvider {
                 ModItems.OBSIDIAN_KNIFE.get(),
                 ModItems.NETHERITE_KNIFE.get()
         );
+
+        tag(ModItemTags.FRYING_PANS).add(ModItems.SKILLET.get());
 
         tag(ModTiers.REPAIRS_OBSIDIAN_KNIFE).add(Items.OBSIDIAN);
     }

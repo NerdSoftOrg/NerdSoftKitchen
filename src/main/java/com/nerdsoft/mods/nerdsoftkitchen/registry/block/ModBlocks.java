@@ -5,6 +5,7 @@ import com.nerdsoft.mods.nerdsoftkitchen.block.CuttingBoardBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.block.FertileFarmlandBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.block.GrillTableBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.block.OrganicSoilBlock;
+import com.nerdsoft.mods.nerdsoftkitchen.block.SkilletBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.crop.ModCropBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.crop.TomatoCropBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.crop.TomatoCropPoleBlock;
@@ -12,7 +13,6 @@ import com.nerdsoft.mods.nerdsoftkitchen.crop.WildCropBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.item.ModItems;
 import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -23,7 +23,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public final class ModBlocks {
@@ -77,6 +76,17 @@ public final class ModBlocks {
                     BlockBehaviour.Properties.ofFullCopy(Blocks.DIRT)
                             .mapColor(MapColor.PODZOL)
                             .strength(0.5F).sound(SoundType.MUD)));
+
+    public static final DeferredBlock<SkilletBlock> SKILLET = BLOCKS.register(
+            "skillet",
+            () -> new SkilletBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .instrument(NoteBlockInstrument.HAT)
+                            .strength(2.5F).sound(SoundType.NETHERITE_BLOCK)
+                            .noOcclusion()
+                            .lightLevel(state -> state.getValue(SkilletBlock.LIT) ? 6 : 0)
+                            .ignitedByLava()));
     //?} else {
     /*public static final DeferredBlock<GrillTableBlock> GRILL_TABLE = BLOCKS.registerBlock(
             "grill_table",
@@ -126,6 +136,18 @@ public final class ModBlocks {
                     .mapColor(MapColor.PODZOL)
                     .strength(0.5F)
                     .sound(SoundType.MUD)
+    );
+    public static final DeferredBlock<SkilletBlock> SKILLET = BLOCKS.registerBlock(
+            "skillet",
+            SkilletBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .instrument(NoteBlockInstrument.HAT)
+                    .strength(2.5F)
+                    .sound(SoundType.NETHERITE_BLOCK)
+                    .noOcclusion()
+                    .lightLevel(state -> state.getValue(SkilletBlock.LIT) ? 6 : 0)
+                    .ignitedByLava()
     );
     *///?}
 

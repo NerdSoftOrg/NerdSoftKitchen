@@ -87,8 +87,21 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
         }
 
         if (dirty) {
-            entity.setChanged();
-            level.sendBlockUpdated(pos, state, state, 3);
+            entity.markUpdated();
+        }
+    }
+
+    /**
+     * {@code setChanged()} + a full block-update broadcast. Centralizes the
+     * {@code sendBlockUpdated(pos, state, state, 3)} pattern that was previously duplicated in
+     * {@code genericTick} and in every subclass's own mutation methods (placing food, etc.).
+     * Requires {@link #level} to be non-null; callers that might run before the block entity is
+     * attached to a level (e.g. NBT deserialization) should not call this.
+     */
+    protected final void markUpdated() {
+        setChanged();
+        if (level != null) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     }
 

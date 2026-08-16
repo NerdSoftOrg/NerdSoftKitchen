@@ -1,6 +1,7 @@
 package com.nerdsoft.mods.nerdsoftkitchen.crop;
 
 import com.nerdsoft.mods.nerdsoftkitchen.block.FertileFarmlandBlock;
+import com.nerdsoft.mods.nerdsoftkitchen.util.RandomUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -77,7 +78,7 @@ public abstract class HarvestableCropBlock extends ModCropBlock {
         }
 
         serverLevel.playSound(null, originPos, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS,
-                1.0F, 0.8F + serverLevel.getRandom().nextFloat() * 0.4F);
+                1.0F, RandomUtil.jitteredPitch(serverLevel.getRandom(), 0.8F, 0.4F));
 
         return InteractionResult.SUCCESS;
     }

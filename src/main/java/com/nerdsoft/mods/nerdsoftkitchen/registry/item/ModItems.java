@@ -8,6 +8,7 @@ import com.nerdsoft.mods.nerdsoftkitchen.item.IronCupItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.KnifeItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.OrganicMixtureItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.SeedItem;
+import com.nerdsoft.mods.nerdsoftkitchen.item.SkilletBlockItem;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.ModTiers;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
@@ -41,6 +42,10 @@ public final class ModItems {
 
     private static final float DEFAULT_KNIFE_SPEED = -1.4F; // 2.6
 
+    // Iron-tool-tier durability: heavy enough to survive sustained combat use without being
+    // effectively unbreakable, consistent with it being a repurposed cooking tool.
+    private static final int SKILLET_DURABILITY = 250;
+
     //? if <1.21.2 {
     /// Machine Items
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE = ITEMS.registerItem("grill_table",
@@ -50,6 +55,8 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> CUTTING_BOARD = ITEMS.registerSimpleBlockItem(ModBlocks.CUTTING_BOARD);
     public static final DeferredItem<BlockItem> FERTILE_FARMLAND = ITEMS.registerSimpleBlockItem(ModBlocks.FERTILE_FARMLAND);
     public static final DeferredItem<BlockItem> ORGANIC_SOIL = ITEMS.registerSimpleBlockItem(ModBlocks.ORGANIC_SOIL);
+    public static final DeferredItem<SkilletBlockItem> SKILLET = ITEMS.registerItem("skillet",
+            props -> new SkilletBlockItem(ModBlocks.SKILLET.get(), props.stacksTo(1).durability(SKILLET_DURABILITY)));
 
     /// Wild Crop Block Items
     public static final DeferredItem<CreativeOnlyBlockItem> WILD_STRAWBERRY =
@@ -93,6 +100,8 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> CUTTING_BOARD = ITEMS.registerSimpleBlockItem(ModBlocks.CUTTING_BOARD);
     public static final DeferredItem<BlockItem> FERTILE_FARMLAND = ITEMS.registerSimpleBlockItem(ModBlocks.FERTILE_FARMLAND);
     public static final DeferredItem<BlockItem> ORGANIC_SOIL = ITEMS.registerSimpleBlockItem(ModBlocks.ORGANIC_SOIL);
+    public static final DeferredItem<SkilletBlockItem> SKILLET = ITEMS.registerItem("skillet",
+            props -> new SkilletBlockItem(ModBlocks.SKILLET.get(), props.stacksTo(1).durability(SKILLET_DURABILITY)));
 
     /// Wild Crop Block Items
     public static final DeferredItem<CreativeOnlyBlockItem> WILD_STRAWBERRY = ITEMS.registerItem(
@@ -177,6 +186,10 @@ public final class ModItems {
             props -> new Item(props.food(ModFoods.CHEESE_TOASTED_SANDWICH)));
     public static final DeferredItem<Item> GRILLED_CHEESE = ITEMS.registerItem("grilled_cheese",
             props -> new Item(props.food(ModFoods.GRILLED_CHEESE)));
+    // Pan-exclusive stir-fry dish (egg + cheese slice), only obtainable via the Skillet's
+    // MixRecipe path - see ModRecipeProvider#SKILLET_MIX_RECIPES.
+    public static final DeferredItem<Item> SCRAMBLED_EGGS = ITEMS.registerItem("scrambled_eggs",
+            props -> new Item(props.food(ModFoods.SCRAMBLED_EGGS)));
 
     private ModItems() {
     }

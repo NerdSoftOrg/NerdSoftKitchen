@@ -56,6 +56,11 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.GRILL_TABLE_SOUL.get());
         dropSelf(ModBlocks.CUTTING_BOARD.get());
         dropSelf(ModBlocks.ORGANIC_SOIL.get());
+        // Note: dropSelf is only used for the "cold" break case. SkilletBlock#playerDestroy
+        // intercepts the hot-break case and pops a pre-stamped item directly, bypassing this
+        // loot table entirely - see that method's javadoc for why playerDestroy (not the loot
+        // table) is the correct hook for that mechanic.
+        dropSelf(ModBlocks.SKILLET.get());
 
         add(ModBlocks.FERTILE_FARMLAND.get(), block -> LootTable.lootTable()
                 .withPool(LootPool.lootPool().add(LootItem.lootTableItem(Blocks.DIRT))));
@@ -136,7 +141,8 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
                 ModBlocks.TOMATO_CROP.get(),
                 ModBlocks.TOMATO_CROP_POLE.get(),
                 ModBlocks.FERTILE_FARMLAND.get(),
-                ModBlocks.ORGANIC_SOIL.get()
+                ModBlocks.ORGANIC_SOIL.get(),
+                ModBlocks.SKILLET.get()
         );
     }
 }

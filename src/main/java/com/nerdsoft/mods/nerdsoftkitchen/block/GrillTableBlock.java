@@ -9,6 +9,7 @@ import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.data.ModDamageTypes;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.sound.ModSounds;
+import com.nerdsoft.mods.nerdsoftkitchen.util.RandomUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -245,7 +246,7 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
 
         if (level.getBlockEntity(pos) instanceof GrillTableBlockEntity grillTableBlockEntity && grillTableBlockEntity.isCooking()) {
             level.playLocalSound(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, ModSounds.GRILL_SIZZLE.get(), SoundSource.BLOCKS,
-                    0.4F + random.nextFloat() * 0.4F, random.nextFloat() * 0.4F + 0.8F, false);
+                    RandomUtil.jitter(random, 0.4F, 0.4F), RandomUtil.jitter(random, 0.8F, 0.4F), false);
         }
     }
 
