@@ -2,7 +2,7 @@
 mod_id = "nerdsoftkitchen"
 mod_name = "NerdSoft Kitchen"
 mod_group = "com.nerdsoft.mods"
-mod_version = "0.2.0"
+mod_version = "0.3.0"
 mod_license = "AGPLv3"
 mod_resources_license = "CC-BY-NC-SA-4.0"
 mod_authors = "Bichal & Hugo"

@@ -1,8 +1,8 @@
 {
 	"render_type": "minecraft:cutout",
 	"textures": {
-		"0": "nerdsoftkitchen:block/wild_strawberry",
-		"particle": "nerdsoftkitchen:block/wild_strawberry"
+		"0": "nerdsoftkitchen:block/strawberry_crop_stage2-3",
+		"particle": "nerdsoftkitchen:block/strawberry_crop_stage2-3"
 	},
 	"elements": [
 		{
