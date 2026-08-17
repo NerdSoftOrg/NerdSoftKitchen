@@ -2,18 +2,10 @@ package com.nerdsoft.mods.nerdsoftkitchen.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.block.CuttingBoardBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.blockentity.CuttingBoardBlockEntity;
-import com.nerdsoft.mods.nerdsoftkitchen.lod.ClientLodResolver;
-import com.nerdsoft.mods.nerdsoftkitchen.lod.LodBlock;
-import com.nerdsoft.mods.nerdsoftkitchen.lod.LodModelSet;
-import com.nerdsoft.mods.nerdsoftkitchen.lod.LodModelStates;
-import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -22,10 +14,11 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<CuttingBoardBlockEntity> {
@@ -47,57 +40,37 @@ public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<Cutt
 
     private static final float MAX_YAW_JITTER_DEGREES = 25.0F;
 
-    private final ItemRenderer itemRenderer;
+    private static final double CULL_DISTANCE_BLOCKS = 48.0;
+    private static final double CULL_DISTANCE_SQR = CULL_DISTANCE_BLOCKS * CULL_DISTANCE_BLOCKS;
 
-    private final BakedModel[] lodTierModels;
+    private static final double ITEM_DROP_STEP_BLOCKS = 16.0;
+
+    private final ItemRenderer itemRenderer;
 
     public CuttingBoardBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
         this.itemRenderer = context.getItemRenderer();
-
-        LodBlock lodBlock = ModBlocks.CUTTING_BOARD.get();
-        this.lodTierModels = LodModelStates.forBlock(
-                NerdSoftKitchen.MOD_ID, "cutting_board", lodBlock.maxLodTier(), LodModelSet.DEFAULT_SUFFIX);
     }
 
-    private static LodBlock resolveLodBlock() {
-        return ModBlocks.CUTTING_BOARD.get();
+    @Override
+    public boolean shouldRender(@NotNull CuttingBoardBlockEntity board, @NotNull Vec3 cameraPos) {
+        // vanilla default already culls at 2304 (48^2) via closerThanCenter;
+        // we tighten that to our own 24-block radius on top of it.
+        return BlockEntityRenderer.super.shouldRender(board, cameraPos)
+                && withinCullDistance(board.getBlockPos());
     }
 
     @Override
     public void render(@NotNull CuttingBoardBlockEntity board, float partialTick, @NotNull PoseStack poseStack,
-                       @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
-
-        renderLodModelSwap(board, poseStack, bufferSource, packedLight, packedOverlay);
+                        @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         renderStoredItems(board, poseStack, bufferSource, packedLight);
     }
 
-    private void renderLodModelSwap(CuttingBoardBlockEntity board, PoseStack poseStack,
-                                     MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
-        LodBlock lodBlock = resolveLodBlock();
-        int tier = ClientLodResolver.resolveTier(lodBlock, board.getBlockPos());
-
-        BakedModel model;
-        if (tier == 0) {
-            model = Minecraft.getInstance().getBlockRenderer().getBlockModel(board.getBlockState());
-        } else {
-            model = lodTierModels[tier];
+    private static boolean withinCullDistance(BlockPos pos) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) {
+            return true;
         }
-
-        if (model == null) return;
-
-        BlockRenderDispatcher dispatcher = Minecraft.getInstance().getBlockRenderer();
-
-        poseStack.pushPose();
-        dispatcher.getModelRenderer().renderModel(
-                poseStack.last(),
-                bufferSource.getBuffer(RenderType.cutout()),
-                board.getBlockState(),
-                model,
-                1f, 1f, 1f,
-                packedLight, packedOverlay,
-                ModelData.EMPTY,
-                RenderType.cutout());
-        poseStack.popPose();
+        return player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= CULL_DISTANCE_SQR;
     }
 
     private void renderStoredItems(CuttingBoardBlockEntity board, PoseStack poseStack,
@@ -105,11 +78,15 @@ public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<Cutt
         ItemStack stack = board.getStoredItem();
         if (stack.isEmpty()) return;
 
+        int lodTier = board.getBlockState().getValue(CuttingBoardBlock.LOD);
+        double playerDistance = distanceToPlayer(board.getBlockPos());
+        boolean pastLod1 = lodTier >= 1;
+
         Direction facing = board.getBlockState().getValue(CuttingBoardBlock.FACING);
         float boardYRot = facing.toYRot() + 180.0F;
         float halfDepth = halfDepthFor(stack);
 
-        int itemCount = renderedItemCountFor(stack);
+        int itemCount = renderedItemCountFor(stack, pastLod1, playerDistance);
         BlockPos pos = board.getBlockPos();
         RandomSource random = RandomSource.create(seedFor(pos));
 
@@ -135,33 +112,60 @@ public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<Cutt
             poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
             poseStack.scale(BASE_SCALE, BASE_SCALE, BASE_SCALE);
 
-            this.itemRenderer.renderStatic(
-                    stack,
-                    ItemDisplayContext.FIXED,
-                    packedLight,
-                    OverlayTexture.NO_OVERLAY,
-                    poseStack,
-                    bufferSource,
-                    board.getLevel(),
-                    (int) (pos.asLong() + i)
-            );
+            renderItem(stack, poseStack, bufferSource, packedLight, board, pos, i, pastLod1);
 
             poseStack.popPose();
         }
+    }
+
+    private void renderItem(ItemStack stack, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight,
+                             CuttingBoardBlockEntity board, BlockPos pos, int index, boolean pastLod1) {
+        int seed = (int) (pos.asLong() + index);
+        if (!pastLod1) {
+            this.itemRenderer.renderStatic(
+                    stack, ItemDisplayContext.FIXED, packedLight, OverlayTexture.NO_OVERLAY,
+                    poseStack, bufferSource, board.getLevel(), seed
+            );
+            return;
+        }
+
+        BakedModel normalModel = itemRenderer.getModel(stack, board.getLevel(), null, seed);
+        BakedModel flatModel = LodItemModelCache.singleQuad(normalModel);
+        this.itemRenderer.render(
+                stack, ItemDisplayContext.FIXED, false, poseStack, bufferSource,
+                packedLight, OverlayTexture.NO_OVERLAY, flatModel
+        );
+    }
+
+    private static double distanceToPlayer(BlockPos pos) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) {
+            return 0.0;
+        }
+        return Math.sqrt(player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5));
     }
 
     private float halfDepthFor(ItemStack stack) {
         return stack.getItem() instanceof BlockItem ? BLOCK_ITEM_HALF_DEPTH : FLAT_ITEM_HALF_DEPTH;
     }
 
-    private int renderedItemCountFor(ItemStack stack) {
+    private int renderedItemCountFor(ItemStack stack, boolean pastLod1, double playerDistance) {
         int maxStackSize = stack.getMaxStackSize();
+        int baseCount;
         if (maxStackSize <= 1) {
-            return 1;
+            baseCount = 1;
+        } else {
+            float fraction = (float) stack.getCount() / maxStackSize;
+            int extra = (int) (fraction / STACK_FRACTION_PER_EXTRA_ITEM);
+            baseCount = 1 + Math.min(extra, MAX_RENDERED_ITEMS - 1);
         }
-        float fraction = (float) stack.getCount() / maxStackSize;
-        int extra = (int) (fraction / STACK_FRACTION_PER_EXTRA_ITEM);
-        return 1 + Math.min(extra, MAX_RENDERED_ITEMS - 1);
+
+        if (!pastLod1) {
+            return baseCount;
+        }
+
+        int stepsPast = (int) (playerDistance / ITEM_DROP_STEP_BLOCKS);
+        return Math.max(1, baseCount - stepsPast);
     }
 
     private long seedFor(BlockPos pos) {
@@ -175,6 +179,8 @@ public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<Cutt
 
     @Override
     public int getViewDistance() {
-        return 128;
+        // Bounding box for the game's own frustum check; shouldRender() above
+        // does the real 24-block cull. This just needs to be >= that.
+        return 32;
     }
 }

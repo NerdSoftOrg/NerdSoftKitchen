@@ -9,13 +9,13 @@ import com.nerdsoft.mods.nerdsoftkitchen.recipe.cutting.CuttingRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.item.ModItems;
 import net.minecraft.core.HolderLookup;
 //? if >=1.21.2 {
-import net.minecraft.core.registries.Registries;
+/*import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
-//?}
-//? if <=1.21.1 {
-/*import net.minecraft.data.DataProvider;
 *///?}
+//? if <=1.21.1 {
+import net.minecraft.data.DataProvider;
+//?}
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceLocation;
@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 //? if <1.21.2 {
-/*public class ModRecipeProvider extends RecipeProvider implements DataProvider {
+public class ModRecipeProvider extends RecipeProvider implements DataProvider {
 
     private static final int DEFAULT_GRILL_COOK_TIME = 600;
     private static final int FAST_GRILL_COOK_TIME = 300;
@@ -184,8 +184,8 @@ import java.util.concurrent.CompletableFuture;
     private ResourceLocation id(String name) {
         return ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, name);
     }
-*///?} else {
-public class ModRecipeProvider extends RecipeProvider {
+//?} else {
+/*public class ModRecipeProvider extends RecipeProvider {
 
     private static final int DEFAULT_GRILL_COOK_TIME = 600; // 30 segundos
     private static final int FAST_GRILL_COOK_TIME = 300;    // 15 segundos
@@ -354,13 +354,13 @@ public class ModRecipeProvider extends RecipeProvider {
             return "NerdSoftKitchen Recipes";
         }
     }
-//?}
+*///?}
 
     private String recipeNameFor(Item item) {
         //? if <1.21.2 {
-        /*return net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item).getPath();
-        *///?} else {
         return net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item).getPath();
-         //?}
+        //?} else {
+        /*return net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item).getPath();
+         *///?}
     }
 }

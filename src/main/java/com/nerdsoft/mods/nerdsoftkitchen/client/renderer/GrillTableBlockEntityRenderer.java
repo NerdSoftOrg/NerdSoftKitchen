@@ -10,10 +10,14 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 public class GrillTableBlockEntityRenderer implements BlockEntityRenderer<GrillTableBlockEntity> {
@@ -30,6 +34,9 @@ public class GrillTableBlockEntityRenderer implements BlockEntityRenderer<GrillT
     private static final double[] CORNER_Z = new double[4];
     private static final float[] CORNER_YAW = new float[4];
     private static final double[] CAMPFIRE_WIDTH = {CAMPFIRE_ITEM_OFFSET, CAMPFIRE_LATERAL_OFFSET, CAMPFIRE_ITEM_OFFSET, CAMPFIRE_LATERAL_OFFSET};
+
+    private static final double CULL_DISTANCE_BLOCKS = 48.0;
+    private static final double CULL_DISTANCE_SQR = CULL_DISTANCE_BLOCKS * CULL_DISTANCE_BLOCKS;
 
     static {
         for (int i = 0; i < 4; i++) {
@@ -48,29 +55,46 @@ public class GrillTableBlockEntityRenderer implements BlockEntityRenderer<GrillT
     }
 
     @Override
+    public boolean shouldRender(@NotNull GrillTableBlockEntity blockEntity, @NotNull Vec3 cameraPos) {
+        return BlockEntityRenderer.super.shouldRender(blockEntity, cameraPos)
+                && withinCullDistance(blockEntity.getBlockPos().getX() + 0.5,
+                                       blockEntity.getBlockPos().getY() + 0.5,
+                                       blockEntity.getBlockPos().getZ() + 0.5);
+    }
+
+    @Override
     public void render(@NotNull GrillTableBlockEntity blockEntity, float partialTick, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         BlockState state = blockEntity.getBlockState();
         int facing2D = state.getValue(GrillTableBlock.FACING).get2DDataValue();
         int seedBase = blockEntity.getRenderSeedBase();
         ClientLevel renderLevel = Minecraft.getInstance().level;
+        boolean pastLod1 = state.getValue(GrillTableBlock.LOD) >= 1;
 
         for (int slot = 0; slot < GrillTableBlockEntity.GRILL_SLOTS_COUNT; slot++) {
             ItemStack stack = blockEntity.getItem(GrillTableBlockEntity.GRILL_SLOTS_START + slot);
             if (!stack.isEmpty()) {
-                renderGrillSlot(blockEntity, slot, stack, facing2D, seedBase, poseStack, bufferSource, packedLight, packedOverlay, renderLevel);
+                renderGrillSlot(blockEntity, slot, stack, facing2D, seedBase, poseStack, bufferSource, packedLight, packedOverlay, renderLevel, pastLod1);
             }
         }
         for (int slot = 0; slot < GrillTableBlockEntity.CAMPFIRE_SLOTS_COUNT; slot++) {
             ItemStack stack = blockEntity.getItem(GrillTableBlockEntity.CAMPFIRE_SLOTS_START + slot);
             if (!stack.isEmpty()) {
-                renderCampfireSlot(slot, stack, facing2D, seedBase, poseStack, bufferSource, packedLight, packedOverlay, renderLevel);
+                renderCampfireSlot(slot, stack, facing2D, seedBase, poseStack, bufferSource, packedLight, packedOverlay, renderLevel, pastLod1);
             }
         }
     }
 
+    private static boolean withinCullDistance(double x, double y, double z) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) {
+            return true;
+        }
+        return player.distanceToSqr(x, y, z) <= CULL_DISTANCE_SQR;
+    }
+
     private void renderGrillSlot(GrillTableBlockEntity blockEntity, int slot, ItemStack stack, int facing2D,
                                  int seedBase, PoseStack poseStack, MultiBufferSource bufferSource,
-                                 int packedLight, int packedOverlay, ClientLevel renderLevel) {
+                                 int packedLight, int packedOverlay, ClientLevel renderLevel, boolean pastLod1) {
         int dirIndex = (slot + facing2D) & 3;
         double x = 0.5 + CORNER_X[dirIndex] + blockEntity.getGrillOffsetX(slot);
         double z = 0.5 + CORNER_Z[dirIndex] + blockEntity.getGrillOffsetZ(slot);
@@ -81,11 +105,11 @@ public class GrillTableBlockEntityRenderer implements BlockEntityRenderer<GrillT
         poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
         poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
         poseStack.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
-        itemRenderer.renderStatic(stack, ItemDisplayContext.FIXED, packedLight, packedOverlay, poseStack, bufferSource, renderLevel, seedBase + slot);
+        renderItem(stack, poseStack, bufferSource, packedLight, packedOverlay, renderLevel, seedBase + slot, pastLod1);
         poseStack.popPose();
     }
 
-    private void renderCampfireSlot(int slot, ItemStack stack, int facing2D, int seedBase, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, ClientLevel renderLevel) {
+    private void renderCampfireSlot(int slot, ItemStack stack, int facing2D, int seedBase, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, ClientLevel renderLevel, boolean pastLod1) {
         int dirIndex = (slot + facing2D) & 3;
         float yRot = CORNER_YAW[dirIndex];
         double widthOffset = CAMPFIRE_WIDTH[slot];
@@ -96,7 +120,19 @@ public class GrillTableBlockEntityRenderer implements BlockEntityRenderer<GrillT
         poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
         poseStack.translate(-CAMPFIRE_ITEM_OFFSET, -widthOffset, 0.0);
         poseStack.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
-        itemRenderer.renderStatic(stack, ItemDisplayContext.FIXED, packedLight, packedOverlay, poseStack, bufferSource, renderLevel, seedBase + slot + CAMPFIRE_SEED_SPLIT);
+        renderItem(stack, poseStack, bufferSource, packedLight, packedOverlay, renderLevel, seedBase + slot + CAMPFIRE_SEED_SPLIT, pastLod1);
         poseStack.popPose();
+    }
+
+    private void renderItem(ItemStack stack, PoseStack poseStack, MultiBufferSource bufferSource,
+                             int packedLight, int packedOverlay, ClientLevel renderLevel, int seed, boolean pastLod1) {
+        if (!pastLod1) {
+            itemRenderer.renderStatic(stack, ItemDisplayContext.FIXED, packedLight, packedOverlay, poseStack, bufferSource, renderLevel, seed);
+            return;
+        }
+
+        BakedModel normalModel = itemRenderer.getModel(stack, renderLevel, null, seed);
+        BakedModel flatModel = LodItemModelCache.singleQuad(normalModel);
+        itemRenderer.render(stack, ItemDisplayContext.FIXED, false, poseStack, bufferSource, packedLight, packedOverlay, flatModel);
     }
 }

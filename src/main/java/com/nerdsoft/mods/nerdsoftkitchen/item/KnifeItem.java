@@ -3,20 +3,20 @@ package com.nerdsoft.mods.nerdsoftkitchen.item;
 import net.minecraft.world.item.SwordItem;
 
 //? if <1.21.2 {
-/*import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.Tier;
-*///?} else {
-import net.minecraft.world.item.ToolMaterial;
- //?}
+//?} else {
+/*import net.minecraft.world.item.ToolMaterial;
+ *///?}
 
 public class KnifeItem extends SwordItem {
 
     //? if <1.21.2 {
-    /*private static final ResourceLocation BASE_ATTACK_DAMAGE_ID =
+    private static final ResourceLocation BASE_ATTACK_DAMAGE_ID =
             ResourceLocation.withDefaultNamespace("base_attack_damage");
     private static final ResourceLocation BASE_ATTACK_SPEED_ID =
             ResourceLocation.withDefaultNamespace("base_attack_speed");
@@ -35,9 +35,9 @@ public class KnifeItem extends SwordItem {
                         EquipmentSlotGroup.MAINHAND)
                 .build();
     }
-    *///?} else {
-    public KnifeItem(ToolMaterial material, float attackDamage, float attackSpeed, Properties properties) {
+    //?} else {
+    /*public KnifeItem(ToolMaterial material, float attackDamage, float attackSpeed, Properties properties) {
         super(material, attackDamage, attackSpeed, properties);
     }
-    //?}
+    *///?}
 }

@@ -3,6 +3,8 @@ package com.nerdsoft.mods.nerdsoftkitchen.block;
 import com.mojang.serialization.MapCodec;
 import com.nerdsoft.mods.nerdsoftkitchen.blockentity.CuttingBoardBlockEntity;
 import com.nerdsoft.mods.nerdsoftkitchen.lod.LodBlock;
+import com.nerdsoft.mods.nerdsoftkitchen.lod.LodConfig;
+import com.nerdsoft.mods.nerdsoftkitchen.lod.LodProperty;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipeInput;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cutting.CuttingRecipe;
@@ -42,6 +44,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -52,8 +55,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 //? if <1.21.2 {
-/*import net.minecraft.world.ItemInteractionResult;
-*///?}
+import net.minecraft.world.ItemInteractionResult;
+//?}
 
 public class CuttingBoardBlock extends BaseEntityBlock implements LodBlock {
 
@@ -62,22 +65,26 @@ public class CuttingBoardBlock extends BaseEntityBlock implements LodBlock {
     protected static final VoxelShape SHAPE = Block.box(1.0, 0.0, 1.0, 15.0, 1.0, 15.0);
     protected static final VoxelShape SHAPE_SIMPLE = Shapes.block();
 
-    private static final int LOD_MAX_TIER = 1;
-    private static final int LOD_SIMPLE_TIER_DISTANCE_CHUNKS = 2;
+    public static final IntegerProperty LOD = LodProperty.create(LodConfig.CUTTING_BOARD.maxTier());
 
     public CuttingBoardBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LOD, 0));
+    }
+
+    @Override
+    public IntegerProperty lodProperty() {
+        return LOD;
     }
 
     @Override
     public int tierDistanceChunks(int tier) {
-        return LOD_SIMPLE_TIER_DISTANCE_CHUNKS;
+        return LodConfig.CUTTING_BOARD.distanceChunksForTier(tier);
     }
 
     @Override
     public int maxLodTier() {
-        return LOD_MAX_TIER;
+        return LodConfig.CUTTING_BOARD.maxTier();
     }
 
     @Override
@@ -93,21 +100,21 @@ public class CuttingBoardBlock extends BaseEntityBlock implements LodBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING, LOD);
     }
 
     @Override
             //? if <1.21.2 {
-    /*protected @NotNull ItemInteractionResult useItemOn(
-            *///?} else
-            protected @NotNull InteractionResult useItemOn(
+    protected @NotNull ItemInteractionResult useItemOn(
+            //?} else
+            //protected @NotNull InteractionResult useItemOn(
             @NotNull ItemStack stack, @NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult
     ) {
         if (!(level.getBlockEntity(pos) instanceof CuttingBoardBlockEntity board)) {
             //? if <1.21.2 {
-            /*return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-            *///?} else
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            //?} else
+            //return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
 
         if (stack.is(ModItemTags.KNIFE) && !board.isEmpty()) {
@@ -122,9 +129,9 @@ public class CuttingBoardBlock extends BaseEntityBlock implements LodBlock {
         }
 
         //? if <1.21.2 {
-        /*return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        *///?} else
-        return InteractionResult.TRY_WITH_EMPTY_HAND;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        //?} else
+        //return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
     @Override
@@ -133,17 +140,17 @@ public class CuttingBoardBlock extends BaseEntityBlock implements LodBlock {
         if (level.getBlockEntity(pos) instanceof CuttingBoardBlockEntity board && !board.isEmpty()) {
             // Clic con mano vacía -> Recuperar el stack completo
             //? if <1.21.2 {
-            /*return returnItem(level, board, player).result();
-            *///?} else
-            return returnItem(level, board, player);
+            return returnItem(level, board, player).result();
+            //?} else
+            //return returnItem(level, board, player);
         }
         return InteractionResult.PASS;
     }
 
     //? if <1.21.2 {
-    /*private ItemInteractionResult handleItemInteraction(Level level, CuttingBoardBlockEntity board, ItemStack heldStack, Player player, InteractionHand hand) {
-        *///?} else
-        private InteractionResult handleItemInteraction(Level level, CuttingBoardBlockEntity board, ItemStack heldStack, Player player, InteractionHand hand) {
+    private ItemInteractionResult handleItemInteraction(Level level, CuttingBoardBlockEntity board, ItemStack heldStack, Player player, InteractionHand hand) {
+        //?} else
+        //private InteractionResult handleItemInteraction(Level level, CuttingBoardBlockEntity board, ItemStack heldStack, Player player, InteractionHand hand) {
         ItemStack stored = board.getStoredItem();
 
         if (stored.isEmpty()) {
@@ -155,9 +162,9 @@ public class CuttingBoardBlock extends BaseEntityBlock implements LodBlock {
                 level.playSound(null, board.getBlockPos(), SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1.0F, 1.0F);
             }
             //? if <1.21.2 {
-            /*return ItemInteractionResult.sidedSuccess(level.isClientSide);
-            *///?} else
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            //?} else
+            //return InteractionResult.SUCCESS;
         }
 
         if (ItemStack.isSameItemSameComponents(stored, heldStack)) {
@@ -176,9 +183,9 @@ public class CuttingBoardBlock extends BaseEntityBlock implements LodBlock {
                     level.playSound(null, board.getBlockPos(), SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1.0F, 1.0F);
                 }
                 //? if <1.21.2 {
-                /*return ItemInteractionResult.sidedSuccess(level.isClientSide);
-                *///?} else
-                return InteractionResult.SUCCESS;
+                return ItemInteractionResult.sidedSuccess(level.isClientSide);
+                //?} else
+                //return InteractionResult.SUCCESS;
             }
         } else {
             if (!level.isClientSide) {
@@ -191,15 +198,15 @@ public class CuttingBoardBlock extends BaseEntityBlock implements LodBlock {
                 level.playSound(null, board.getBlockPos(), SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1.0F, 1.0F);
             }
             //? if <1.21.2 {
-            /*return ItemInteractionResult.sidedSuccess(level.isClientSide);
-            *///?} else
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            //?} else
+            //return InteractionResult.SUCCESS;
         }
 
         //? if <1.21.2 {
-        /*return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        *///?} else
-        return InteractionResult.TRY_WITH_EMPTY_HAND;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        //?} else
+        //return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
     @Nullable
@@ -207,21 +214,21 @@ public class CuttingBoardBlock extends BaseEntityBlock implements LodBlock {
         if (level == null) return null;
 
         //? if <1.21.2 {
-        /*if (level.isClientSide()) {
+        if (level.isClientSide()) {
             return net.minecraft.client.Minecraft.getInstance().getConnection() != null
                     ? net.minecraft.client.Minecraft.getInstance().getConnection().getRecipeManager()
                     : null;
         }
         return level.getServer() != null ? level.getServer().getRecipeManager() : null;
-        *///?} else {
-        return (RecipeManager) level.recipeAccess();
-         //?}
+        //?} else {
+        /*return (RecipeManager) level.recipeAccess();
+         *///?}
     }
 
     //? if <1.21.2 {
-    /*private ItemInteractionResult returnItem(Level level, CuttingBoardBlockEntity board, Player player) {
-        *///?} else
-        private InteractionResult returnItem(Level level, CuttingBoardBlockEntity board, Player player) {
+    private ItemInteractionResult returnItem(Level level, CuttingBoardBlockEntity board, Player player) {
+        //?} else
+        //private InteractionResult returnItem(Level level, CuttingBoardBlockEntity board, Player player) {
         if (!level.isClientSide) {
             ItemStack removed = board.clearStoredItem();
             if (!player.getInventory().add(removed)) {
@@ -229,21 +236,21 @@ public class CuttingBoardBlock extends BaseEntityBlock implements LodBlock {
             }
         }
         //? if <1.21.2 {
-        /*return ItemInteractionResult.sidedSuccess(level.isClientSide);
-        *///?} else
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.sidedSuccess(level.isClientSide);
+        //?} else
+        //return InteractionResult.SUCCESS;
     }
 
     //? if <1.21.2 {
-    /*private ItemInteractionResult tryCut(Level level, BlockPos pos, CuttingBoardBlockEntity board, ItemStack knife, Player player) {
-        *///?} else
-        private InteractionResult tryCut(Level level, BlockPos pos, CuttingBoardBlockEntity board, ItemStack knife, Player player) {
+    private ItemInteractionResult tryCut(Level level, BlockPos pos, CuttingBoardBlockEntity board, ItemStack knife, Player player) {
+        //?} else
+        //private InteractionResult tryCut(Level level, BlockPos pos, CuttingBoardBlockEntity board, ItemStack knife, Player player) {
         RecipeManager recipeManager = getRecipeManager(level);
         if (recipeManager == null) {
             //? if <1.21.2 {
-            /*return ItemInteractionResult.FAIL;
-            *///?} else
-            return InteractionResult.FAIL;
+            return ItemInteractionResult.FAIL;
+            //?} else
+            //return InteractionResult.FAIL;
         }
 
         Optional<RecipeHolder<CuttingRecipe>> match = recipeManager
@@ -251,9 +258,9 @@ public class CuttingBoardBlock extends BaseEntityBlock implements LodBlock {
 
         if (match.isEmpty()) {
             //? if <1.21.2 {
-            /*return ItemInteractionResult.FAIL;
-            *///?} else
-            return InteractionResult.FAIL;
+            return ItemInteractionResult.FAIL;
+            //?} else
+            //return InteractionResult.FAIL;
         }
 
         if (!level.isClientSide) {
@@ -268,20 +275,20 @@ public class CuttingBoardBlock extends BaseEntityBlock implements LodBlock {
 
             if (!player.getAbilities().instabuild && level instanceof ServerLevel serverLevel) {
                 //? if <1.21.2 {
-                /*knife.hurtAndBreak(1, serverLevel, player instanceof ServerPlayer serverPlayer ? serverPlayer : null,
+                knife.hurtAndBreak(1, serverLevel, player instanceof ServerPlayer serverPlayer ? serverPlayer : null,
                         item -> player.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
-                *///?} else {
-                knife.hurtAndBreak(1, serverLevel, player, item -> player.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
-                 //?}
+                //?} else {
+                /*knife.hurtAndBreak(1, serverLevel, player, item -> player.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
+                 *///?}
             }
 
             level.playSound(null, pos, SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 0.6F, 1.6F);
         }
 
         //? if <1.21.2 {
-        /*return ItemInteractionResult.sidedSuccess(level.isClientSide);
-        *///?} else
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.sidedSuccess(level.isClientSide);
+        //?} else
+        //return InteractionResult.SUCCESS;
     }
 
     @SuppressWarnings("deprecation")
@@ -312,15 +319,12 @@ public class CuttingBoardBlock extends BaseEntityBlock implements LodBlock {
 
     @Override
     protected @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {
-        if (level.getBlockEntity(pos) instanceof CuttingBoardBlockEntity board && board.isSimplifyCollision()) {
-            return SHAPE_SIMPLE;
-        }
-        return SHAPE;
+        return state.getValue(LOD) == 0 ? SHAPE : SHAPE_SIMPLE;
     }
 
     @Override
     protected @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
-        return RenderShape.INVISIBLE;
+        return RenderShape.MODEL;
     }
 
     @Override

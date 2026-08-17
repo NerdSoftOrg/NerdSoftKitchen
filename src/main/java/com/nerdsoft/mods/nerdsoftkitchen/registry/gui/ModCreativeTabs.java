@@ -22,6 +22,7 @@ public final class ModCreativeTabs {
         output.accept(ModItems.GRILL_TABLE);
         output.accept(ModItems.GRILL_TABLE_SOUL);
         output.accept(ModItems.CUTTING_BOARD);
+//        output.accept(ModItems.SKILLET);
         output.accept(ModItems.WILD_STRAWBERRY);
         output.accept(ModItems.WILD_TOMATO);
         output.accept(ModItems.WILD_LETTUCE);

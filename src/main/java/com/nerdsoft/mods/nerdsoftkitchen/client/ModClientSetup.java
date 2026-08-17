@@ -1,14 +1,14 @@
 package com.nerdsoft.mods.nerdsoftkitchen.client;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
-import com.nerdsoft.mods.nerdsoftkitchen.client.renderer.CuttingBoardBlockEntityRenderer;
 import com.nerdsoft.mods.nerdsoftkitchen.client.renderer.GrillTableBlockEntityRenderer;
 import com.nerdsoft.mods.nerdsoftkitchen.client.renderer.SkilletBlockEntityRenderer;
 //? if <1.21.2 {
-/*import com.nerdsoft.mods.nerdsoftkitchen.compat.jei.client.JeiCategorySorter;
-*///?}
+import com.nerdsoft.mods.nerdsoftkitchen.compat.jei.client.JeiCategorySorter;
+//?}
 import com.nerdsoft.mods.nerdsoftkitchen.item.IronCupItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
+import com.nerdsoft.mods.nerdsoftkitchen.lod.LodDiagnostics;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.item.ModItems;
@@ -41,14 +41,16 @@ public final class ModClientSetup {
                     return content == null ? 0.0F : content.modelIndex() + 1;
                 }));
         //? if <1.21.2 {
-        /*JeiCategorySorter.forceGrillAfterCampfire();
-        *///?}
+        JeiCategorySorter.forceGrillAfterCampfire();
+        //?}
+
+        LodDiagnostics.checkCullDistanceAgainstLod("CuttingBoard", 48.0, ModBlocks.CUTTING_BOARD.get());
+        LodDiagnostics.checkCullDistanceAgainstLod("GrillTable", 48.0, ModBlocks.GRILL_TABLE.get());
     }
 
     @SubscribeEvent
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.GRILL_TABLE.get(), GrillTableBlockEntityRenderer::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.CUTTING_BOARD.get(), CuttingBoardBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.SKILLET.get(), SkilletBlockEntityRenderer::new);
     }
 

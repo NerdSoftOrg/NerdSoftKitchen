@@ -12,8 +12,8 @@ import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 //? if >=1.21.2 {
- import net.minecraft.world.InteractionResult;
-//?}
+ /*import net.minecraft.world.InteractionResult;
+*///?}
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -47,15 +47,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 //? if >=1.21.2 {
-import net.minecraft.world.level.redstone.Orientation;
-//?}
+/*import net.minecraft.world.level.redstone.Orientation;
+*///?}
 //? if <1.21.2 {
 
-/*import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
- *///?} else {
-import net.minecraft.world.level.block.state.properties.EnumProperty;
-//?}
+ //?} else {
+/*import net.minecraft.world.level.block.state.properties.EnumProperty;
+*///?}
 
 
 @SuppressWarnings("CommentedOutCode")
@@ -63,10 +63,10 @@ public class SkilletBlock extends BaseEntityBlock {
 
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     //? if <1.21.2 {
-    /*public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-     *///?} else {
-    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-    //?}
+    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+     //?} else {
+    /*public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+    *///?}
 
     public static final MapCodec<SkilletBlock> CODEC = simpleCodec(SkilletBlock::new);
 
@@ -115,9 +115,9 @@ public class SkilletBlock extends BaseEntityBlock {
 
     @Override
     //? if <1.21.2 {
-    /*protected @NotNull ItemInteractionResult useItemOn(
-     *///?} else
-    protected @NotNull InteractionResult useItemOn(
+    protected @NotNull ItemInteractionResult useItemOn(
+     //?} else
+    //protected @NotNull InteractionResult useItemOn(
             @NotNull ItemStack stack, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult
     ) {
         if (level.getBlockEntity(pos) instanceof SkilletBlockEntity skilletEntity) {
@@ -126,22 +126,22 @@ public class SkilletBlock extends BaseEntityBlock {
                 if (!level.isClientSide && skilletEntity.placeFood(player, itemstack)) {
                     player.awardStat(Stats.INTERACT_WITH_CAMPFIRE);
                     //? if <1.21.2 {
-                    /*return ItemInteractionResult.SUCCESS;
-                     *///?} else
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
+                     //?} else
+                    //return InteractionResult.SUCCESS;
                 }
 
                 //? if <1.21.2 {
-                /*return ItemInteractionResult.CONSUME;
-                 *///?} else
-                return InteractionResult.CONSUME;
+                return ItemInteractionResult.CONSUME;
+                 //?} else
+                //return InteractionResult.CONSUME;
             }
         }
 
         //? if <1.21.2 {
-        /*return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-         *///?} else
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+         //?} else
+        //return InteractionResult.PASS;
     }
 
     @Override
@@ -163,22 +163,22 @@ public class SkilletBlock extends BaseEntityBlock {
     }
 
     //? if <1.21.2 {
-    /*@Override
+    @Override
     protected void neighborChanged(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Block neighborBlock, @NotNull BlockPos neighborPos, boolean movedByPiston) {
         super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston);
         if (!level.isClientSide && neighborPos.equals(pos.below())) {
             refreshLitState(level, pos, state);
         }
     }
-    *///?} else {
-    @Override
+    //?} else {
+    /*@Override
     protected void neighborChanged(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston) {
         super.neighborChanged(state, level, pos, neighborBlock, orientation, movedByPiston);
         if (!level.isClientSide) {
             refreshLitState(level, pos, state);
         }
     }
-    //?}
+    *///?}
 
     private void refreshLitState(Level level, BlockPos pos, BlockState state) {
         boolean shouldBeLit = isHeatSourceBelow(level, pos);
@@ -188,7 +188,7 @@ public class SkilletBlock extends BaseEntityBlock {
     }
 
     //? if <1.21.2 {
-    /*@Override
+    @Override
     protected void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!state.is(newState.getBlock())) {
             BlockEntity blockentity = level.getBlockEntity(pos);
@@ -198,8 +198,8 @@ public class SkilletBlock extends BaseEntityBlock {
             super.onRemove(state, level, pos, newState, movedByPiston);
         }
     }
-    *///?} else {
-    @Override
+    //?} else {
+    /*@Override
     protected void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
             BlockEntity blockentity = level.getBlockEntity(pos);
@@ -209,7 +209,7 @@ public class SkilletBlock extends BaseEntityBlock {
             super.onRemove(state, level, pos, newState, isMoving);
         }
     }
-    //?}
+    *///?}
 
     @Override
     public void playerDestroy(@NotNull Level level, @NotNull Player player, @NotNull BlockPos pos,
@@ -302,12 +302,12 @@ public class SkilletBlock extends BaseEntityBlock {
 
     @Override
     //? if <1.21.2 {
-    /*protected boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType type) {
+    protected boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType type) {
         return false;
     }
-    *///?} else {
-    protected boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType pathComputationType) {
+    //?} else {
+    /*protected boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType pathComputationType) {
         return false;
     }
-    //?}
+    *///?}
 }

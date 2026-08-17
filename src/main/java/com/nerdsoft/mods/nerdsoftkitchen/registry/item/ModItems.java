@@ -12,24 +12,24 @@ import com.nerdsoft.mods.nerdsoftkitchen.item.SkilletBlockItem;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.ModTiers;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.component.Consumables;
-import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 //? if <1.21.2 {
-/*import net.minecraft.world.item.Tiers;
-*///?} else {
+import net.minecraft.world.item.Tiers;
+//?} else {
+/*import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.component.Consumables;
+import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import net.minecraft.world.item.ToolMaterial;
 
 import java.util.List;
-        //?}
+*///?}
 
 @SuppressWarnings("CommentedOutCode")
 public final class ModItems {
@@ -52,7 +52,7 @@ public final class ModItems {
     private static final int SKILLET_DURABILITY = 250;
 
     //? if <1.21.2 {
-    /*/// Machine Items
+    /// Machine Items
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE = ITEMS.registerItem("grill_table",
             props -> new GrillBlockItem(ModBlocks.GRILL_TABLE.get(), props));
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE_SOUL = ITEMS.registerItem("grill_table_soul",
@@ -96,8 +96,8 @@ public final class ModItems {
             props -> new KnifeItem(ModTiers.OBSIDIAN, OBSIDIAN_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> NETHERITE_KNIFE = ITEMS.registerItem("netherite_knife",
             props -> new KnifeItem(Tiers.NETHERITE, NETHERITE_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
-    *///?} else {
-    /// Machine Items
+    //?} else {
+    /*/// Machine Items
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE = ITEMS.registerItem(
             "grill_table", props -> new GrillBlockItem(ModBlocks.GRILL_TABLE.get(), props));
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE_SOUL = ITEMS.registerItem(
@@ -141,7 +141,7 @@ public final class ModItems {
             props -> new KnifeItem(ModTiers.OBSIDIAN, OBSIDIAN_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> NETHERITE_KNIFE = ITEMS.registerItem("netherite_knife",
             props -> new KnifeItem(ToolMaterial.NETHERITE, NETHERITE_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
-    //?}
+    *///?}
 
     @SuppressWarnings("InvariantValue")
     //? if > 1.21.8 {
@@ -176,10 +176,10 @@ public final class ModItems {
 
     /// Cooked Foods
     //? if <1.21.2 {
-    /*public static final DeferredItem<Item> RAW_CHICKEN_PIECES = ITEMS.registerItem("raw_chicken_pieces",
-            props -> new Item(props.food(ModFoods.RAW_CHICKEN_PIECES)));
-    *///?} else {
     public static final DeferredItem<Item> RAW_CHICKEN_PIECES = ITEMS.registerItem("raw_chicken_pieces",
+            props -> new Item(props.food(ModFoods.RAW_CHICKEN_PIECES)));
+    //?} else {
+    /*public static final DeferredItem<Item> RAW_CHICKEN_PIECES = ITEMS.registerItem("raw_chicken_pieces",
             props -> new Item(props
                     .food(ModFoods.RAW_CHICKEN_PIECES)
                     .component(
@@ -192,7 +192,7 @@ public final class ModItems {
                                     .build()
                     )
             ));
-    //?}
+    *///?}
     public static final DeferredItem<Item> COOKED_CHICKEN_PIECES = ITEMS.registerItem("cooked_chicken_pieces",
             props -> new Item(props.food(ModFoods.COOKED_CHICKEN_PIECES)));
     public static final DeferredItem<Item> FRIED_EGG = ITEMS.registerItem("fried_egg",

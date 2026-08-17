@@ -7,7 +7,6 @@ public final class LodModelSet {
     private LodModelSet() {
     }
 
-    @SuppressWarnings("unused")
     public static String modelName(String baseName, int tier) {
         return modelName(baseName, tier, DEFAULT_SUFFIX);
     }

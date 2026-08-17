@@ -45,16 +45,16 @@ public record CupContentIngredient(IronCupContent content) implements ICustomIng
     }
 
     //? if <1.21.2 {
-    /*@Override
+    @Override
     public @NotNull Stream<ItemStack> getItems() {
         return Stream.of(IronCupItem.filled(ModItems.IRON_CUP.get(), content));
     }
-    *///?} else {
-    @Override
+    //?} else {
+    /*@Override
     public @NotNull Stream<Holder<Item>> items() {
         return Stream.of(ModItems.IRON_CUP.getDelegate());
     }
-    //?}
+    *///?}
 
     @Override
     public boolean isSimple() {

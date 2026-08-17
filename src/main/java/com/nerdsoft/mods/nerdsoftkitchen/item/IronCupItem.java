@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 //? if <1.21.2 {
-/*import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.item.UseAnim;
-*///?}
+//?}
 
 public class IronCupItem extends Item {
 
@@ -98,10 +98,10 @@ public class IronCupItem extends Item {
         }
 
         //? if <1.21.2 {
-        /*return InteractionResult.sidedSuccess(level.isClientSide);
-         *///?} else {
-        return InteractionResult.SUCCESS;
-        //?}
+        return InteractionResult.sidedSuccess(level.isClientSide);
+         //?} else {
+        /*return InteractionResult.SUCCESS;
+        *///?}
     }
 
     @Override
@@ -148,7 +148,7 @@ public class IronCupItem extends Item {
 
             if (newDuration > 0) {
                 //? if <1.21.2 {
-                /*MobEffectInstance newEffect = new MobEffectInstance(
+                MobEffectInstance newEffect = new MobEffectInstance(
                         effect.getEffect(),
                         newDuration,
                         effect.getAmplifier(),
@@ -159,8 +159,8 @@ public class IronCupItem extends Item {
                 newEffect.getCures().clear();
                 newEffect.getCures().addAll(effect.getCures());
                 toReapply.add(newEffect);
-                *///?} else {
-                MobEffectInstance newEffect = new MobEffectInstance(
+                //?} else {
+                /*MobEffectInstance newEffect = new MobEffectInstance(
                         effect.getEffect(),
                         newDuration,
                         effect.getAmplifier(),
@@ -169,7 +169,7 @@ public class IronCupItem extends Item {
                         effect.showIcon()
                 );
                 toReapply.add(newEffect);
-                //?}
+                *///?}
             }
         }
 
@@ -195,14 +195,14 @@ public class IronCupItem extends Item {
 
     @Override
             //? if <1.21.2 {
-    /*public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
+    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
         return isEmpty(stack) ? UseAnim.NONE : UseAnim.DRINK;
     }
-    *///?} else {
-    public @NotNull ItemUseAnimation getUseAnimation(@NotNull ItemStack stack) {
+    //?} else {
+    /*public @NotNull ItemUseAnimation getUseAnimation(@NotNull ItemStack stack) {
         return isEmpty(stack) ? ItemUseAnimation.NONE : ItemUseAnimation.DRINK;
     }
-    //?}
+    *///?}
 
     @Override
     public int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
@@ -211,7 +211,7 @@ public class IronCupItem extends Item {
 
     @Override
             //? if <1.21.2 {
-    /*public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player,
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player,
                                                            @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (isEmpty(stack)) {
@@ -219,8 +219,8 @@ public class IronCupItem extends Item {
         }
         return ItemUtils.startUsingInstantly(level, player, hand);
     }
-    *///?} else {
-    public @NotNull InteractionResult use(@NotNull Level level, @NotNull Player player,
+    //?} else {
+    /*public @NotNull InteractionResult use(@NotNull Level level, @NotNull Player player,
                                           @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (isEmpty(stack)) {
@@ -228,5 +228,5 @@ public class IronCupItem extends Item {
         }
         return ItemUtils.startUsingInstantly(level, player, hand);
     }
-    //?}
+    *///?}
 }

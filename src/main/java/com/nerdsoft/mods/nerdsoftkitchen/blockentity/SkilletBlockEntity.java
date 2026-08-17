@@ -191,17 +191,17 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
         var mixType = ModRecipeTypes.MIX_TYPE.get();
 
         //? if >=1.21.2{
-        return serverLevel.recipeAccess().getRecipes().stream()
+        /*return serverLevel.recipeAccess().getRecipes().stream()
                 .filter(holder -> holder.value().getType() == mixType)
                 .map(holder -> (MixRecipe) holder.value())
                 .anyMatch(recipe -> recipe.inputs().size() == hypotheticalSize
                         && matchesPartial(recipe.inputs(), occupied, candidate));
-        //?} else {
-        /*return serverLevel.getRecipeManager().getAllRecipesFor(mixType).stream()
+        *///?} else {
+        return serverLevel.getRecipeManager().getAllRecipesFor(mixType).stream()
                 .map(RecipeHolder::value)
                 .anyMatch(recipe -> recipe.inputs().size() == hypotheticalSize
                         && matchesPartial(recipe.inputs(), occupied, candidate));
-        *///?}
+        //?}
     }
 
     private static boolean matchesPartial(List<Ingredient> ingredients, List<ItemStack> occupied, ItemStack candidate) {

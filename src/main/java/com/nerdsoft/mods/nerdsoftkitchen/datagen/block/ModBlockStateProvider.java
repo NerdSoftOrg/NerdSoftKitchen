@@ -258,11 +258,18 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     private void lodBlockYRotated(DeferredBlock<?> block, String baseName, String suffix) {
         LodBlock lodBlock = asLodBlock(block);
-        horizontalBlock(block.get(), getExistingBlockModel(baseName));
+        ModelFile[] tierModels = resolveTierModels(lodBlock, baseName, suffix);
 
-        for (int tier = 1; tier <= lodBlock.maxLodTier(); tier++) {
-            getExistingBlockModel(LodModelSet.modelName(baseName, tier, suffix));
-        }
+        var builder = getVariantBuilder(block.get());
+        builder.forAllStatesExcept(state -> {
+            int tier = state.getValue(lodBlock.lodProperty());
+            int yRot = ((int) state.getValue(BlockStateProperties.HORIZONTAL_FACING).toYRot() + 360) % 360;
+
+            return ConfiguredModel.builder()
+                    .modelFile(tierModels[tier])
+                    .rotationY(yRot)
+                    .build();
+        }, BlockStateProperties.WATERLOGGED);
     }
 
     @SuppressWarnings("unused")
@@ -273,11 +280,22 @@ public class ModBlockStateProvider extends BlockStateProvider {
     @SuppressWarnings("unused")
     private void lodBlock(DeferredBlock<?> block, String baseName, String suffix) {
         LodBlock lodBlock = asLodBlock(block);
-        simpleBlock(block.get(), getExistingBlockModel(baseName));
+        ModelFile[] tierModels = resolveTierModels(lodBlock, baseName, suffix);
 
-        for (int tier = 1; tier <= lodBlock.maxLodTier(); tier++) {
-            getExistingBlockModel(LodModelSet.modelName(baseName, tier, suffix));
+        var builder = getVariantBuilder(block.get());
+        builder.forAllStatesExcept(state -> {
+            int tier = state.getValue(lodBlock.lodProperty());
+            return ConfiguredModel.builder().modelFile(tierModels[tier]).build();
+        }, BlockStateProperties.WATERLOGGED);
+    }
+
+    private ModelFile[] resolveTierModels(LodBlock lodBlock, String baseName, String suffix) {
+        String[] names = LodModelSet.modelNames(baseName, lodBlock.maxLodTier(), suffix);
+        ModelFile[] models = new ModelFile[names.length];
+        for (int tier = 0; tier < names.length; tier++) {
+            models[tier] = getExistingBlockModel(names[tier]);
         }
+        return models;
     }
 
     private LodBlock asLodBlock(DeferredBlock<?> block) {
@@ -289,8 +307,20 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     // Lit/Unlit Models
     private void litModel(DeferredBlock<?> block, String litName, String unlitName, boolean ignoreLitProp) {
-        ModelFile litModel = getExistingBlockModel(litName);
-        ModelFile unlitModel = (unlitName != null) ? getExistingBlockModel(unlitName) : litModel;
+        LodBlock lodBlock = block.get() instanceof LodBlock lb ? lb : null;
+        int maxTier = lodBlock != null ? lodBlock.maxLodTier() : 0;
+        
+        ModelFile[] tierLitModels = new ModelFile[maxTier + 1];
+        ModelFile[] tierUnlitModels = new ModelFile[maxTier + 1];
+        for (int tier = 0; tier <= maxTier; tier++) {
+            String tierLitName = LodModelSet.modelName(litName, tier);
+            tierLitModels[tier] = getExistingBlockModel(tierLitName);
+            if (unlitName != null) {
+                tierUnlitModels[tier] = getExistingBlockModel(LodModelSet.modelName(unlitName, tier));
+            } else {
+                tierUnlitModels[tier] = tierLitModels[tier];
+            }
+        }
 
         var builder = getVariantBuilder(block.get());
         var ignoredProps = ignoreLitProp
@@ -300,9 +330,12 @@ public class ModBlockStateProvider extends BlockStateProvider {
         builder.forAllStatesExcept(state -> {
             boolean lit = !ignoreLitProp && state.getValue(BlockStateProperties.LIT);
             int yRot = ((int) state.getValue(BlockStateProperties.HORIZONTAL_FACING).toYRot() + 360) % 360;
+            int tier = lodBlock != null ? state.getValue(lodBlock.lodProperty()) : 0;
+
+            ModelFile model = lit ? tierLitModels[tier] : tierUnlitModels[tier];
 
             return ConfiguredModel.builder()
-                    .modelFile(lit ? litModel : unlitModel)
+                    .modelFile(model)
                     .rotationY(yRot)
                     .build();
         }, ignoredProps);

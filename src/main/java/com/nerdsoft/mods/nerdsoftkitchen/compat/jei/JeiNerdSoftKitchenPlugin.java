@@ -2,7 +2,7 @@ package com.nerdsoft.mods.nerdsoftkitchen.compat.jei;
 
 //? if <1.21.2 {
 
-/*import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
+import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.compat.jei.category.GrillCookingCategory;
 import com.nerdsoft.mods.nerdsoftkitchen.item.IronCupItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
@@ -163,4 +163,4 @@ public class JeiNerdSoftKitchenPlugin implements IModPlugin {
         }
     }
 }
-*///?}
+//?}

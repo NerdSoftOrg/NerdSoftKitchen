@@ -14,8 +14,8 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 //? if >=1.21.2 {
-import java.util.Set;
-//?}
+/*import java.util.Set;
+*///?}
 
 public final class ModBlockEntities {
 
@@ -23,7 +23,7 @@ public final class ModBlockEntities {
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, NerdSoftKitchen.MOD_ID);
 
     //? if <1.21.2 {
-    /*@SuppressWarnings("DataFlowIssue")
+    @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GrillTableBlockEntity>> GRILL_TABLE =
             BLOCK_ENTITIES.register("grill_table", () -> BlockEntityType.Builder.of(GrillTableBlockEntity::new,
                     ModBlocks.GRILL_TABLE.get(), ModBlocks.GRILL_TABLE_SOUL.get()).build(null));
@@ -39,8 +39,8 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SkilletBlockEntity>> SKILLET =
             BLOCK_ENTITIES.register("skillet", () -> BlockEntityType.Builder.of(SkilletBlockEntity::new,
                     ModBlocks.SKILLET.get()).build(null));
-    *///?} else {
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GrillTableBlockEntity>> GRILL_TABLE =
+    //?} else {
+    /*public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GrillTableBlockEntity>> GRILL_TABLE =
             BLOCK_ENTITIES.register("grill_table", () -> new BlockEntityType<>(
                     GrillTableBlockEntity::new,
                     Set.of(ModBlocks.GRILL_TABLE.get(), ModBlocks.GRILL_TABLE_SOUL.get())
@@ -60,7 +60,7 @@ public final class ModBlockEntities {
                     SkilletBlockEntity::new,
                     Set.of(ModBlocks.SKILLET.get())
             ));
-    //?}
+    *///?}
 
     private ModBlockEntities() {
     }
