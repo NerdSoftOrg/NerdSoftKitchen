@@ -20,6 +20,14 @@ public final class NerdSoftKitchenLogger {
         NerdSoftKitchen.LOGGER.info(PREFIX + " " + message, args);
     }
 
+    public static void debug(String message) {
+        NerdSoftKitchen.LOGGER.debug(SINGLE_FORMAT, PREFIX, message);
+    }
+
+    public static void debug(String message, Object... args) {
+        NerdSoftKitchen.LOGGER.debug(PREFIX + " " + message, args);
+    }
+
     public static void warn(String message) {
         NerdSoftKitchen.LOGGER.warn(SINGLE_FORMAT, PREFIX, message);
     }

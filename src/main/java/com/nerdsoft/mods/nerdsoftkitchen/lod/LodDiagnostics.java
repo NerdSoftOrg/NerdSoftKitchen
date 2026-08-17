@@ -9,7 +9,7 @@ public final class LodDiagnostics {
     }
 
     public static void tierChanged(String blockName, BlockPos pos, int fromTier, int toTier) {
-        NerdSoftKitchenLogger.info("LOD {} at {} changed tier {} -> {}", blockName, pos, fromTier, toTier);
+        NerdSoftKitchenLogger.debug("LOD {} at {} changed tier {} -> {}", blockName, pos, fromTier, toTier);
     }
 
     public static void checkCullDistanceAgainstLod(String blockName, double cullDistanceBlocks, LodBlock lodBlock) {
