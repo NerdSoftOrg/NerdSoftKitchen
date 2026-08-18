@@ -1,5 +1,8 @@
 package com.nerdsoft.mods.nerdsoftkitchen.blockentity;
 
+import com.nerdsoft.mods.nerdsoftkitchen.perf.GlobalTickManager;
+import com.nerdsoft.mods.nerdsoftkitchen.perf.PackedPos;
+import com.nerdsoft.mods.nerdsoftkitchen.perf.StateMask;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.data.ModDataComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -41,6 +44,9 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
     int cookingSlotCount;
     int nonEmptySlotCount;
 
+    private final long packedPos;
+    private int tickSlot = -1;
+
     protected AbstractCookingBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int totalSlots) {
         super(type, pos, state);
         this.totalSlots = totalSlots;
@@ -49,6 +55,7 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
         this.cookTime = new int[totalSlots];
         this.slotSeeds = new long[totalSlots];
         this.cachedOutput = new ItemStack[totalSlots];
+        this.packedPos = PackedPos.pack(pos.getX(), pos.getY(), pos.getZ());
         for (int i = 0; i < totalSlots; i++) {
             this.slotSeeds[i] = SEED_SOURCE.nextLong();
         }
@@ -80,7 +87,7 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
                 cookProgress[slot] = 0;
                 cachedOutput[slot] = null;
                 entity.cookingSlotCount--;
-                entity.nonEmptySlotCount--;
+                entity.adjustNonEmptySlotCount(-1);
                 dirty = true;
                 entity.onCookComplete(level, pos, slot, output);
             }
@@ -91,18 +98,52 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
         }
     }
 
-    /**
-     * {@code setChanged()} + a full block-update broadcast. Centralizes the
-     * {@code sendBlockUpdated(pos, state, state, 3)} pattern that was previously duplicated in
-     * {@code genericTick} and in every subclass's own mutation methods (placing food, etc.).
-     * Requires {@link #level} to be non-null; callers that might run before the block entity is
-     * attached to a level (e.g. NBT deserialization) should not call this.
-     */
     protected final void markUpdated() {
         setChanged();
         if (level != null) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
+    }
+
+    protected final void ensureRegistered() {
+        if (tickSlot == -1) {
+            tickSlot = GlobalTickManager.INSTANCE.register(packedPos, this, (short) 0);
+        }
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        if (tickSlot != -1) {
+            GlobalTickManager.INSTANCE.unregister(packedPos);
+            tickSlot = -1;
+        }
+    }
+
+    protected final long packedPos() {
+        return packedPos;
+    }
+
+    protected final short tickState() {
+        return tickSlot != -1 ? GlobalTickManager.INSTANCE.getState(tickSlot) : 0;
+    }
+
+    protected final void setTickState(short state) {
+        ensureRegistered();
+        GlobalTickManager.INSTANCE.setState(tickSlot, state);
+    }
+
+    private void setNonEmptySlotCount(int value) {
+        nonEmptySlotCount = value;
+        setTickState(StateMask.setActive(tickState(), value > 0));
+    }
+
+    protected final void adjustNonEmptySlotCount(int delta) {
+        setNonEmptySlotCount(nonEmptySlotCount + delta);
+    }
+
+    public final boolean isTileActive() {
+        return StateMask.isActive(tickState());
     }
 
     @SuppressWarnings("unused")
@@ -166,7 +207,7 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
                 count++;
             }
         }
-        nonEmptySlotCount = count;
+        setNonEmptySlotCount(count);
     }
 
     @Override
@@ -209,7 +250,7 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
             cachedOutput[slot] = null;
             cookingSlotCount--;
         }
-        nonEmptySlotCount--;
+        adjustNonEmptySlotCount(-1);
     }
 
     @Override
@@ -221,11 +262,11 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
         items.set(slot, stack);
         cookProgress[slot] = 0;
         if (wasEmpty && !stack.isEmpty()) {
-            nonEmptySlotCount++;
+            adjustNonEmptySlotCount(1);
             this.slotSeeds[slot] = SEED_SOURCE.nextLong();
             onSlotSeedAssigned(slot);
         } else if (!wasEmpty && stack.isEmpty()) {
-            nonEmptySlotCount--;
+            adjustNonEmptySlotCount(-1);
         }
         refreshSlotRecipe(slot);
         setChanged();
@@ -258,7 +299,7 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
         Arrays.fill(cookTime, 0);
         Arrays.fill(cachedOutput, null);
         cookingSlotCount = 0;
-        nonEmptySlotCount = 0;
+        setNonEmptySlotCount(0);
         setChanged();
     }
 
@@ -280,7 +321,7 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
         items.clear();
         Arrays.fill(cachedOutput, null);
         cookingSlotCount = 0;
-        nonEmptySlotCount = 0;
+        setNonEmptySlotCount(0);
     }
 
     private static NonNullList<ItemStack> mergeStacksForDrop(NonNullList<ItemStack> source) {
@@ -353,6 +394,7 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
     @Override
     public void onLoad() {
         super.onLoad();
+        ensureRegistered();
         refreshAllSlotRecipes();
     }
 

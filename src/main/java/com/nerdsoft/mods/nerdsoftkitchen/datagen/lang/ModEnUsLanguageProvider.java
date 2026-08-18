@@ -49,6 +49,12 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
                 ModItems.PURPLE_ONION,
                 "Onion"
         );
+        addCrop(
+                ModBlocks.WILD_RICE,
+                ModItems.RICE_SEEDS,
+                ModItems.RICE,
+                "Rice"
+        );
 
         // Knifes
         addKnifePattern("%s Knife");
@@ -74,6 +80,8 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
         add(ModItems.CHEESE_TOASTED_SANDWICH, "Toasted Cheese Sandwich");
         add(ModItems.GRILLED_CHEESE, "Grilled Cheese");
         add(ModItems.SCRAMBLED_EGGS, "Scrambled Eggs");
+        add(ModItems.COOKED_RICE, "Cooked Rice");
+        add(ModItems.RICE_BOWL, "Rice Bowl");
         add(ModItems.ORGANIC_MIXTURE, "Organic Mixture");
 
         // Iron Cups

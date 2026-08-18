@@ -72,6 +72,8 @@ public final class ModItems {
             ITEMS.register("wild_lettuce", () -> new CreativeOnlyBlockItem(ModBlocks.WILD_LETTUCE.get(), new Item.Properties()));
     public static final DeferredItem<CreativeOnlyBlockItem> WILD_PURPLE_ONION =
             ITEMS.register("wild_purple_onion", () -> new CreativeOnlyBlockItem(ModBlocks.WILD_PURPLE_ONION.get(), new Item.Properties()));
+    public static final DeferredItem<CreativeOnlyBlockItem> WILD_RICE =
+            ITEMS.register("wild_rice", () -> new CreativeOnlyBlockItem(ModBlocks.WILD_RICE.get(), new Item.Properties()));
 
     /// Crop Seeds
     public static final DeferredItem<SeedItem> STRAWBERRY_SEEDS =
@@ -82,6 +84,8 @@ public final class ModItems {
             ITEMS.register("lettuce_seeds", () -> new SeedItem(ModBlocks.LETTUCE_CROP.get(), new Item.Properties()));
     public static final DeferredItem<SeedItem> PURPLE_ONION_SEEDS =
             ITEMS.register("purple_onion_seeds", () -> new SeedItem(ModBlocks.PURPLE_ONION_CROP.get(), new Item.Properties()));
+    public static final DeferredItem<SeedItem> RICE_SEEDS =
+            ITEMS.register("rice_seeds", () -> new SeedItem(ModBlocks.RICE_CROP.get(), new Item.Properties()));
 
     /// Knives
     public static final DeferredItem<KnifeItem> STONE_KNIFE = ITEMS.registerItem("stone_knife",
@@ -117,6 +121,8 @@ public final class ModItems {
             "wild_lettuce", props -> new CreativeOnlyBlockItem(ModBlocks.WILD_LETTUCE.get(), props));
     public static final DeferredItem<CreativeOnlyBlockItem> WILD_PURPLE_ONION = ITEMS.registerItem(
             "wild_purple_onion", props -> new CreativeOnlyBlockItem(ModBlocks.WILD_PURPLE_ONION.get(), props));
+    public static final DeferredItem<CreativeOnlyBlockItem> WILD_RICE = ITEMS.registerItem(
+            "wild_rice", props -> new CreativeOnlyBlockItem(ModBlocks.WILD_RICE.get(), props));
 
     /// Crop Seeds
     public static final DeferredItem<SeedItem> STRAWBERRY_SEEDS = ITEMS.registerItem(
@@ -127,6 +133,8 @@ public final class ModItems {
             "lettuce_seeds", props -> new SeedItem(ModBlocks.LETTUCE_CROP.get(), props));
     public static final DeferredItem<SeedItem> PURPLE_ONION_SEEDS = ITEMS.registerItem(
             "purple_onion_seeds", props -> new SeedItem(ModBlocks.PURPLE_ONION_CROP.get(), props));
+    public static final DeferredItem<SeedItem> RICE_SEEDS = ITEMS.registerItem(
+            "rice_seeds", props -> new SeedItem(ModBlocks.RICE_CROP.get(), props));
 
     /// Knives
     public static final DeferredItem<KnifeItem> STONE_KNIFE = ITEMS.registerItem("stone_knife",
@@ -160,6 +168,8 @@ public final class ModItems {
             props -> new Item(props.food(ModFoods.PURPLE_ONION_RAW)));
     public static final DeferredItem<Item> RAW_SANDWICH_BREAD = ITEMS.registerItem("raw_sandwich_bread",
             props -> new Item(props.food(ModFoods.RAW_SANDWICH_BREAD)));
+    public static final DeferredItem<Item> RICE = ITEMS.registerItem("rice",
+            props -> new Item(props.food(ModFoods.RICE)));
 
     public static final DeferredItem<OrganicMixtureItem> ORGANIC_MIXTURE = ITEMS.registerItem("organic_mixture",
             props -> new OrganicMixtureItem(props.stacksTo(64)));
@@ -209,6 +219,10 @@ public final class ModItems {
             props -> new Item(props.food(ModFoods.GRILLED_CHEESE)));
     public static final DeferredItem<Item> SCRAMBLED_EGGS = ITEMS.registerItem("scrambled_eggs",
             props -> new Item(props.food(ModFoods.SCRAMBLED_EGGS)));
+    public static final DeferredItem<Item> COOKED_RICE = ITEMS.registerItem("cooked_rice",
+            props -> new Item(props.food(ModFoods.COOKED_RICE)));
+    public static final DeferredItem<Item> RICE_BOWL = ITEMS.registerItem("rice_bowl",
+            props -> new Item(props.food(ModFoods.RICE_BOWL)));
 
     private ModItems() {
     }

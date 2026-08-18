@@ -1,5 +1,8 @@
 package com.nerdsoft.mods.nerdsoftkitchen.blockentity;
 
+import com.nerdsoft.mods.nerdsoftkitchen.perf.GlobalTickManager;
+import com.nerdsoft.mods.nerdsoftkitchen.perf.PackedPos;
+import com.nerdsoft.mods.nerdsoftkitchen.perf.SoilStateMask;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -21,39 +24,77 @@ public class OrganicSoilBlockEntity extends BlockEntity {
     private static final String NUTRIENTS_KEY = "Nutrients";
     private static final String THRESHOLD_KEY = "NutrientThreshold";
 
-    private int nutrients;
-    private int threshold;
+    private final long packedPos;
+    private int tickSlot = -1;
 
     public OrganicSoilBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ORGANIC_SOIL.get(), pos, state);
+        this.packedPos = PackedPos.pack(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    private void ensureRegistered() {
+        if (tickSlot == -1) {
+            tickSlot = GlobalTickManager.INSTANCE.register(packedPos, this, (short) 0);
+        }
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        ensureRegistered();
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        if (tickSlot != -1) {
+            GlobalTickManager.INSTANCE.unregister(packedPos);
+            tickSlot = -1;
+        }
+    }
+
+    private short state() {
+        ensureRegistered();
+        return GlobalTickManager.INSTANCE.getState(tickSlot);
+    }
+
+    private void setState(short value) {
+        ensureRegistered();
+        GlobalTickManager.INSTANCE.setState(tickSlot, value);
+    }
+
+    private int nutrients() {
+        return SoilStateMask.getNutrients(state());
+    }
+
+    private int threshold() {
+        return SoilStateMask.getThreshold(state());
     }
 
     public boolean isNourished() {
-        return threshold > 0 && nutrients >= threshold;
+        return SoilStateMask.isNourished(state());
     }
 
-    /**
-     * Registers one use of rotten flesh on the mushroom growing above this soil.
-     * The threshold (3-9 uses) is rolled the first time nutrients are added.
-     *
-     * @return true if this use pushed the nutrient count past the threshold (i.e. the mushroom is now ready).
-     */
     public boolean addNutrient(RandomSource random) {
-        if (threshold <= 0) {
-            threshold = MIN_NUTRIENT_THRESHOLD + random.nextInt(MAX_NUTRIENT_THRESHOLD - MIN_NUTRIENT_THRESHOLD + 1);
+        short current = state();
+        int currentThreshold = SoilStateMask.getThreshold(current);
+        if (currentThreshold <= 0) {
+            currentThreshold = MIN_NUTRIENT_THRESHOLD + random.nextInt(MAX_NUTRIENT_THRESHOLD - MIN_NUTRIENT_THRESHOLD + 1);
+            current = SoilStateMask.setThreshold(current, currentThreshold);
+            setState(current);
         }
-        if (nutrients >= threshold) {
+        int currentNutrients = SoilStateMask.getNutrients(current);
+        if (currentNutrients >= currentThreshold) {
             return true;
         }
-        nutrients++;
+        setState(SoilStateMask.incrementNutrients(current));
         setChanged();
         requestSync();
-        return nutrients >= threshold;
+        return nutrients() >= currentThreshold;
     }
 
     public void reset() {
-        nutrients = 0;
-        threshold = 0;
+        setState((short) 0);
         setChanged();
         requestSync();
     }
@@ -67,15 +108,19 @@ public class OrganicSoilBlockEntity extends BlockEntity {
     @Override
     protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.loadAdditional(tag, registries);
-        nutrients = tag.getInt(NUTRIENTS_KEY);
-        threshold = tag.getInt(THRESHOLD_KEY);
+        int loadedNutrients = tag.getInt(NUTRIENTS_KEY);
+        int loadedThreshold = tag.getInt(THRESHOLD_KEY);
+        short packed = SoilStateMask.setNutrients((short) 0, loadedNutrients);
+        packed = SoilStateMask.setThreshold(packed, loadedThreshold);
+        packed = SoilStateMask.setNourished(packed, loadedThreshold > 0 && loadedNutrients >= loadedThreshold);
+        setState(packed);
     }
 
     @Override
     protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.saveAdditional(tag, registries);
-        tag.putInt(NUTRIENTS_KEY, nutrients);
-        tag.putInt(THRESHOLD_KEY, threshold);
+        tag.putInt(NUTRIENTS_KEY, nutrients());
+        tag.putInt(THRESHOLD_KEY, threshold());
     }
 
     @Override

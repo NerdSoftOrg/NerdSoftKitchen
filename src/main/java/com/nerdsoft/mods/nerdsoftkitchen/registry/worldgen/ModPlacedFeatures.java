@@ -22,11 +22,13 @@ public final class ModPlacedFeatures {
     private static final int WILD_TOMATO_RARITY = 28;
     private static final int WILD_LETTUCE_RARITY = 26;
     private static final int WILD_PURPLE_ONION_RARITY = 30;
+    private static final int WILD_RICE_RARITY = 18;
 
     public static final ResourceKey<PlacedFeature> WILD_STRAWBERRY = key("wild_strawberry");
     public static final ResourceKey<PlacedFeature> WILD_TOMATO = key("wild_tomato");
     public static final ResourceKey<PlacedFeature> WILD_LETTUCE = key("wild_lettuce");
     public static final ResourceKey<PlacedFeature> WILD_PURPLE_ONION = key("wild_purple_onion");
+    public static final ResourceKey<PlacedFeature> WILD_RICE = key("wild_rice");
 
     private ModPlacedFeatures() {
     }
@@ -47,6 +49,7 @@ public final class ModPlacedFeatures {
         register(context, WILD_TOMATO, configuredFeatures.getOrThrow(ModConfiguredFeatures.WILD_TOMATO), WILD_TOMATO_RARITY);
         register(context, WILD_LETTUCE, configuredFeatures.getOrThrow(ModConfiguredFeatures.WILD_LETTUCE), WILD_LETTUCE_RARITY);
         register(context, WILD_PURPLE_ONION, configuredFeatures.getOrThrow(ModConfiguredFeatures.WILD_PURPLE_ONION), WILD_PURPLE_ONION_RARITY);
+        registerWildRice(context, configuredFeatures.getOrThrow(ModConfiguredFeatures.WILD_RICE));
     }
 
     private static void register(BootstrapContext<PlacedFeature> context, ResourceKey<PlacedFeature> key,
@@ -58,5 +61,15 @@ public final class ModPlacedFeatures {
                 BiomeFilter.biome()
         );
         context.register(key, new PlacedFeature(configuredFeature, modifiers));
+    }
+
+    private static void registerWildRice(BootstrapContext<PlacedFeature> context, Holder<ConfiguredFeature<?, ?>> configuredFeature) {
+        List<PlacementModifier> modifiers = List.of(
+                RarityFilter.onAverageOnceEvery(WILD_RICE_RARITY),
+                InSquarePlacement.spread(),
+                HeightmapPlacement.onHeightmap(Heightmap.Types.WORLD_SURFACE_WG),
+                BiomeFilter.biome()
+        );
+        context.register(WILD_RICE, new PlacedFeature(configuredFeature, modifiers));
     }
 }

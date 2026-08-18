@@ -29,14 +29,16 @@ public class ModItemTagsProvider extends ItemTagsProvider {
                 ModItems.STRAWBERRY.get(),
                 ModItems.TOMATO.get(),
                 ModItems.LETTUCE.get(),
-                ModItems.PURPLE_ONION.get()
+                ModItems.PURPLE_ONION.get(),
+                ModItems.RICE.get()
         );
 
         tag(Tags.Items.SEEDS).add(
                 ModItems.STRAWBERRY_SEEDS.get(),
                 ModItems.TOMATO_SEEDS.get(),
                 ModItems.LETTUCE_SEEDS.get(),
-                ModItems.PURPLE_ONION_SEEDS.get()
+                ModItems.PURPLE_ONION_SEEDS.get(),
+                ModItems.RICE_SEEDS.get()
         );
 
         tag(Tags.Items.FOODS).add(
@@ -45,6 +47,9 @@ public class ModItemTagsProvider extends ItemTagsProvider {
                 ModItems.LETTUCE.get(),
                 ModItems.PURPLE_ONION.get(),
                 ModItems.WILD_TOMATO.get(),
+                ModItems.RICE.get(),
+                ModItems.COOKED_RICE.get(),
+                ModItems.RICE_BOWL.get(),
                 ModItems.SALAD.get(),
                 ModItems.RAW_CHICKEN_PIECES.get(),
                 ModItems.COOKED_CHICKEN_PIECES.get(),

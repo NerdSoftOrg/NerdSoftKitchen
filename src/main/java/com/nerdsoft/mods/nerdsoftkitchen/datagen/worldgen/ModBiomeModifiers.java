@@ -37,6 +37,9 @@ public final class ModBiomeModifiers {
 
         registerForTags(context, biomes, placedFeatures, "wild_purple_onion", ModPlacedFeatures.WILD_PURPLE_ONION,
                 Tags.Biomes.IS_SAVANNA, Tags.Biomes.IS_PLAINS);
+
+        registerForTags(context, biomes, placedFeatures, "wild_rice", ModPlacedFeatures.WILD_RICE,
+                Tags.Biomes.IS_SWAMP, Tags.Biomes.IS_RIVER);
     }
 
     @SafeVarargs

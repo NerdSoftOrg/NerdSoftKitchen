@@ -11,9 +11,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-//? if >=1.21.2 {
- /*import net.minecraft.world.InteractionResult;
-*///?}
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -23,14 +21,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CampfireBlock;
-import net.minecraft.world.level.block.FireBlock;
-import net.minecraft.world.level.block.Mirror;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -38,23 +29,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 //? if >=1.21.2 {
 /*import net.minecraft.world.level.redstone.Orientation;
-*///?}
-//? if <1.21.2 {
-
-import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
- //?} else {
-/*import net.minecraft.world.level.block.state.properties.EnumProperty;
 *///?}
 
 
@@ -64,13 +47,16 @@ public class SkilletBlock extends BaseEntityBlock {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     //? if <1.21.2 {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-     //?} else {
+    //?} else {
     /*public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-    *///?}
+     *///?}
 
     public static final MapCodec<SkilletBlock> CODEC = simpleCodec(SkilletBlock::new);
 
-    protected static final VoxelShape SHAPE = Shapes.box(0.0625, 0.0, 0.0625, 0.9375, 0.125, 0.9375);
+    protected static final VoxelShape SHAPE_BASE = Block.box(2.0, 0.0, 2.0, 14.0, 2.0, 14.0);
+    protected static final VoxelShape RIM_NORTH = Block.box(7.25, 0.25, -6.5, 8.75, 1.75, 2.0);
+
+    protected static final VoxelShape[] RIM_BY_DIRECTION = new VoxelShape[4];
 
     private static final int SMOKE_CHANCE_COOKING = 3;
     private static final int SMOKE_CHANCE_IDLE = 8;
@@ -83,6 +69,12 @@ public class SkilletBlock extends BaseEntityBlock {
     private static final double OIL_XZ_MARGIN = 0.2;
     private static final double OIL_RISE_SPEED = 0.01;
 
+    static {
+        for (Direction dir : Direction.Plane.HORIZONTAL) {
+            RIM_BY_DIRECTION[dir.get2DDataValue()] = rotateShape(Direction.NORTH, dir, RIM_NORTH);
+        }
+    }
+
     public SkilletBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(
@@ -92,7 +84,6 @@ public class SkilletBlock extends BaseEntityBlock {
                         .setValue(FACING, Direction.NORTH)
         );
     }
-
 
     public static boolean isHeatSourceBelow(LevelReader level, BlockPos pos) {
         BlockPos below = pos.below();
@@ -114,10 +105,10 @@ public class SkilletBlock extends BaseEntityBlock {
     }
 
     @Override
-    //? if <1.21.2 {
+            //? if <1.21.2 {
     protected @NotNull ItemInteractionResult useItemOn(
-     //?} else
-    //protected @NotNull InteractionResult useItemOn(
+            //?} else
+            //protected @NotNull InteractionResult useItemOn(
             @NotNull ItemStack stack, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult
     ) {
         if (level.getBlockEntity(pos) instanceof SkilletBlockEntity skilletEntity) {
@@ -127,20 +118,20 @@ public class SkilletBlock extends BaseEntityBlock {
                     player.awardStat(Stats.INTERACT_WITH_CAMPFIRE);
                     //? if <1.21.2 {
                     return ItemInteractionResult.SUCCESS;
-                     //?} else
+                    //?} else
                     //return InteractionResult.SUCCESS;
                 }
 
                 //? if <1.21.2 {
                 return ItemInteractionResult.CONSUME;
-                 //?} else
+                //?} else
                 //return InteractionResult.CONSUME;
             }
         }
 
         //? if <1.21.2 {
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-         //?} else
+        //?} else
         //return InteractionResult.PASS;
     }
 
@@ -152,14 +143,41 @@ public class SkilletBlock extends BaseEntityBlock {
         super.stepOn(level, pos, state, entity);
     }
 
-    @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        LevelAccessor levelaccessor = context.getLevel();
-        BlockPos blockpos = context.getClickedPos();
-        return this.defaultBlockState()
-                .setValue(LIT, isHeatSourceBelow(levelaccessor, blockpos))
-                .setValue(FACING, context.getHorizontalDirection());
+        Direction facing = context.getHorizontalDirection().getOpposite();
+        BlockState state = this.defaultBlockState().setValue(FACING, facing);
+        Level level = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+
+        if (canSurvive(state, level, pos)) {
+            return state;
+        }
+
+        for (Direction altFacing : Direction.Plane.HORIZONTAL) {
+            BlockState altState = state.setValue(FACING, altFacing);
+            if (canSurvive(altState, level, pos)) {
+                return altState;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        Direction facing = state.getValue(FACING);
+        BlockPos neighborPos = pos.relative(facing);
+        BlockState neighborState = level.getBlockState(neighborPos);
+
+        if (neighborState.is(this)) {
+            Direction neighborFacing = neighborState.getValue(FACING);
+            if (neighborFacing == facing.getOpposite()) {
+                return false;
+            }
+        }
+
+        return super.canSurvive(state, level, pos);
     }
 
     //? if <1.21.2 {
@@ -213,14 +231,20 @@ public class SkilletBlock extends BaseEntityBlock {
 
     @Override
     public void playerDestroy(@NotNull Level level, @NotNull Player player, @NotNull BlockPos pos,
-                               @NotNull BlockState state, @Nullable BlockEntity blockEntity, @NotNull ItemStack tool) {
-        if (!level.isClientSide
-                && !player.isCreative()
-                && blockEntity instanceof SkilletBlockEntity skilletEntity
-                && skilletEntity.isHotEligible()) {
-            ItemStack hotStack = new ItemStack(this);
-            SkilletBlockItem.pickupHotState(hotStack, skilletEntity, level);
-            popResource(level, pos, hotStack);
+                              @NotNull BlockState state, @Nullable BlockEntity blockEntity, @NotNull ItemStack tool) {
+        if (!level.isClientSide && !player.isCreative() && blockEntity instanceof SkilletBlockEntity skilletEntity) {
+
+            ItemStack stack = new ItemStack(this);
+
+            if (skilletEntity.getDamage() > 0) {
+                stack.setDamageValue(skilletEntity.getDamage());
+            }
+
+            if (skilletEntity.isHotEligible()) {
+                SkilletBlockItem.pickupHotState(stack, skilletEntity, level);
+            }
+
+            popResource(level, pos, stack);
             player.awardStat(Stats.BLOCK_MINED.get(this));
             player.causeFoodExhaustion(0.005F);
             return;
@@ -230,12 +254,42 @@ public class SkilletBlock extends BaseEntityBlock {
 
     @Override
     protected @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {
-        return SHAPE;
+        Direction facing = state.getValue(FACING);
+        BlockPos neighborPos = pos.relative(facing);
+
+        if (level.getBlockState(neighborPos).isSolidRender(level, neighborPos)) {
+            return SHAPE_BASE;
+        }
+
+        return Shapes.or(SHAPE_BASE, RIM_BY_DIRECTION[facing.get2DDataValue()]);
     }
 
     @Override
     protected @NotNull VoxelShape getCollisionShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {
-        return SHAPE;
+        Direction facing = state.getValue(FACING);
+        int index = facing.get2DDataValue();
+        VoxelShape rim = RIM_BY_DIRECTION[index];
+
+        if (context instanceof EntityCollisionContext entityContext) {
+            Entity entity = entityContext.getEntity();
+            if (entity != null) {
+                VoxelShape entityShape = Shapes.create(entity.getBoundingBox().move(-pos.getX(), -pos.getY(), -pos.getZ()));
+
+                if (Shapes.joinIsNotEmpty(rim, entityShape, BooleanOp.AND)) {
+                    return SHAPE_BASE;
+                }
+            }
+        }
+
+        return Shapes.or(SHAPE_BASE, rim);
+    }
+
+    @Override
+    public @NotNull BlockState updateShape(BlockState state, @NotNull Direction facing, @NotNull BlockState neighborState, @NotNull LevelAccessor level, @NotNull BlockPos currentPos, @NotNull BlockPos neighborPos) {
+        if (facing == state.getValue(FACING) && !state.canSurvive(level, currentPos)) {
+            return Blocks.AIR.defaultBlockState();
+        }
+        return super.updateShape(state, facing, neighborState, level, currentPos, neighborPos);
     }
 
     @Override
@@ -301,7 +355,7 @@ public class SkilletBlock extends BaseEntityBlock {
     }
 
     @Override
-    //? if <1.21.2 {
+            //? if <1.21.2 {
     protected boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType type) {
         return false;
     }
@@ -310,4 +364,18 @@ public class SkilletBlock extends BaseEntityBlock {
         return false;
     }
     *///?}
+
+    @SuppressWarnings("SameParameterValue")
+    private static VoxelShape rotateShape(Direction from, Direction to, VoxelShape shape) {
+        VoxelShape[] buffer = new VoxelShape[]{shape, Shapes.empty()};
+        int times = (to.get2DDataValue() - from.get2DDataValue() + 4) % 4;
+
+        for (int i = 0; i < times; i++) {
+            buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) ->
+                    buffer[1] = Shapes.or(buffer[1], Shapes.create(1.0 - maxZ, minY, minX, 1.0 - minZ, maxY, maxX)));
+            buffer[0] = buffer[1];
+            buffer[1] = Shapes.empty();
+        }
+        return buffer[0];
+    }
 }

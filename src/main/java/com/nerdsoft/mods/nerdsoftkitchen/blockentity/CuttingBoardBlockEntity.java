@@ -2,6 +2,9 @@ package com.nerdsoft.mods.nerdsoftkitchen.blockentity;
 
 import com.nerdsoft.mods.nerdsoftkitchen.lod.LodBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.lod.LodResolver;
+import com.nerdsoft.mods.nerdsoftkitchen.perf.GlobalTickManager;
+import com.nerdsoft.mods.nerdsoftkitchen.perf.PackedPos;
+import com.nerdsoft.mods.nerdsoftkitchen.perf.StateMask;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -23,8 +26,45 @@ public class CuttingBoardBlockEntity extends BlockEntity {
     private static final String ITEM_KEY = "Item";
     private ItemStack storedItem = ItemStack.EMPTY;
 
+    private final long packedPos;
+    private int tickSlot = -1;
+
     public CuttingBoardBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CUTTING_BOARD.get(), pos, state);
+        this.packedPos = PackedPos.pack(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    private void ensureRegistered() {
+        if (tickSlot == -1) {
+            tickSlot = GlobalTickManager.INSTANCE.register(packedPos, this, (short) 0);
+        }
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        ensureRegistered();
+        syncActiveFlag();
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        if (tickSlot != -1) {
+            GlobalTickManager.INSTANCE.unregister(packedPos);
+            tickSlot = -1;
+        }
+    }
+
+    private void syncActiveFlag() {
+        ensureRegistered();
+        short current = GlobalTickManager.INSTANCE.getState(tickSlot);
+        GlobalTickManager.INSTANCE.setState(tickSlot, StateMask.setActive(current, !storedItem.isEmpty()));
+    }
+
+    @SuppressWarnings("unused")
+    public boolean isOccupiedFlag() {
+        return tickSlot != -1 && StateMask.isActive(GlobalTickManager.INSTANCE.getState(tickSlot));
     }
 
     public boolean isEmpty() {
@@ -46,6 +86,7 @@ public class CuttingBoardBlockEntity extends BlockEntity {
 
     public void setStoredItem(ItemStack stack) {
         this.storedItem = stack;
+        syncActiveFlag();
         setChanged();
         requestSync();
     }
@@ -53,6 +94,7 @@ public class CuttingBoardBlockEntity extends BlockEntity {
     public ItemStack clearStoredItem() {
         ItemStack removed = storedItem;
         storedItem = ItemStack.EMPTY;
+        syncActiveFlag();
         setChanged();
         requestSync();
         return removed;
@@ -72,6 +114,7 @@ public class CuttingBoardBlockEntity extends BlockEntity {
             ContainerHelper.loadAllItems(tag.getCompound(ITEM_KEY), holder, registries);
         }
         storedItem = holder.getFirst();
+        syncActiveFlag();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.nerdsoft.mods.nerdsoftkitchen.blockentity;
 
 import com.nerdsoft.mods.nerdsoftkitchen.block.SkilletBlock;
+import com.nerdsoft.mods.nerdsoftkitchen.perf.StateMask;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipeInput;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.mix.MixRecipe;
@@ -56,8 +57,9 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
     private final int renderSeedBase;
 
     private final List<ItemStack> occupiedScratch = new ArrayList<>(PAN_SLOTS_COUNT);
+
     private long hotUntilTick;
-    private boolean mixActive;
+    private int damage = 0;
 
     public SkilletBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SKILLET.get(), pos, state, PAN_SLOTS_COUNT);
@@ -89,9 +91,22 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
         return panOffsetZ[slot];
     }
 
+    public int getDamage() {
+        return this.damage;
+    }
+
+    public void setDamage(int damage) {
+        this.damage = damage;
+        setChanged();
+    }
+
     @SuppressWarnings("unused")
     public boolean isMixActive() {
-        return mixActive;
+        return StateMask.isHeated(tickState());
+    }
+
+    private void setMixActive(boolean value) {
+        setTickState(StateMask.setHeated(tickState(), value));
     }
 
     private void cachePanTransform(int slot) {
@@ -125,11 +140,8 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
         return state.getValue(SkilletBlock.LIT);
     }
 
-    private boolean canCookAt(Level level, ItemStack stack) {
-        if (level instanceof ServerLevel serverLevel) {
-            return cookRecipeCheck.getRecipeFor(new CookRecipeInput(stack), serverLevel).isPresent();
-        }
-        return false;
+    private boolean canCookAt(ServerLevel serverLevel, ItemStack stack) {
+        return cookRecipeCheck.getRecipeFor(new CookRecipeInput(stack), serverLevel).isPresent();
     }
 
     @Override
@@ -160,25 +172,26 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
     private void refreshMixState() {
         Level level = getLevel();
         if (!(level instanceof ServerLevel serverLevel)) {
-            mixActive = false;
+            setMixActive(false);
             return;
         }
 
         List<ItemStack> occupied = collectOccupied();
         if (occupied.size() < 2) {
-            mixActive = false;
+            setMixActive(false);
             return;
         }
 
-        mixActive = mixRecipeCheck.getRecipeFor(new MixRecipeInput(occupied), serverLevel).isPresent();
+        boolean active = mixRecipeCheck.getRecipeFor(new MixRecipeInput(occupied), serverLevel).isPresent();
+        setMixActive(active);
     }
 
     public boolean hasCookableRecipe(ItemStack stack) {
         Level level = getLevel();
-        if (level == null || !hasFreeSlot()) {
+        if (!(level instanceof ServerLevel serverLevel) || !hasFreeSlot()) {
             return false;
         }
-        return canCookAt(level, stack) || couldContributeToMix((ServerLevel) level, stack);
+        return canCookAt(serverLevel, stack) || couldContributeToMix(serverLevel, stack);
     }
 
     private boolean couldContributeToMix(ServerLevel serverLevel, ItemStack candidate) {
@@ -259,13 +272,13 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
         CookResult result = resolveRecipe(lvl, slot, inserted);
 
         items.set(slot, food.consumeAndReturn(1, entity));
-        nonEmptySlotCount++;
+        adjustNonEmptySlotCount(1);
         this.slotSeeds[slot] = lvl.getRandom().nextLong();
         onSlotSeedAssigned(slot);
 
         refreshMixState();
 
-        if (mixActive) {
+        if (isMixActive()) {
             consolidateMixCook(lvl);
         } else if (result != null) {
             cookProgress[slot] = 0;
@@ -336,14 +349,14 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
         }
         Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 1.0625, pos.getZ() + 0.5, result);
 
-        if (mixActive) {
+        if (isMixActive()) {
             for (int i = 0; i < PAN_SLOTS_COUNT; i++) {
                 if (!items.get(i).isEmpty()) {
                     items.set(i, ItemStack.EMPTY);
-                    nonEmptySlotCount--;
+                    adjustNonEmptySlotCount(-1);
                 }
             }
-            mixActive = false;
+            setMixActive(false);
         }
     }
 
@@ -376,11 +389,11 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
         if (!getItem(slot).isEmpty()) {
             return false;
         }
-        Level level = getLevel();
+        ServerLevel level = (ServerLevel) getLevel();
         if (level == null) {
             return false;
         }
-        return canCookAt(level, stack) || couldContributeToMix((ServerLevel) level, stack);
+        return canCookAt(level, stack) || couldContributeToMix(level, stack);
     }
 
     @Override
@@ -400,11 +413,13 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
     protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.loadAdditional(tag, registries);
         hotUntilTick = tag.getLong(HOT_UNTIL_KEY);
+        this.damage = tag.getInt("Damage");
     }
 
     @Override
     protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.saveAdditional(tag, registries);
         tag.putLong(HOT_UNTIL_KEY, hotUntilTick);
+        tag.putInt("Damage", this.damage);
     }
 }

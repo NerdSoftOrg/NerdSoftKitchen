@@ -35,9 +35,11 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                 ModBlocks.WILD_TOMATO.get(),
                 ModBlocks.WILD_LETTUCE.get(),
                 ModBlocks.WILD_PURPLE_ONION.get(),
+                ModBlocks.WILD_RICE.get(),
                 ModBlocks.STRAWBERRY_CROP.get(),
                 ModBlocks.LETTUCE_CROP.get(),
                 ModBlocks.PURPLE_ONION_CROP.get(),
+                ModBlocks.RICE_CROP.get(),
                 ModBlocks.TOMATO_CROP.get(),
                 ModBlocks.TOMATO_CROP_POLE.get()
         );
@@ -47,9 +49,11 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                 ModBlocks.WILD_TOMATO.get(),
                 ModBlocks.WILD_LETTUCE.get(),
                 ModBlocks.WILD_PURPLE_ONION.get(),
+                ModBlocks.WILD_RICE.get(),
                 ModBlocks.STRAWBERRY_CROP.get(),
                 ModBlocks.LETTUCE_CROP.get(),
                 ModBlocks.PURPLE_ONION_CROP.get(),
+                ModBlocks.RICE_CROP.get(),
                 ModBlocks.TOMATO_CROP.get(),
                 ModBlocks.TOMATO_CROP_POLE.get()
         );

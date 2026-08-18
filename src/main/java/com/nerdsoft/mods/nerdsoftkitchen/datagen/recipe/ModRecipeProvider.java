@@ -43,7 +43,8 @@ public class ModRecipeProvider extends RecipeProvider implements DataProvider {
 
             ModItems.RAW_CHICKEN_PIECES.get(), new CookingEntry(ModItems.COOKED_CHICKEN_PIECES.get(), DEFAULT_GRILL_COOK_TIME),
             Items.EGG, new CookingEntry(ModItems.FRIED_EGG.get(), FAST_GRILL_COOK_TIME),
-            ModItems.CHEESE_SLICE.get(), new CookingEntry(ModItems.GRILLED_CHEESE.get(), FAST_GRILL_COOK_TIME)
+            ModItems.CHEESE_SLICE.get(), new CookingEntry(ModItems.GRILLED_CHEESE.get(), FAST_GRILL_COOK_TIME),
+            ModItems.RICE.get(), new CookingEntry(ModItems.COOKED_RICE.get(), DEFAULT_GRILL_COOK_TIME)
     );
 
     private record CookingEntry(Item result, int cookTime) {}
@@ -96,6 +97,12 @@ public class ModRecipeProvider extends RecipeProvider implements DataProvider {
                 .unlockedBy(getHasName(ModItems.LETTUCE.get()), has(ModItems.LETTUCE.get()))
                 .save(output);
 
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, ModItems.RICE_BOWL.get())
+                .requires(ModItems.COOKED_RICE.get())
+                .requires(Items.BOWL)
+                .unlockedBy(getHasName(ModItems.COOKED_RICE.get()), has(ModItems.COOKED_RICE.get()))
+                .save(output);
+
         ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, ModItems.CHEESE.get())
                 .requires(Items.MILK_BUCKET)
                 .requires(Items.MILK_BUCKET)
@@ -124,9 +131,6 @@ public class ModRecipeProvider extends RecipeProvider implements DataProvider {
         cuttingRecipe(output, Ingredient.of(ModItems.CHEESE.get()), new ItemStack(ModItems.CHEESE_SLICE.get(), 4));
         cuttingRecipe(output, Ingredient.of(Items.CHICKEN), new ItemStack(ModItems.RAW_CHICKEN_PIECES.get(), 2));
 
-        // Pan-exclusive stir-fry: egg + cheese slice -> scrambled eggs. Only matches in the
-        // Skillet (MixRecipe is never checked by GrillTableBlockEntity), demonstrating the
-        // "exclusive recipes for stir-fries and mixed dishes" requirement.
         panMixRecipe(output, "scrambled_eggs",
                 new ItemStack(ModItems.SCRAMBLED_EGGS.get()),
                 Ingredient.of(Items.EGG), Ingredient.of(ModItems.CHEESE_SLICE.get()));
@@ -198,7 +202,8 @@ public class ModRecipeProvider extends RecipeProvider implements DataProvider {
             // Ingredientes / Comidas
             ModItems.RAW_CHICKEN_PIECES.get(), new CookingEntry(ModItems.COOKED_CHICKEN_PIECES.get(), DEFAULT_GRILL_COOK_TIME),
             Items.EGG, new CookingEntry(ModItems.FRIED_EGG.get(), FAST_GRILL_COOK_TIME),
-            ModItems.CHEESE_SLICE.get(), new CookingEntry(ModItems.GRILLED_CHEESE.get(), FAST_GRILL_COOK_TIME)
+            ModItems.CHEESE_SLICE.get(), new CookingEntry(ModItems.GRILLED_CHEESE.get(), FAST_GRILL_COOK_TIME),
+            ModItems.RICE.get(), new CookingEntry(ModItems.COOKED_RICE.get(), DEFAULT_GRILL_COOK_TIME)
     );
 
     private record CookingEntry(Item result, int cookTime) {}
@@ -249,6 +254,12 @@ public class ModRecipeProvider extends RecipeProvider implements DataProvider {
                 .requires(ModItems.LETTUCE.get())
                 .requires(Items.BOWL)
                 .unlockedBy(getHasName(ModItems.LETTUCE.get()), has(ModItems.LETTUCE.get()))
+                .save(this.output);
+
+        shapeless(RecipeCategory.FOOD, ModItems.RICE_BOWL.get())
+                .requires(ModItems.COOKED_RICE.get())
+                .requires(Items.BOWL)
+                .unlockedBy(getHasName(ModItems.COOKED_RICE.get()), has(ModItems.COOKED_RICE.get()))
                 .save(this.output);
 
         shapeless(RecipeCategory.FOOD, ModItems.CHEESE.get())

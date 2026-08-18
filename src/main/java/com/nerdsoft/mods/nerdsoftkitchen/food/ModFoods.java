@@ -20,6 +20,8 @@ public final class ModFoods {
             new FoodProperties.Builder().nutrition(1).saturationModifier(0.2f).alwaysEdible().build();
     public static final FoodProperties PURPLE_ONION_RAW =
             new FoodProperties.Builder().nutrition(1).saturationModifier(0.1f).alwaysEdible().build();
+    public static final FoodProperties RICE =
+            new FoodProperties.Builder().nutrition(1).saturationModifier(0.2f).alwaysEdible().build();
     //? if <1.21.2 {
     @SuppressWarnings("deprecation")
     public static final FoodProperties RAW_CHICKEN_PIECES =
@@ -61,6 +63,10 @@ public final class ModFoods {
             new FoodProperties.Builder().nutrition(4).saturationModifier(0.5f).build();
     public static final FoodProperties SCRAMBLED_EGGS =
             new FoodProperties.Builder().nutrition(6).saturationModifier(0.5f).build();
+    public static final FoodProperties COOKED_RICE =
+            new FoodProperties.Builder().nutrition(6).saturationModifier(0.6f).build();
+    public static final FoodProperties RICE_BOWL =
+            new FoodProperties.Builder().nutrition(7).saturationModifier(0.7f).build();
 
     private ModFoods() {
     }

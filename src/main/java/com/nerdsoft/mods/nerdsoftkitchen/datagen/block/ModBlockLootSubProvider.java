@@ -46,6 +46,9 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
     private static final float WILD_YIELD_MIN = 1.0F;
     private static final float WILD_YIELD_MAX = 3.0F;
 
+    private static final float RICE_YIELD_MIN = 1.0F;
+    private static final float RICE_YIELD_MAX = 3.0F;
+
     public ModBlockLootSubProvider(HolderLookup.Provider registries) {
         super(Set.of(), FeatureFlags.REGISTRY.allFlags(), registries);
     }
@@ -56,10 +59,6 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.GRILL_TABLE_SOUL.get());
         dropSelf(ModBlocks.CUTTING_BOARD.get());
         dropSelf(ModBlocks.ORGANIC_SOIL.get());
-        // Note: dropSelf is only used for the "cold" break case. SkilletBlock#playerDestroy
-        // intercepts the hot-break case and pops a pre-stamped item directly, bypassing this
-        // loot table entirely - see that method's javadoc for why playerDestroy (not the loot
-        // table) is the correct hook for that mechanic.
         dropSelf(ModBlocks.SKILLET.get());
 
         add(ModBlocks.FERTILE_FARMLAND.get(), block -> LootTable.lootTable()
@@ -69,6 +68,7 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         add(ModBlocks.WILD_TOMATO.get(), block -> createWildCropDrops(ModItems.TOMATO.get(), ModItems.TOMATO_SEEDS.get()));
         add(ModBlocks.WILD_LETTUCE.get(), block -> createWildCropDrops(ModItems.LETTUCE.get(), ModItems.LETTUCE_SEEDS.get()));
         add(ModBlocks.WILD_PURPLE_ONION.get(), block -> createWildCropDrops(ModItems.PURPLE_ONION.get(), ModItems.PURPLE_ONION_SEEDS.get()));
+        add(ModBlocks.WILD_RICE.get(), block -> createWildCropDrops(ModItems.RICE.get(), ModItems.RICE_SEEDS.get()));
 
         add(ModBlocks.STRAWBERRY_CROP.get(), block -> createMatureCropDrops(block, BlockStateProperties.AGE_3,
                 ModItems.STRAWBERRY.get(), STRAWBERRY_YIELD_MIN, STRAWBERRY_YIELD_MAX, ModItems.STRAWBERRY_SEEDS.get()));
@@ -76,6 +76,8 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
                 ModItems.LETTUCE.get(), LETTUCE_YIELD_MIN, LETTUCE_YIELD_MAX, ModItems.LETTUCE_SEEDS.get()));
         add(ModBlocks.PURPLE_ONION_CROP.get(), block -> createMatureCropDrops(block, BlockStateProperties.AGE_3,
                 ModItems.PURPLE_ONION.get(), PURPLE_ONION_YIELD_MIN, PURPLE_ONION_YIELD_MAX, ModItems.PURPLE_ONION_SEEDS.get()));
+        add(ModBlocks.RICE_CROP.get(), block -> createMatureCropDrops(block, BlockStateProperties.AGE_3,
+                ModItems.RICE.get(), RICE_YIELD_MIN, RICE_YIELD_MAX, ModItems.RICE_SEEDS.get()));
 
         add(ModBlocks.TOMATO_CROP.get(), block -> createMatureCropDrops(block, BlockStateProperties.AGE_4,
                 ModItems.TOMATO.get(), TOMATO_YIELD_MIN, TOMATO_YIELD_MAX, ModItems.TOMATO_SEEDS.get()));
@@ -135,9 +137,11 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
                 ModBlocks.WILD_TOMATO.get(),
                 ModBlocks.WILD_LETTUCE.get(),
                 ModBlocks.WILD_PURPLE_ONION.get(),
+                ModBlocks.WILD_RICE.get(),
                 ModBlocks.STRAWBERRY_CROP.get(),
                 ModBlocks.LETTUCE_CROP.get(),
                 ModBlocks.PURPLE_ONION_CROP.get(),
+                ModBlocks.RICE_CROP.get(),
                 ModBlocks.TOMATO_CROP.get(),
                 ModBlocks.TOMATO_CROP_POLE.get(),
                 ModBlocks.FERTILE_FARMLAND.get(),

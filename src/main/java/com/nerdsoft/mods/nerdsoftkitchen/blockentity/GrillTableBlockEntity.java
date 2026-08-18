@@ -3,6 +3,7 @@ package com.nerdsoft.mods.nerdsoftkitchen.blockentity;
 import com.nerdsoft.mods.nerdsoftkitchen.block.GrillTableBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.lod.LodBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.lod.LodResolver;
+import com.nerdsoft.mods.nerdsoftkitchen.perf.StateMask;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipeInput;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
@@ -118,6 +119,15 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
         return renderSeedBase;
     }
 
+    @SuppressWarnings("unused")
+    public boolean isHayBelowCached() {
+        return StateMask.isHotResidual(tickState());
+    }
+
+    private void setHayBelowCached(boolean value) {
+        setTickState(StateMask.setHotResidual(tickState(), value));
+    }
+
     private void cacheGrillTransform(int slot) {
         int localSlot = slot - GRILL_SLOTS_START;
         long baseSeed = slotSeeds[slot];
@@ -155,14 +165,15 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
 
     @Override
     public void onLoad() {
+        super.onLoad();
         if (getBlockState().getBlock() instanceof GrillTableBlock grillTableBlock) {
             speedMultiplier = resolveSpeedMultiplier(grillTableBlock.isSoul());
         }
-        super.onLoad();
     }
 
     private float resolveSpeedMultiplier(boolean soul) {
         boolean hayBelow = level != null && level.getBlockState(worldPosition.below()).is(Blocks.HAY_BLOCK);
+        setHayBelowCached(hayBelow);
         float multiplier = BASE_MULTIPLIER;
         if (soul) multiplier *= SOUL_MULTIPLIER;
         if (hayBelow) multiplier *= HAY_BALE_MULTIPLIER;
@@ -322,7 +333,7 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
             cookTime[slot] = result.cookTime();
             items.set(slot, food.consumeAndReturn(1, entity));
             cookingSlotCount++;
-            nonEmptySlotCount++;
+            adjustNonEmptySlotCount(1);
             this.slotSeeds[slot] = lvl.getRandom().nextLong();
             onSlotSeedAssigned(slot);
             playPlaceFood(lvl, getBlockPos());
