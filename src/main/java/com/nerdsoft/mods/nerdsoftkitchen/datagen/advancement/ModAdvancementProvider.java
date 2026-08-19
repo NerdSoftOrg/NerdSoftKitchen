@@ -3,23 +3,31 @@ package com.nerdsoft.mods.nerdsoftkitchen.datagen.advancement;
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.item.IronCupItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.item.ModItems;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.AdvancementType;
-import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.*;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPredicate;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+
+//? if <1.21.2 {
+import net.minecraft.advancements.critereon.BlockPredicate;
+import net.minecraft.advancements.critereon.LocationPredicate;
+import net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger;
+//?} else {
+/*import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.Item;
+*///?}
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -37,6 +45,10 @@ public class ModAdvancementProvider extends AdvancementProvider {
 
     private static void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver,
                                  ExistingFileHelper existingFileHelper) {
+
+        //? if >=1.21.2 {
+        /*HolderLookup.RegistryLookup<Item> itemRegistry = registries.lookupOrThrow(Registries.ITEM);
+        *///?}
 
         AdvancementHolder root = Builder.advancement()
                 .display(
@@ -112,7 +124,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
                 .requirements(AdvancementRequirements.Strategy.OR)
                 .save(saver, id("craft_master_knife"));
 
-        // --- Farming branch: one advancement per crop, feeding into harvest_all ---
+        // --- Farming branch ---
 
         AdvancementHolder growStrawberry = Builder.advancement()
                 .parent(root)
@@ -169,16 +181,33 @@ public class ModAdvancementProvider extends AdvancementProvider {
         AdvancementHolder trellisMaster = Builder.advancement()
                 .parent(growTomato)
                 .display(
-                        ModItems.TOMATO.get(),
+                        Items.STICK,
                         Component.translatable("advancements.nerdsoftkitchen.trellis_master.title"),
                         Component.translatable("advancements.nerdsoftkitchen.trellis_master.description"),
                         null,
                         AdvancementType.GOAL,
                         true, true, false
                 )
-                .addCriterion("has_tomato_pole", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.TOMATO.get()))
+                //? if <1.21.2 {
+                .addCriterion("staked_tomato_crop", ItemUsedOnLocationTrigger.TriggerInstance.itemUsedOnBlock(
+                        LocationPredicate.Builder.location().setBlock(BlockPredicate.Builder.block().of(ModBlocks.TOMATO_CROP.get())),
+                        ItemPredicate.Builder.item().of(Items.STICK)
+                ))
+                //?} else {
+                /*.addCriterion("staked_tomato_crop", ItemUsedOnLocationTrigger.TriggerInstance.itemUsedOnBlock(
+                        LocationPredicate.Builder.location().setBlock(BlockPredicate.Builder.block().of(
+                                registries.lookupOrThrow(Registries.BLOCK),
+                                ModBlocks.TOMATO_CROP.get()
+                        )),
+                        ItemPredicate.Builder.item().of(
+                                itemRegistry,
+                                Items.STICK
+                        )
+                ))
+                *///?}
                 .save(saver, id("build_tomato_trellis"));
 
+        //? if <1.21.2 {
         AdvancementHolder harvestAll = Builder.advancement()
                 .parent(root)
                 .display(
@@ -189,13 +218,38 @@ public class ModAdvancementProvider extends AdvancementProvider {
                         AdvancementType.GOAL,
                         true, true, false
                 )
-                .addCriterion("has_strawberry", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.STRAWBERRY.get()))
-                .addCriterion("has_tomato", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.TOMATO.get()))
-                .addCriterion("has_lettuce", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.LETTUCE.get()))
-                .addCriterion("has_purple_onion", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.PURPLE_ONION.get()))
+                .addCriterion("has_strawberry", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ItemPredicate.Builder.item().of(ModItems.STRAWBERRY.get()).build()))
+                .addCriterion("has_tomato", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ItemPredicate.Builder.item().of(ModItems.TOMATO.get()).build()))
+                .addCriterion("has_lettuce", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ItemPredicate.Builder.item().of(ModItems.LETTUCE.get()).build()))
+                .addCriterion("has_purple_onion", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ItemPredicate.Builder.item().of(ModItems.PURPLE_ONION.get()).build()))
                 .save(saver, id("harvest_all_crops"));
+        //?} else {
+        /*AdvancementHolder harvestAll = Builder.advancement()
+                .parent(root)
+                .display(
+                        ModItems.SALAD.get(),
+                        Component.translatable("advancements.nerdsoftkitchen.harvest_all.title"),
+                        Component.translatable("advancements.nerdsoftkitchen.harvest_all.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true, true, false
+                )
+                .addCriterion("has_strawberry", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ItemPredicate.Builder.item().of(itemRegistry, ModItems.STRAWBERRY.get()).build()))
+                .addCriterion("has_tomato", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ItemPredicate.Builder.item().of(itemRegistry, ModItems.TOMATO.get()).build()))
+                .addCriterion("has_lettuce", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ItemPredicate.Builder.item().of(itemRegistry, ModItems.LETTUCE.get()).build()))
+                .addCriterion("has_purple_onion", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ItemPredicate.Builder.item().of(itemRegistry, ModItems.PURPLE_ONION.get()).build()))
+                .save(saver, id("harvest_all_crops"));
+        *///?}
 
-        // --- Cooking branch (grill + cutting board results) ---
+        // --- Cooking branch ---
 
         AdvancementHolder makeSalad = Builder.advancement()
                 .parent(harvestAll)
@@ -251,21 +305,21 @@ public class ModAdvancementProvider extends AdvancementProvider {
                 .addCriterion("has_grilled_cheese", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.GRILLED_CHEESE.get()))
                 .save(saver, id("make_grilled_cheese"));
 
-        AdvancementHolder scrambledEggs = Builder.advancement()
+        AdvancementHolder potatoTortilla = Builder.advancement()
                 .parent(cuttingBoard)
                 .display(
-                        ModItems.SCRAMBLED_EGGS.get(),
-                        Component.translatable("advancements.nerdsoftkitchen.scrambled_eggs.title"),
-                        Component.translatable("advancements.nerdsoftkitchen.scrambled_eggs.description"),
+                        ModItems.POTATO_TORTILLA.get(),
+                        Component.translatable("advancements.nerdsoftkitchen.potato_tortilla.title"),
+                        Component.translatable("advancements.nerdsoftkitchen.potato_tortilla.description"),
                         null,
                         AdvancementType.GOAL,
                         true, true, false
                 )
                 .rewards(AdvancementRewards.Builder.experience(10))
-                .addCriterion("has_scrambled_eggs", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.SCRAMBLED_EGGS.get()))
-                .save(saver, id("make_scrambled_eggs"));
+                .addCriterion("has_potato_tortilla", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.POTATO_TORTILLA.get()))
+                .save(saver, id("make_potato_tortilla"));
 
-//? if <1.21.2 {
+        //? if <1.21.2 {
         AdvancementHolder milkCup = Builder.advancement()
                 .parent(ironCup)
                 .display(
@@ -318,7 +372,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
                                 .build()))
                 .save(saver, id("make_strawberry_yogurt"));
 
-        // --- Capstone: requires every branch's final goal ---
+        // --- Capstone ---
 
         Builder.advancement()
                 .parent(strawberryYogurt)
@@ -342,9 +396,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
                 .requirements(AdvancementRequirements.Strategy.AND)
                 .save(saver, id("gourmet_chef"));
         //?} else {
-        /*HolderLookup.RegistryLookup<Item> itemRegistry = registries.lookupOrThrow(Registries.ITEM);
-
-        AdvancementHolder milkCup = Builder.advancement()
+        /*AdvancementHolder milkCup = Builder.advancement()
                 .parent(ironCup)
                 .display(
                         ironCupWith(IronCupContent.MILK),
@@ -396,9 +448,6 @@ public class ModAdvancementProvider extends AdvancementProvider {
                                 .build()))
                 .save(saver, id("make_strawberry_yogurt"));
 
-
-        // --- Capstone: requires every branch's final goal ---
-
         Builder.advancement()
                 .parent(strawberryYogurt)
                 .display(
@@ -420,7 +469,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
                 .addCriterion("has_salad", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.SALAD.get()))
                 .requirements(AdvancementRequirements.Strategy.AND)
                 .save(saver, id("gourmet_chef"));
-         *///?}
+        *///?}
     }
 
     private static ItemStack ironCupWith(IronCupContent content) {

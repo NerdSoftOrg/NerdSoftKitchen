@@ -28,26 +28,53 @@ public record MixRecipe(List<Ingredient> inputs, ItemStack result) implements Re
 
     @Override
     public boolean matches(@NotNull MixRecipeInput recipeInput, @NotNull Level level) {
+        return matchAssignment(recipeInput) != null;
+    }
+
+    private int[] matchAssignment(@NotNull MixRecipeInput recipeInput) {
         int size = recipeInput.size();
-        if (size != inputs.size()) return false;
+        if (size != inputs.size()) {
+            return null;
+        }
         boolean[] consumed = new boolean[size];
-        for (Ingredient ingredient : inputs) {
-            boolean found = false;
-            for (int i = 0; i < size; i++) {
-                if (!consumed[i] && ingredient.test(recipeInput.getItem(i))) {
-                    consumed[i] = true;
-                    found = true;
+        int[] assignment = new int[inputs.size()];
+
+        for (int i = 0; i < inputs.size(); i++) {
+            Ingredient ingredient = inputs.get(i);
+            int match = -1;
+            for (int j = 0; j < size; j++) {
+                if (!consumed[j] && ingredient.test(recipeInput.getItem(j))) {
+                    consumed[j] = true;
+                    match = j;
                     break;
                 }
             }
-            if (!found) return false;
+            if (match < 0) {
+                return null;
+            }
+            assignment[i] = match;
         }
-        return true;
+        return assignment;
+    }
+
+    public int batchSize(@NotNull MixRecipeInput recipeInput) {
+        int[] assignment = matchAssignment(recipeInput);
+        if (assignment == null) {
+            return 0;
+        }
+        int min = Integer.MAX_VALUE;
+        for (int index : assignment) {
+            min = Math.min(min, recipeInput.getItem(index).getCount());
+        }
+        return min == Integer.MAX_VALUE ? 0 : min;
     }
 
     @Override
     public @NotNull ItemStack assemble(@NotNull MixRecipeInput recipeInput, HolderLookup.@NotNull Provider registries) {
-        return result.copy();
+        ItemStack output = result.copy();
+        int batches = batchSize(recipeInput);
+        output.setCount(output.getCount() * Math.max(1, batches));
+        return output;
     }
 
     //? if <1.21.2 {

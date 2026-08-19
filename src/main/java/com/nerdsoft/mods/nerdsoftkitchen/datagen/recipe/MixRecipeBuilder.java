@@ -26,12 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Datagen builder for pan-exclusive {@link MixRecipe} stir-fry/combined-dish recipes
- * (scrambled eggs, omelets, fried rice, etc.). Mirrors {@link CookRecipeBuilder}'s structure
- * exactly, but accepts an ordered list of ingredients instead of a single input, matching
- * {@link MixRecipe}'s unordered-set matching semantics (see {@code MixRecipe#matches}).
- */
 public class MixRecipeBuilder implements RecipeBuilder {
 
     private final List<Ingredient> inputs;

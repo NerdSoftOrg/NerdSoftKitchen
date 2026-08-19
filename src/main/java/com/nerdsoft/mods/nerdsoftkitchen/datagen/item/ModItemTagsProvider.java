@@ -58,7 +58,11 @@ public class ModItemTagsProvider extends ItemTagsProvider {
                 ModItems.CHEESE_SLICE.get(),
                 ModItems.CHEESE_RAW_SANDWICH.get(),
                 ModItems.GRILLED_CHEESE.get(),
-                ModItems.SCRAMBLED_EGGS.get()
+                ModItems.TORTILLA.get(),
+                ModItems.POTATO_TORTILLA.get(),
+                ModItems.ONION_TORTILLA.get(),
+                ModItems.CUT_POTATO.get(),
+                ModItems.CUT_PURPLE_ONION.get()
         );
 
         tag(ModItemTags.IRON_CUP).add(ModItems.IRON_CUP.get());

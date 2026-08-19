@@ -30,7 +30,10 @@ public record CookRecipe(Ingredient input, ItemStack result, int cookingTime) im
     @Override
     public @NotNull ItemStack assemble(@NotNull CookRecipeInput recipeInput,
                                        HolderLookup.@NotNull Provider registries) {
-        return result.copy();
+        ItemStack output = result.copy();
+        int batches = recipeInput.item().getCount();
+        output.setCount(output.getCount() * Math.max(1, batches));
+        return output;
     }
 
     //? if <1.21.2 {

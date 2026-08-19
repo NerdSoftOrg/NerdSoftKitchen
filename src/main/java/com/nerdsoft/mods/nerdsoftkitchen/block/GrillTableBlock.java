@@ -23,7 +23,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -43,9 +42,9 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 //? if >=1.21.2 {
 /*import net.minecraft.world.level.redstone.Orientation;
+import net.minecraft.world.InteractionResult;
 *///?}
 //? if <1.21.2 {
-
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
@@ -156,7 +155,7 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
     }
 
     @Override
-    public void stepOn(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Entity entity) {
+    protected void entityInside(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Entity entity) {
         if (!level.isClientSide && entity instanceof LivingEntity && !entity.fireImmune() && state.getValue(LIT)) {
             DamageSource source = level.damageSources().source(ModDamageTypes.GRILL_BURN, entity);
             //? if <1.21.2 {
@@ -164,8 +163,7 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
             //?} else
              //entity.hurtServer((ServerLevel) level, source, STEP_DAMAGE);
         }
-
-        super.stepOn(level, pos, state, entity);
+        super.entityInside(state, level, pos, entity);
     }
 
     //? if <1.21.2 {

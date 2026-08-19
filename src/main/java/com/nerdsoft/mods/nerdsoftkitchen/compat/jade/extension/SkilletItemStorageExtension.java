@@ -1,7 +1,7 @@
-package com.nerdsoft.mods.nerdsoftkitchen.compat.jade;
+package com.nerdsoft.mods.nerdsoftkitchen.compat.jade.extension;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
-import com.nerdsoft.mods.nerdsoftkitchen.blockentity.GrillTableBlockEntity;
+import com.nerdsoft.mods.nerdsoftkitchen.blockentity.SkilletBlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -20,10 +20,10 @@ import snownee.jade.impl.ui.ItemStackElement;
 import java.util.ArrayList;
 import java.util.List;
 
-public enum GrillTableItemStorageExtension implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
+public enum SkilletItemStorageExtension implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
     INSTANCE;
 
-    private static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, "grill_table_progress");
+    private static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, "skillet_progress");
 
     @Override
     public ResourceLocation getUid() {
@@ -32,13 +32,13 @@ public enum GrillTableItemStorageExtension implements IBlockComponentProvider, I
 
     @Override
     public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-        if (!(accessor.getBlockEntity() instanceof GrillTableBlockEntity grill)) {
+        if (!(accessor.getBlockEntity() instanceof SkilletBlockEntity skillet)) {
             return;
         }
 
         ListTag itemsList = new ListTag();
-        for (int slot = 0; slot < GrillTableBlockEntity.TOTAL_SLOTS; slot++) {
-            ItemStack stack = grill.getItem(slot);
+        for (int slot = 0; slot < SkilletBlockEntity.PAN_SLOTS_COUNT; slot++) {
+            ItemStack stack = skillet.getItem(slot);
             if (stack.isEmpty()) {
                 continue;
             }
@@ -49,36 +49,33 @@ public enum GrillTableItemStorageExtension implements IBlockComponentProvider, I
             Tag customStackTag = stack.save(accessor.getLevel().registryAccess());
             itemTag.put("Item", customStackTag);
 
-            int cookTime = grill.getCookTime(slot);
-            int remainingTicks = (cookTime > 0) ? Math.max(0, cookTime - grill.getCookProgress(slot)) : 0;
+            int cookTime = skillet.getCookTime(slot);
+            int remainingTicks = (cookTime > 0) ? Math.max(0, cookTime - skillet.getCookProgress(slot)) : 0;
             itemTag.putInt("Remaining", remainingTicks);
 
             itemsList.add(itemTag);
         }
 
-        data.put("GrillItems", itemsList);
+        data.put("SkilletItems", itemsList);
     }
 
     @Override
     public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
         CompoundTag data = accessor.getServerData();
-        if (!data.contains("GrillItems")) {
+        if (!data.contains("SkilletItems")) {
             return;
         }
 
-        ListTag itemsList = data.getList("GrillItems", 10);
+        ListTag itemsList = data.getList("SkilletItems", 10);
         if (itemsList.isEmpty()) {
             return;
         }
 
         IElementHelper elements = IElementHelper.get();
-
-        List<IElement> topRow = new ArrayList<>();
-        List<IElement> bottomRow = new ArrayList<>();
+        List<IElement> row = new ArrayList<>();
 
         for (int i = 0; i < itemsList.size(); i++) {
             CompoundTag itemTag = itemsList.getCompound(i);
-            int slot = itemTag.getInt("Slot");
 
             ItemStack stack = ItemStack.parse(accessor.getLevel().registryAccess(), itemTag.getCompound("Item")).orElse(ItemStack.EMPTY);
             if (stack.isEmpty()) {
@@ -95,15 +92,10 @@ public enum GrillTableItemStorageExtension implements IBlockComponentProvider, I
                 itemElement = elements.item(stack);
             }
 
-            if (slot < 4) {
-                topRow.add(itemElement);
-            } else {
-                bottomRow.add(itemElement);
-            }
+            row.add(itemElement);
         }
 
-        appendRowToTooltip(tooltip, topRow);
-        appendRowToTooltip(tooltip, bottomRow);
+        appendRowToTooltip(tooltip, row);
     }
 
     private void appendRowToTooltip(ITooltip tooltip, List<IElement> rowElements) {

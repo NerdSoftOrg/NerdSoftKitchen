@@ -12,8 +12,8 @@ import net.minecraft.core.HolderLookup;
 /*import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
-*///?}
-//? if <=1.21.1 {
+import net.minecraft.world.level.ItemLike;
+*///?} else {
 import net.minecraft.data.DataProvider;
 //?}
 import net.minecraft.data.PackOutput;
@@ -23,7 +23,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -130,10 +129,20 @@ public class ModRecipeProvider extends RecipeProvider implements DataProvider {
 
         cuttingRecipe(output, Ingredient.of(ModItems.CHEESE.get()), new ItemStack(ModItems.CHEESE_SLICE.get(), 4));
         cuttingRecipe(output, Ingredient.of(Items.CHICKEN), new ItemStack(ModItems.RAW_CHICKEN_PIECES.get(), 2));
+        cuttingRecipe(output, Ingredient.of(Items.POTATO), new ItemStack(ModItems.CUT_POTATO.get(), 2));
+        cuttingRecipe(output, Ingredient.of(ModItems.PURPLE_ONION.get()), new ItemStack(ModItems.CUT_PURPLE_ONION.get(), 2));
 
-        panMixRecipe(output, "scrambled_eggs",
-                new ItemStack(ModItems.SCRAMBLED_EGGS.get()),
-                Ingredient.of(Items.EGG), Ingredient.of(ModItems.CHEESE_SLICE.get()));
+        panMixRecipe(output, "tortilla",
+                new ItemStack(ModItems.TORTILLA.get()),
+                Ingredient.of(Items.EGG));
+
+        panMixRecipe(output, "potato_tortilla",
+                new ItemStack(ModItems.POTATO_TORTILLA.get()),
+                Ingredient.of(Items.EGG), Ingredient.of(ModItems.CUT_POTATO.get()));
+
+        panMixRecipe(output, "onion_tortilla",
+                new ItemStack(ModItems.ONION_TORTILLA.get()),
+                Ingredient.of(Items.EGG), Ingredient.of(ModItems.CUT_PURPLE_ONION.get()));
 
         cupYogurtRecipe(output, IronCupContent.MILK,
                 List.of(CupContentIngredient.of(IronCupContent.MILK), Ingredient.of(Items.SUGAR)),
@@ -290,10 +299,20 @@ public class ModRecipeProvider extends RecipeProvider implements DataProvider {
 
         cuttingRecipe(this.output, Ingredient.of(ModItems.CHEESE.get()), new ItemStack(ModItems.CHEESE_SLICE.get(), 4));
         cuttingRecipe(this.output, Ingredient.of(Items.CHICKEN), new ItemStack(ModItems.RAW_CHICKEN_PIECES.get(), 2));
+        cuttingRecipe(this.output, Ingredient.of(Items.POTATO), new ItemStack(ModItems.CUT_POTATO.get(), 2));
+        cuttingRecipe(this.output, Ingredient.of(ModItems.PURPLE_ONION.get()), new ItemStack(ModItems.CUT_PURPLE_ONION.get(), 2));
 
-        panMixRecipe(this.output, "scrambled_eggs",
-                new ItemStack(ModItems.SCRAMBLED_EGGS.get()),
-                Ingredient.of(Items.EGG), Ingredient.of(ModItems.CHEESE_SLICE.get()));
+        panMixRecipe(this.output, "tortilla",
+                new ItemStack(ModItems.TORTILLA.get()),
+                Ingredient.of(Items.EGG));
+
+        panMixRecipe(this.output, "potato_tortilla",
+                new ItemStack(ModItems.POTATO_TORTILLA.get()),
+                Ingredient.of(Items.EGG), Ingredient.of(ModItems.CUT_POTATO.get()));
+
+        panMixRecipe(this.output, "onion_tortilla",
+                new ItemStack(ModItems.ONION_TORTILLA.get()),
+                Ingredient.of(Items.EGG), Ingredient.of(ModItems.CUT_PURPLE_ONION.get()));
 
         cupYogurtRecipe(this.output, IronCupContent.MILK,
                 List.of(CupContentIngredient.of(IronCupContent.MILK), Ingredient.of(Items.SUGAR)),

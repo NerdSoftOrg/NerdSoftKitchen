@@ -19,6 +19,7 @@ public class ModEsEsLanguageProvider extends ModLanguageProvider {
         add(ModBlocks.FERTILE_FARMLAND, "Tierra Fértil");
         add(ModBlocks.ORGANIC_SOIL, "Tierra Orgánica");
         add(ModBlocks.CUTTING_BOARD, "Tabla de Cortar");
+        add(ModBlocks.SKILLET, "Sartén");
 
         // Cultivos y Semillas
         addWildCropPrefix("%s Silvestre");
@@ -48,6 +49,12 @@ public class ModEsEsLanguageProvider extends ModLanguageProvider {
                 ModItems.PURPLE_ONION,
                 "Cebolla"
         );
+        addCrop(
+                ModBlocks.WILD_RICE,
+                ModItems.RICE_SEEDS,
+                ModItems.RICE,
+                "Arroz"
+        );
 
         // Cuchillos
         addKnifePattern("Cuchillo de %s");
@@ -72,6 +79,13 @@ public class ModEsEsLanguageProvider extends ModLanguageProvider {
         add(ModItems.CHEESE_RAW_SANDWICH, "Sándwich de Queso");
         add(ModItems.CHEESE_TOASTED_SANDWICH, "Sándwich de Queso Tostado");
         add(ModItems.GRILLED_CHEESE, "Queso a la Parrilla");
+        add(ModItems.TORTILLA, "Tortilla");
+        add(ModItems.POTATO_TORTILLA, "Tortilla de Patata");
+        add(ModItems.ONION_TORTILLA, "Tortilla de Cebolla");
+        add(ModItems.CUT_POTATO, "Patata Cortada");
+        add(ModItems.CUT_PURPLE_ONION, "Cebolla Morada Cortada");
+        add(ModItems.COOKED_RICE, "Arroz Cocinado");
+        add(ModItems.RICE_BOWL, "Bol de Arroz");
         add(ModItems.ORGANIC_MIXTURE, "Mezcla Orgánica");
 
         // Iron Cups
@@ -85,7 +99,11 @@ public class ModEsEsLanguageProvider extends ModLanguageProvider {
         // Tooltips
         add("itemGroup.nerdsoftkitchen.kitchen_tab", "NerdSoft Kitchen");
         add("subtitles.block.nerdsoftkitchen.grill.place_food", "Asando comida");
+        add("subtitles.block.nerdsoftkitchen.skillet.sizzle_loop", "Chisporroteo de la sartén");
+        add("subtitles.item.nerdsoftkitchen.skillet.clang", "Golpe metálico de la sartén");
         add("jade.nerdsoftkitchen.grill_table.slot_remaining", "%ss");
+        add("jade.nerdsoftkitchen.skillet.slot_remaining", "%ss");
+        add("jade.nerdsoftkitchen.skillet.egg_quantity", "Huevos: %s");
         add("config.jade.plugin_nerdsoftkitchen.grill_table_progress", "Tiempo de Cocción");
 
         // Logros
@@ -180,6 +198,11 @@ public class ModEsEsLanguageProvider extends ModLanguageProvider {
                 "Prepara un sándwich de Queso Fundido"
         );
         addAdvancement(
+                "potato_tortilla",
+                "Enróllala Bien",
+                "Cocina una Tortilla de Patata en la Sartén"
+        );
+        addAdvancement(
                 "gourmet",
                 "Chef Gourmet",
                 "Domina cada disciplina de la cocina: cultivo, corte, parrilla y lácteos"
@@ -214,6 +237,14 @@ public class ModEsEsLanguageProvider extends ModLanguageProvider {
         addJeiInfo(
                 "cutting_board",
                 "Haz clic derecho con un ingrediente cortable para colocarlo, luego haz clic derecho con cualquier cuchillo (etiqueta #c:tools/knife) para cortarlo. Cortar reduce la durabilidad del cuchillo en 1."
+        );
+        addJeiInfo(
+                "skillet",
+                "Colócala sobre una Parrilla, Fogata, Fuego o Bloque de Magma encendidos. Cocina las mismas recetas simples que la Parrilla, además de tortillas al combinar Huevo con Patata Cortada o Cebolla Morada Cortada. También sirve como arma cuerpo a cuerpo pesada: recogerla mientras está caliente prende fuego a los enemigos."
+        );
+        addJeiInfo(
+                "tortilla",
+                "Cocina un solo Huevo en la Sartén. Añade Patata Cortada o Cebolla Morada Cortada mientras se cocina para convertirla en una Tortilla de Patata o de Cebolla."
         );
 
         // Datapack

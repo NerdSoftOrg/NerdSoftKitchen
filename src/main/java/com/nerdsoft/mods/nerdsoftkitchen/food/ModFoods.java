@@ -22,6 +22,10 @@ public final class ModFoods {
             new FoodProperties.Builder().nutrition(1).saturationModifier(0.1f).alwaysEdible().build();
     public static final FoodProperties RICE =
             new FoodProperties.Builder().nutrition(1).saturationModifier(0.2f).alwaysEdible().build();
+    public static final FoodProperties CUT_POTATO =
+            new FoodProperties.Builder().nutrition(1).saturationModifier(0.2f).alwaysEdible().build();
+    public static final FoodProperties CUT_PURPLE_ONION =
+            new FoodProperties.Builder().nutrition(1).saturationModifier(0.1f).alwaysEdible().build();
     //? if <1.21.2 {
     @SuppressWarnings("deprecation")
     public static final FoodProperties RAW_CHICKEN_PIECES =
@@ -61,7 +65,11 @@ public final class ModFoods {
             new FoodProperties.Builder().nutrition(9).saturationModifier(0.7f).build();
     public static final FoodProperties GRILLED_CHEESE =
             new FoodProperties.Builder().nutrition(4).saturationModifier(0.5f).build();
-    public static final FoodProperties SCRAMBLED_EGGS =
+    public static final FoodProperties TORTILLA =
+            new FoodProperties.Builder().nutrition(4).saturationModifier(0.4f).build();
+    public static final FoodProperties POTATO_TORTILLA =
+            new FoodProperties.Builder().nutrition(7).saturationModifier(0.6f).build();
+    public static final FoodProperties ONION_TORTILLA =
             new FoodProperties.Builder().nutrition(6).saturationModifier(0.5f).build();
     public static final FoodProperties COOKED_RICE =
             new FoodProperties.Builder().nutrition(6).saturationModifier(0.6f).build();

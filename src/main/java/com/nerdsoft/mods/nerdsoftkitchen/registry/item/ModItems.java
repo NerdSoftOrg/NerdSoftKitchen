@@ -38,9 +38,9 @@ public final class ModItems {
 
     private static final float STONE_KNIFE_DAMAGE = 0.5F; // 2.5
     @SuppressWarnings("InvariantValue")
-    //? if > 1.21.8 {
+            //? if > 1.21.8 {
     /*private static final float COPPER_KNIFE_DAMAGE = 0.75F; // 2.75 - 1.0 (copper tier)
-    *///?}
+     *///?}
     private static final float IRON_KNIFE_DAMAGE = 0.0F; // 3.0
     private static final float GOLD_KNIFE_DAMAGE = 1.0F; // 2.0
     private static final float DIAMOND_KNIFE_DAMAGE = -0.5F; // 3.5
@@ -152,7 +152,7 @@ public final class ModItems {
     *///?}
 
     @SuppressWarnings("InvariantValue")
-    //? if > 1.21.8 {
+            //? if > 1.21.8 {
     /*public static final DeferredItem<KnifeItem> COPPER_KNIFE = ITEMS.registerItem("copper_knife",
            props -> new KnifeItem(ToolMaterial.IRON, COPPER_KNIFE_DAMAGE, COPPER_KNIFE_SPEED, props));
     *///?}
@@ -170,6 +170,10 @@ public final class ModItems {
             props -> new Item(props.food(ModFoods.RAW_SANDWICH_BREAD)));
     public static final DeferredItem<Item> RICE = ITEMS.registerItem("rice",
             props -> new Item(props.food(ModFoods.RICE)));
+    public static final DeferredItem<Item> CUT_POTATO = ITEMS.registerItem("cut_potato",
+            props -> new Item(props.food(ModFoods.CUT_POTATO)));
+    public static final DeferredItem<Item> CUT_PURPLE_ONION = ITEMS.registerItem("cut_purple_onion",
+            props -> new Item(props.food(ModFoods.CUT_PURPLE_ONION)));
 
     public static final DeferredItem<OrganicMixtureItem> ORGANIC_MIXTURE = ITEMS.registerItem("organic_mixture",
             props -> new OrganicMixtureItem(props.stacksTo(64)));
@@ -217,8 +221,12 @@ public final class ModItems {
             props -> new Item(props.food(ModFoods.CHEESE_TOASTED_SANDWICH)));
     public static final DeferredItem<Item> GRILLED_CHEESE = ITEMS.registerItem("grilled_cheese",
             props -> new Item(props.food(ModFoods.GRILLED_CHEESE)));
-    public static final DeferredItem<Item> SCRAMBLED_EGGS = ITEMS.registerItem("scrambled_eggs",
-            props -> new Item(props.food(ModFoods.SCRAMBLED_EGGS)));
+    public static final DeferredItem<Item> TORTILLA = ITEMS.registerItem("tortilla",
+            props -> new Item(props.food(ModFoods.TORTILLA)));
+    public static final DeferredItem<Item> POTATO_TORTILLA = ITEMS.registerItem("potato_tortilla",
+            props -> new Item(props.food(ModFoods.POTATO_TORTILLA)));
+    public static final DeferredItem<Item> ONION_TORTILLA = ITEMS.registerItem("onion_tortilla",
+            props -> new Item(props.food(ModFoods.ONION_TORTILLA)));
     public static final DeferredItem<Item> COOKED_RICE = ITEMS.registerItem("cooked_rice",
             props -> new Item(props.food(ModFoods.COOKED_RICE)));
     public static final DeferredItem<Item> RICE_BOWL = ITEMS.registerItem("rice_bowl",

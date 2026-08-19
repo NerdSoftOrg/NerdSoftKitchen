@@ -8,6 +8,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.BakedModelWrapper;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -35,8 +36,8 @@ final class LodItemModelCache {
         }
 
         @Override
-        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand,
-                                         ModelData data, @Nullable RenderType renderType) {
+        public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand,
+                                                 @NotNull ModelData data, @Nullable RenderType renderType) {
             if (side != null) {
                 return side == FRONT_FACE
                         ? originalModel.getQuads(state, side, rand, data, renderType)

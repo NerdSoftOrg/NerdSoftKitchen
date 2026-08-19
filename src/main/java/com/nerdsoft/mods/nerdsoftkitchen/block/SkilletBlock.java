@@ -11,16 +11,14 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -29,7 +27,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.*;
@@ -38,13 +37,19 @@ import org.jetbrains.annotations.Nullable;
 
 //? if >=1.21.2 {
 /*import net.minecraft.world.level.redstone.Orientation;
-*///?}
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.InteractionResult;
+*///?} else {
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+//?}
 
 
 @SuppressWarnings("CommentedOutCode")
-public class SkilletBlock extends BaseEntityBlock {
+public class SkilletBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
 
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     //? if <1.21.2 {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     //?} else {
@@ -81,6 +86,7 @@ public class SkilletBlock extends BaseEntityBlock {
                 this.stateDefinition
                         .any()
                         .setValue(LIT, false)
+                        .setValue(WATERLOGGED, false)
                         .setValue(FACING, Direction.NORTH)
         );
     }
@@ -146,9 +152,11 @@ public class SkilletBlock extends BaseEntityBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         Direction facing = context.getHorizontalDirection().getOpposite();
-        BlockState state = this.defaultBlockState().setValue(FACING, facing);
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
+        boolean waterlogged = level.getFluidState(pos).is(net.minecraft.tags.FluidTags.WATER);
+
+        BlockState state = this.defaultBlockState().setValue(FACING, facing).setValue(WATERLOGGED, waterlogged);
 
         if (canSurvive(state, level, pos)) {
             return state;
@@ -199,10 +207,28 @@ public class SkilletBlock extends BaseEntityBlock {
     *///?}
 
     private void refreshLitState(Level level, BlockPos pos, BlockState state) {
-        boolean shouldBeLit = isHeatSourceBelow(level, pos);
+        boolean shouldBeLit = !state.getValue(WATERLOGGED) && isHeatSourceBelow(level, pos);
         if (state.getValue(LIT) != shouldBeLit) {
             level.setBlock(pos, state.setValue(LIT, shouldBeLit), 3);
         }
+    }
+
+    @Override
+    public boolean placeLiquid(@NotNull LevelAccessor level, @NotNull BlockPos pos, BlockState state, @NotNull FluidState fluidState) {
+        if (!state.getValue(WATERLOGGED) && fluidState.getType() == Fluids.WATER) {
+            if (state.getValue(LIT) && !level.isClientSide()) {
+                level.playSound(null, pos, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 1.0F, 1.0F);
+            }
+            level.setBlock(pos, state.setValue(LIT, false).setValue(WATERLOGGED, true), 3);
+            level.scheduleTick(pos, fluidState.getType(), fluidState.getType().getTickDelay(level));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected @NotNull FluidState getFluidState(BlockState state) {
+        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
     //? if <1.21.2 {
@@ -257,7 +283,11 @@ public class SkilletBlock extends BaseEntityBlock {
         Direction facing = state.getValue(FACING);
         BlockPos neighborPos = pos.relative(facing);
 
+        //? if <1.21.2 {
         if (level.getBlockState(neighborPos).isSolidRender(level, neighborPos)) {
+        //?} else {
+        /*if (level.getBlockState(neighborPos).isSolidRender()) {
+        *///?}
             return SHAPE_BASE;
         }
 
@@ -284,12 +314,28 @@ public class SkilletBlock extends BaseEntityBlock {
         return Shapes.or(SHAPE_BASE, rim);
     }
 
+    //? if <1.21.2 {
     @Override
     public @NotNull BlockState updateShape(BlockState state, @NotNull Direction facing, @NotNull BlockState neighborState, @NotNull LevelAccessor level, @NotNull BlockPos currentPos, @NotNull BlockPos neighborPos) {
+    //?} else {
+    /*@Override
+    protected @NotNull BlockState updateShape(BlockState state, @NotNull LevelReader level, @NotNull ScheduledTickAccess scheduledTickAccess, @NotNull BlockPos currentPos, @NotNull Direction facing, @NotNull BlockPos neighborPos, @NotNull BlockState neighborState, @NotNull RandomSource random) {
+        *///?}
         if (facing == state.getValue(FACING) && !state.canSurvive(level, currentPos)) {
             return Blocks.AIR.defaultBlockState();
         }
+        if (state.getValue(WATERLOGGED)) {
+            //? if <1.21.2 {
+            level.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+            //?} else {
+            /*scheduledTickAccess.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+            *///?}
+        }
+        //? if <1.21.2 {
         return super.updateShape(state, facing, neighborState, level, currentPos, neighborPos);
+        //?} else {
+        /*return super.updateShape(state, level, scheduledTickAccess, currentPos, facing, neighborPos, neighborState, random);
+        *///?}
     }
 
     @Override
@@ -335,7 +381,7 @@ public class SkilletBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(LIT, FACING);
+        builder.add(LIT, WATERLOGGED, FACING);
     }
 
     @Override

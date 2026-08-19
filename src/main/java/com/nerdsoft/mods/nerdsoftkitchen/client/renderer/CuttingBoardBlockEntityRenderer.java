@@ -29,8 +29,7 @@ public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<Cutt
     private static final float FLAT_ITEM_HALF_DEPTH = BOARD_SURFACE_Y / 2.0F;
     private static final float BLOCK_ITEM_HALF_DEPTH = BOARD_SURFACE_Y * 2 / 2.0F;
 
-    private static final float STACK_FRACTION_PER_EXTRA_ITEM = 0.2F;
-    private static final int MAX_RENDERED_ITEMS = 6;
+    private static final int MAX_RENDERED_ITEMS_HARD_CAP = 24;
 
     private static final float MIN_HORIZONTAL_OFFSET = 0.05F;
     private static final float MAX_HORIZONTAL_OFFSET = 0.16F;
@@ -121,7 +120,9 @@ public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<Cutt
     private void renderItem(ItemStack stack, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight,
                              CuttingBoardBlockEntity board, BlockPos pos, int index, boolean pastLod1) {
         int seed = (int) (pos.asLong() + index);
-        if (!pastLod1) {
+        boolean eligibleForFlatLod = pastLod1 && !(stack.getItem() instanceof BlockItem);
+
+        if (!eligibleForFlatLod) {
             this.itemRenderer.renderStatic(
                     stack, ItemDisplayContext.FIXED, packedLight, OverlayTexture.NO_OVERLAY,
                     poseStack, bufferSource, board.getLevel(), seed
@@ -150,15 +151,8 @@ public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<Cutt
     }
 
     private int renderedItemCountFor(ItemStack stack, boolean pastLod1, double playerDistance) {
-        int maxStackSize = stack.getMaxStackSize();
-        int baseCount;
-        if (maxStackSize <= 1) {
-            baseCount = 1;
-        } else {
-            float fraction = (float) stack.getCount() / maxStackSize;
-            int extra = (int) (fraction / STACK_FRACTION_PER_EXTRA_ITEM);
-            baseCount = 1 + Math.min(extra, MAX_RENDERED_ITEMS - 1);
-        }
+        int baseCount = StackedItemCount.countFor(stack);
+        baseCount = Math.min(baseCount, MAX_RENDERED_ITEMS_HARD_CAP);
 
         if (!pastLod1) {
             return baseCount;

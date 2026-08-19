@@ -1,16 +1,19 @@
 package com.nerdsoft.mods.nerdsoftkitchen.crop;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 //? if <1.21.2 {
 import net.minecraft.world.ItemInteractionResult;
-//?}
+//?} else {
+/*import net.minecraft.world.InteractionResult;
+*///?}
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -63,9 +66,9 @@ public final class TomatoCropBlock extends ModCropBlock {
     protected @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state,
                                                        //?} else
             //protected @NotNull InteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state,
-                                                       @NotNull Level level, @NotNull BlockPos pos,
-                                                       @NotNull Player player, @NotNull InteractionHand hand,
-                                                       @NotNull BlockHitResult hitResult) {
+                                                           @NotNull Level level, @NotNull BlockPos pos,
+                                                           @NotNull Player player, @NotNull InteractionHand hand,
+                                                           @NotNull BlockHitResult hitResult) {
         if (!stack.is(Items.STICK)) {
             return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
         }
@@ -81,6 +84,10 @@ public final class TomatoCropBlock extends ModCropBlock {
 
         level.setBlock(pos, TomatoCropPoleBlock.createLower(poleBlock, age), 3);
         TomatoCropPoleBlock.tryGrowOrSyncUpper(poleBlock, level, pos, BlockStateProperties.AGE_5, age);
+
+        if (player instanceof ServerPlayer serverPlayer) {
+            CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger(serverPlayer, pos, stack);
+        }
 
         if (!player.getAbilities().instabuild) {
             stack.shrink(1);

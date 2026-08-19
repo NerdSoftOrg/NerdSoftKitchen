@@ -15,12 +15,12 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 //? if >=1.21.2 {
 /*import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeBookCategories;
+
+import java.util.List;
 *///?}
 
 public record CuttingRecipe(Ingredient input, ItemStack result) implements Recipe<CuttingRecipeInput> {

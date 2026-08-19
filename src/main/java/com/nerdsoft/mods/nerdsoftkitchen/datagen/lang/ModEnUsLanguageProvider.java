@@ -79,7 +79,11 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
         add(ModItems.CHEESE_RAW_SANDWICH, "Cheese Sandwich");
         add(ModItems.CHEESE_TOASTED_SANDWICH, "Toasted Cheese Sandwich");
         add(ModItems.GRILLED_CHEESE, "Grilled Cheese");
-        add(ModItems.SCRAMBLED_EGGS, "Scrambled Eggs");
+        add(ModItems.TORTILLA, "Tortilla");
+        add(ModItems.POTATO_TORTILLA, "Potato Tortilla");
+        add(ModItems.ONION_TORTILLA, "Onion Tortilla");
+        add(ModItems.CUT_POTATO, "Cut Potato");
+        add(ModItems.CUT_PURPLE_ONION, "Cut Purple Onion");
         add(ModItems.COOKED_RICE, "Cooked Rice");
         add(ModItems.RICE_BOWL, "Rice Bowl");
         add(ModItems.ORGANIC_MIXTURE, "Organic Mixture");
@@ -98,6 +102,8 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
         add("subtitles.block.nerdsoftkitchen.skillet.sizzle_loop", "Skillet sizzling");
         add("subtitles.item.nerdsoftkitchen.skillet.clang", "Skillet clangs");
         add("jade.nerdsoftkitchen.grill_table.slot_remaining", "%ss");
+        add("jade.nerdsoftkitchen.skillet.slot_remaining", "%ss");
+        add("jade.nerdsoftkitchen.skillet.egg_quantity", "Eggs: %s");
         add("config.jade.plugin_nerdsoftkitchen.grill_table_progress", "Cooking Time");
 
         // Advancements
@@ -192,9 +198,9 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
                 "Make a Grilled Cheese sandwich"
         );
         addAdvancement(
-                "scrambled_eggs",
-                "Stir It Up",
-                "Cook a stir-fried dish in the Skillet"
+                "potato_tortilla",
+                "Fold It Up",
+                "Cook a Potato Tortilla in the Skillet"
         );
         addAdvancement(
                 "gourmet",
@@ -234,7 +240,11 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
         );
         addJeiInfo(
                 "skillet",
-                "Place on top of a lit Grill, Campfire, Fire, or Magma Block. Cooks the same simple recipes as the Grill, plus exclusive stir-fried dishes when multiple ingredients are combined. Doubles as a heavy melee weapon - picking it up while hot lets it set enemies alight."
+                "Place on top of a lit Grill, Campfire, Fire, or Magma Block. Cooks the same simple recipes as the Grill, plus tortillas when Egg is combined with Cut Potato or Cut Purple Onion. Doubles as a heavy melee weapon - picking it up while hot lets it set enemies alight."
+        );
+        addJeiInfo(
+                "tortilla",
+                "Cook a single Egg alone in the Skillet. Add Cut Potato or Cut Purple Onion while it cooks to turn it into a Potato or Onion Tortilla instead."
         );
 
         // Datapack

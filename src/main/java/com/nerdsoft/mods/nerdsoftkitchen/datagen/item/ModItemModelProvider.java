@@ -34,7 +34,9 @@ public class ModItemModelProvider extends ItemModelProvider {
                 ModItems.STRAWBERRY_SEEDS, ModItems.TOMATO_SEEDS, ModItems.LETTUCE_SEEDS, ModItems.PURPLE_ONION_SEEDS,
                 ModItems.STRAWBERRY, ModItems.TOMATO, ModItems.LETTUCE, ModItems.PURPLE_ONION,
                 ModItems.RAW_CHICKEN_PIECES, ModItems.COOKED_CHICKEN_PIECES, ModItems.FRIED_EGG, ModItems.SALAD,
-                ModItems.CHEESE, ModItems.CHEESE_SLICE, ModItems.GRILLED_CHEESE, ModItems.SCRAMBLED_EGGS,
+                ModItems.CHEESE, ModItems.CHEESE_SLICE, ModItems.GRILLED_CHEESE,
+                ModItems.TORTILLA, ModItems.POTATO_TORTILLA, ModItems.ONION_TORTILLA,
+                ModItems.CUT_POTATO, ModItems.CUT_PURPLE_ONION,
                 ModItems.ORGANIC_MIXTURE,
                 ModItems.RAW_SANDWICH_BREAD, ModItems.TOASTED_SANDWICH_BREAD,
                 ModItems.OBSIDIAN_KNIFE, ModItems.NETHERITE_KNIFE
