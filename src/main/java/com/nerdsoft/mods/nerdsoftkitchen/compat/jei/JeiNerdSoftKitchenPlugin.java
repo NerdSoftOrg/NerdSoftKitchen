@@ -54,6 +54,7 @@ public class JeiNerdSoftKitchenPlugin implements IModPlugin {
         }
 
         @Override
+        @SuppressWarnings({"deprecation", "RedundantSuppression"})
         public @NotNull String getLegacyStringSubtypeInfo(@NotNull ItemStack stack, @NotNull UidContext context) {
             IronCupContent content = IronCupItem.contentOf(stack);
             return content != null ? content.getSerializedName() : EMPTY_SUBTYPE;

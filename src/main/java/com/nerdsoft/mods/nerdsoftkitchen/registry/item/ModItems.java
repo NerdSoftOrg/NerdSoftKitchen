@@ -38,7 +38,7 @@ public final class ModItems {
 
     private static final float STONE_KNIFE_DAMAGE = 0.5F; // 2.5
     @SuppressWarnings("InvariantValue")
-            //? if > 1.21.8 {
+    //? if > 1.21.8 {
     /*private static final float COPPER_KNIFE_DAMAGE = 0.75F; // 2.75 - 1.0 (copper tier)
      *///?}
     private static final float IRON_KNIFE_DAMAGE = 0.0F; // 3.0

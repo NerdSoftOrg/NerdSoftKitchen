@@ -6,6 +6,7 @@ import com.nerdsoft.mods.nerdsoftkitchen.client.sound.SkilletLoopSoundManager;
 import com.nerdsoft.mods.nerdsoftkitchen.item.IronCupItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.SkilletBlockItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlockTags;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.data.ModDamageTypes;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.world.damagesource.BlockDamageSource;
@@ -14,11 +15,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stats;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -106,21 +104,20 @@ public class SkilletBlock extends BaseEntityBlock implements SimpleWaterloggedBl
         );
     }
 
-    public static final TagKey<Block> HEAT_SOURCES =
-           BlockTags.create(
-                    ResourceLocation.fromNamespaceAndPath("c", "heat_sources"));
-
     public static boolean isHeatSourceBelow(LevelReader level, BlockPos pos) {
-        BlockPos below = pos.below();
-        BlockState belowState = level.getBlockState(below);
+        BlockPos belowPos = pos.below();
+        BlockState belowState = level.getBlockState(belowPos);
 
-        if (!belowState.is(HEAT_SOURCES)) {
-            return false;
+        if (belowState.is(ModBlockTags.HEAT_SOURCES)) {
+
+            if (belowState.hasProperty(BlockStateProperties.LIT)) {
+                return belowState.getValue(BlockStateProperties.LIT);
+            }
+
+            return true;
         }
-        if (belowState.hasProperty(BlockStateProperties.LIT)) {
-            return belowState.getValue(BlockStateProperties.LIT);
-        }
-        return true;
+
+        return false;
     }
 
     @Override
@@ -285,7 +282,12 @@ public class SkilletBlock extends BaseEntityBlock implements SimpleWaterloggedBl
         BlockPos pos = context.getClickedPos();
         boolean waterlogged = level.getFluidState(pos).is(FluidTags.WATER);
 
-        BlockState state = this.defaultBlockState().setValue(FACING, facing).setValue(WATERLOGGED, waterlogged);
+        boolean isHeated = !waterlogged && isHeatSourceBelow(level, pos);
+
+        BlockState state = this.defaultBlockState()
+                .setValue(FACING, facing)
+                .setValue(WATERLOGGED, waterlogged)
+                .setValue(LIT, isHeated);
 
         if (canSurvive(state, level, pos)) {
             return state;
@@ -321,19 +323,16 @@ public class SkilletBlock extends BaseEntityBlock implements SimpleWaterloggedBl
     @Override
     protected void neighborChanged(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Block neighborBlock, @NotNull BlockPos neighborPos, boolean movedByPiston) {
         super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston);
-        if (!level.isClientSide && neighborPos.equals(pos.below())) {
-            refreshLitState(level, pos, state);
-        }
-    }
-    //?} else {
-    /*@Override
-    protected void neighborChanged(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston) {
-        super.neighborChanged(state, level, pos, neighborBlock, orientation, movedByPiston);
+        //?} else {
+        /*@Override
+        protected void neighborChanged(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston) {
+            super.neighborChanged(state, level, pos, neighborBlock, orientation, movedByPiston);
+        *///?}
+
         if (!level.isClientSide) {
             refreshLitState(level, pos, state);
         }
     }
-    *///?}
 
     private void refreshLitState(Level level, BlockPos pos, BlockState state) {
         boolean shouldBeLit = !state.getValue(WATERLOGGED) && isHeatSourceBelow(level, pos);

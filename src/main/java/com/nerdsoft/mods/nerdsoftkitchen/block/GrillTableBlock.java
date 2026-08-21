@@ -268,16 +268,17 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
             return;
         }
 
-        if (random.nextInt(5) == 0) {
+        BlockPos abovePos = pos.above();
+        BlockState aboveState = level.getBlockState(abovePos);
+
+        boolean isCovered = aboveState.getBlock() instanceof SkilletBlock || aboveState.isSolidRender(level, abovePos);
+
+        if (!isCovered && random.nextInt(15) == 0) {
             level.addParticle(ParticleTypes.LAVA,
                     pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.4,
                     pos.getY() + 1.0,
                     pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.4,
                     0.0, 0.05, 0.0);
-        }
-
-        if (random.nextInt(10) != 0) {
-            return;
         }
 
         if (level.getBlockEntity(pos) instanceof GrillTableBlockEntity grillTableBlockEntity && grillTableBlockEntity.isCooking()) {

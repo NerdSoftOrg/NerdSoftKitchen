@@ -14,7 +14,9 @@ import com.nerdsoft.mods.nerdsoftkitchen.util.RandomUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -46,7 +48,7 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
     private static final double TAU = Math.PI * 2.0;
 
     private static final String HOT_UNTIL_KEY = "HotUntilTick";
-    private static final int HOT_STATE_SECONDS = 20; // "Hot Skillet" retains heat for N seconds after pickup.
+    private static final int HOT_STATE_SECONDS = 20;
     private static final int HOT_STATE_TICKS = HOT_STATE_SECONDS * 20;
 
     private final RecipeManager.CachedCheck<CookRecipeInput, CookRecipe> cookRecipeCheck =
@@ -70,6 +72,15 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, SkilletBlockEntity entity) {
+        if (!level.isClientSide) {
+            boolean currentlyLit = state.getValue(SkilletBlock.LIT);
+            boolean shouldBeLit = !state.getValue(SkilletBlock.WATERLOGGED) && SkilletBlock.isHeatSourceBelow(level, pos);
+
+            if (currentlyLit != shouldBeLit) {
+                level.setBlock(pos, state.setValue(SkilletBlock.LIT, shouldBeLit), 3);
+                state = level.getBlockState(pos);
+            }
+        }
         genericTick(level, pos, state, entity);
         entity.tickEggAlone(level, pos, state);
     }
@@ -138,11 +149,11 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
         return state.getValue(SkilletBlock.LIT);
     }
 
-    private boolean hasEggLiquid() {
+    public boolean hasEggLiquid() {
         return items.get(EGG_SLOT).is(Items.EGG);
     }
 
-    private boolean hasIngredient() {
+    public boolean hasIngredient() {
         return !items.get(INGREDIENT_SLOT).isEmpty();
     }
 
@@ -235,19 +246,22 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
         if (!hasEggLiquid() || hasIngredient() || !isBlockActive(level, state)) {
             return;
         }
+
         eggAloneProgress++;
+
         if (eggAloneProgress >= eggAloneCookTime) {
-            Level lvl = getLevel();
-            if (lvl instanceof ServerLevel serverLevel) {
+            if (level instanceof ServerLevel serverLevel) {
                 Optional<RecipeHolder<MixRecipe>> mixRecipe =
                         mixRecipeCheck.getRecipeFor(new MixRecipeInput(List.of(eggStack())), serverLevel);
                 mixRecipe.ifPresent(holder -> {
-                    ItemStack output = holder.value().assemble(new MixRecipeInput(List.of(eggStack())), lvl.registryAccess());
-                    onCookComplete(lvl, pos, EGG_SLOT, output);
+                    ItemStack output = holder.value().assemble(new MixRecipeInput(List.of(eggStack())), level.registryAccess());
+                    onCookComplete(level, pos, EGG_SLOT, output);
                 });
             }
             eggAloneProgress = 0;
             eggAloneCookTime = 0;
+            markUpdated();
+        } else if (eggAloneProgress % 5 == 0) {
             markUpdated();
         }
     }
@@ -296,11 +310,6 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
         }
     }
 
-    /**
-     * Bare-hand pickup. Only ever returns a solid ingredient — egg liquid is not
-     * hand-recoverable once poured; it requires an {@link IronCupItem} (see
-     * {@link #canExtractEggToCup()} / {@link #extractEggToCup(ItemStack)}).
-     */
     public ItemStack takeContents() {
         if (hasIngredient()) {
             ItemStack out = items.get(INGREDIENT_SLOT).copy();
@@ -309,12 +318,12 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
                 eggAloneProgress = 0;
                 eggAloneCookTime = CookRecipe.DEFAULT_COOKING_TIME;
             }
+            markUpdated();
             return out;
         }
         return ItemStack.EMPTY;
     }
 
-    /** Whether there's anything a bare hand can pick up (ingredient only, not raw egg liquid). */
     public boolean hasHandRecoverableContents() {
         return hasIngredient();
     }
@@ -383,8 +392,7 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
         if (!getItem(slot).isEmpty()) {
             return false;
         }
-        ServerLevel level = (ServerLevel) getLevel();
-        if (level == null) {
+        if (!(getLevel() instanceof ServerLevel)) {
             return false;
         }
         if (slot == EGG_SLOT) {
@@ -393,9 +401,63 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
         return hasCookableRecipe(stack);
     }
 
+    public float getCookingProgress() {
+        if (hasIngredient()) {
+            int cookTime = getCookTime(INGREDIENT_SLOT);
+            if (cookTime <= 0) return 0.0f;
+            return Math.min(1.0f, (float) getCookProgress(INGREDIENT_SLOT) / (float) cookTime);
+        }
+
+        if (hasEggLiquid()) {
+            if (eggAloneCookTime <= 0) return 0.0f;
+            return Math.min(1.0f, (float) eggAloneProgress / (float) eggAloneCookTime);
+        }
+
+        return 0.0f;
+    }
+
+    public ItemStack getCookingResult() {
+        Level lvl = getLevel();
+        if (!(lvl instanceof ServerLevel serverLevel)) {
+            return ItemStack.EMPTY;
+        }
+
+        if (hasIngredient()) {
+            ItemStack ingredient = getItem(INGREDIENT_SLOT);
+            if (hasEggLiquid()) {
+                List<ItemStack> inputs = List.of(eggStack(), ingredient.copyWithCount(1));
+                return mixRecipeCheck.getRecipeFor(new MixRecipeInput(inputs), serverLevel)
+                        .map(holder -> holder.value().assemble(new MixRecipeInput(inputs), lvl.registryAccess()))
+                        .orElse(ItemStack.EMPTY);
+            } else {
+                CookRecipeInput input = new CookRecipeInput(ingredient.copyWithCount(1));
+                return cookRecipeCheck.getRecipeFor(input, serverLevel)
+                        .map(holder -> holder.value().assemble(input, lvl.registryAccess()))
+                        .orElse(ItemStack.EMPTY);
+            }
+        }
+
+        if (hasEggLiquid()) {
+            List<ItemStack> inputs = List.of(eggStack());
+            return mixRecipeCheck.getRecipeFor(new MixRecipeInput(inputs), serverLevel)
+                    .map(holder -> holder.value().assemble(new MixRecipeInput(inputs), lvl.registryAccess()))
+                    .orElse(ItemStack.EMPTY);
+        }
+
+        return ItemStack.EMPTY;
+    }
+
+    @Nullable
     @Override
-    public int getMaxStackSize() {
-        return 1;
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public @NotNull CompoundTag getUpdateTag(@NotNull Provider registries) {
+        CompoundTag tag = super.getUpdateTag(registries);
+        saveAdditional(tag, registries);
+        return tag;
     }
 
     @Override

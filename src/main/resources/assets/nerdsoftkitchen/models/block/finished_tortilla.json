@@ -1,0 +1,6 @@
+{
+	"parent": "nerdsoftkitchen:block/progress_tortilla",
+	"textures": {
+		"texture": "nerdsoftkitchen:block/finished_tortilla"
+	}
+}

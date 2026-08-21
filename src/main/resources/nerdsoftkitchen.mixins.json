@@ -1,0 +1,13 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "com.nerdsoft.mods.nerdsoftkitchen.mixin",
+	"compatibilityLevel": "${java}",
+	"refmap": "tessera.refmap.json",
+	"client": [
+		"client.CampfireBlockMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
