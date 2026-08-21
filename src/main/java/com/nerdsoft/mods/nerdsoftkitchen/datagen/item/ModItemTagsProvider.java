@@ -70,13 +70,53 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         tag(ModItemTags.KNIFE).add(
                 ModItems.STONE_KNIFE.get(),
                 ModItems.IRON_KNIFE.get(),
-                ModItems.GOLD_KNIFE.get(),
+                ModItems.GOLDEN_KNIFE.get(),
                 ModItems.DIAMOND_KNIFE.get(),
                 ModItems.OBSIDIAN_KNIFE.get(),
                 ModItems.NETHERITE_KNIFE.get()
         );
 
+        tag(ModItemTags.KNIFE_MIN_STONE).add(
+                ModItems.STONE_KNIFE.get(),
+                ModItems.IRON_KNIFE.get(),
+                ModItems.GOLDEN_KNIFE.get(),
+                ModItems.DIAMOND_KNIFE.get(),
+                ModItems.OBSIDIAN_KNIFE.get(),
+                ModItems.NETHERITE_KNIFE.get()
+        );
+        tag(ModItemTags.KNIFE_MIN_IRON).add(
+                ModItems.IRON_KNIFE.get(),
+                ModItems.GOLDEN_KNIFE.get(),
+                ModItems.DIAMOND_KNIFE.get(),
+                ModItems.OBSIDIAN_KNIFE.get(),
+                ModItems.NETHERITE_KNIFE.get()
+        );
+        tag(ModItemTags.KNIFE_MIN_GOLD).add(
+                ModItems.GOLDEN_KNIFE.get(),
+                ModItems.DIAMOND_KNIFE.get(),
+                ModItems.OBSIDIAN_KNIFE.get(),
+                ModItems.NETHERITE_KNIFE.get()
+        );
+        tag(ModItemTags.KNIFE_MIN_DIAMOND).add(
+                ModItems.DIAMOND_KNIFE.get(),
+                ModItems.OBSIDIAN_KNIFE.get(),
+                ModItems.NETHERITE_KNIFE.get()
+        );
+        tag(ModItemTags.KNIFE_MIN_OBSIDIAN).add(
+                ModItems.OBSIDIAN_KNIFE.get(),
+                ModItems.NETHERITE_KNIFE.get()
+        );
+        tag(ModItemTags.KNIFE_MIN_NETHERITE).add(
+                ModItems.NETHERITE_KNIFE.get()
+        );
+
         tag(ModItemTags.FRYING_PANS).add(ModItems.SKILLET.get());
+
+        tag(ModItemTags.TORTILLAS).add(
+                ModItems.TORTILLA.get(),
+                ModItems.POTATO_TORTILLA.get(),
+                ModItems.ONION_TORTILLA.get()
+        );
 
         tag(ModTiers.REPAIRS_OBSIDIAN_KNIFE).add(Items.OBSIDIAN);
     }

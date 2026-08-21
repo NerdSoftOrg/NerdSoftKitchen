@@ -223,3 +223,7 @@ tasks {
         into(rootProject.layout.buildDirectory.file("libs/${project.property("mod_version")}"))
     }
 }
+
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-Xlint:deprecation")
+}

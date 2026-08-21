@@ -3,11 +3,14 @@ package com.nerdsoft.mods.nerdsoftkitchen.compat.jei;
 //? if <1.21.2 {
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
+import com.nerdsoft.mods.nerdsoftkitchen.compat.jei.category.CuttingBoardCategory;
 import com.nerdsoft.mods.nerdsoftkitchen.compat.jei.category.GrillCookingCategory;
+import com.nerdsoft.mods.nerdsoftkitchen.compat.jei.category.SkilletCookingCategory;
 import com.nerdsoft.mods.nerdsoftkitchen.item.IronCupItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipe;
-import com.nerdsoft.mods.nerdsoftkitchen.registry.data.ModDataComponents;
+import com.nerdsoft.mods.nerdsoftkitchen.recipe.cutting.CuttingRecipe;
+import com.nerdsoft.mods.nerdsoftkitchen.recipe.mix.MixRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.item.ModItems;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.recipe.ModRecipeTypes;
 import mezz.jei.api.IModPlugin;
@@ -24,7 +27,6 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -32,7 +34,6 @@ import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +41,24 @@ import java.util.List;
 @JeiPlugin
 @SuppressWarnings("unused")
 public class JeiNerdSoftKitchenPlugin implements IModPlugin {
+    public static final String EMPTY_SUBTYPE = "";
 
     private static final ResourceLocation PLUGIN_ID =
             ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, "jei_plugin");
+
+    private static final ISubtypeInterpreter<ItemStack> IRON_CUP_INTERPRETER = new ISubtypeInterpreter<>() {
+        @Override
+        public @NotNull String getSubtypeData(@NotNull ItemStack stack, @NotNull UidContext context) {
+            IronCupContent content = IronCupItem.contentOf(stack);
+            return content != null ? content.getSerializedName() : EMPTY_SUBTYPE;
+        }
+
+        @Override
+        public @NotNull String getLegacyStringSubtypeInfo(@NotNull ItemStack stack, @NotNull UidContext context) {
+            IronCupContent content = IronCupItem.contentOf(stack);
+            return content != null ? content.getSerializedName() : EMPTY_SUBTYPE;
+        }
+    };
 
     @Override
     public @NotNull ResourceLocation getPluginUid() {
@@ -51,16 +67,18 @@ public class JeiNerdSoftKitchenPlugin implements IModPlugin {
 
     @Override
     public void registerItemSubtypes(@NotNull ISubtypeRegistration registration) {
-        registration.registerSubtypeInterpreter(
-                VanillaTypes.ITEM_STACK,
-                ModItems.IRON_CUP.get(),
-                new IronCupSubtypeInterpreter(ModDataComponents.IRON_CUP_CONTENT.get())
-        );
+        registration.registerSubtypeInterpreter(ModItems.IRON_CUP.get(), IRON_CUP_INTERPRETER);
     }
 
     @Override
     public void registerCategories(@NotNull IRecipeCategoryRegistration registration) {
-        registration.addRecipeCategories(new GrillCookingCategory(registration.getJeiHelpers().getGuiHelper()));
+        var guiHelper = registration.getJeiHelpers().getGuiHelper();
+
+        registration.addRecipeCategories(
+                new GrillCookingCategory(guiHelper),
+                new CuttingBoardCategory(guiHelper),
+                new SkilletCookingCategory(guiHelper)
+        );
     }
 
     @Override
@@ -71,6 +89,12 @@ public class JeiNerdSoftKitchenPlugin implements IModPlugin {
         registration.addRecipeCatalyst(
                 new ItemStack(ModItems.GRILL_TABLE_SOUL.get()),
                 GrillCookingCategory.RECIPE_TYPE);
+        registration.addRecipeCatalyst(
+                new ItemStack(ModItems.CUTTING_BOARD.get()),
+                CuttingBoardCategory.RECIPE_TYPE);
+        registration.addRecipeCatalyst(
+                new ItemStack(ModItems.SKILLET.get()),
+                SkilletCookingCategory.RECIPE_TYPE);
     }
 
     @Override
@@ -103,6 +127,10 @@ public class JeiNerdSoftKitchenPlugin implements IModPlugin {
                 new ItemStack(ModItems.CUTTING_BOARD.get()),
                 Component.translatable("nerdsoftkitchen.jei.info.cutting_board")
         );
+        registration.addItemStackInfo(
+                new ItemStack(ModItems.SKILLET.get()),
+                Component.translatable("nerdsoftkitchen.jei.info.skillet")
+        );
     }
 
     @Override
@@ -119,22 +147,31 @@ public class JeiNerdSoftKitchenPlugin implements IModPlugin {
         RecipeManager recipeManager = level.getRecipeManager();
         HolderLookup.Provider registries = level.registryAccess();
 
-        List<RecipeHolder<CookRecipe>> mergedRecipes = new ArrayList<>(collectGrillRecipes(recipeManager));
-        mergedRecipes.addAll(collectVanillaCampfireRecipes(recipeManager, registries));
+        List<RecipeHolder<CookRecipe>> grillRecipes = collectGrillRecipes(recipeManager);
+        List<RecipeHolder<CampfireCookingRecipe>> campfireRecipes = recipeManager.getAllRecipesFor(net.minecraft.world.item.crafting.RecipeType.CAMPFIRE_COOKING);
+
+        List<RecipeHolder<CookRecipe>> mergedRecipes = new ArrayList<>(grillRecipes.size() + campfireRecipes.size());
+        mergedRecipes.addAll(grillRecipes);
+
+        for (RecipeHolder<CampfireCookingRecipe> holder : campfireRecipes) {
+            mergedRecipes.add(toCookRecipeHolder(holder, registries));
+        }
 
         jeiRuntime.getRecipeManager().addRecipes(GrillCookingCategory.RECIPE_TYPE, mergedRecipes);
+        jeiRuntime.getRecipeManager().addRecipes(CuttingBoardCategory.RECIPE_TYPE, collectCuttingRecipes(recipeManager));
+        jeiRuntime.getRecipeManager().addRecipes(SkilletCookingCategory.RECIPE_TYPE, collectMixRecipes(recipeManager));
+    }
+
+    private List<RecipeHolder<CuttingRecipe>> collectCuttingRecipes(RecipeManager recipeManager) {
+        return recipeManager.getAllRecipesFor(ModRecipeTypes.CUT_TYPE.get());
+    }
+
+    private List<RecipeHolder<MixRecipe>> collectMixRecipes(RecipeManager recipeManager) {
+        return recipeManager.getAllRecipesFor(ModRecipeTypes.MIX_TYPE.get());
     }
 
     private List<RecipeHolder<CookRecipe>> collectGrillRecipes(RecipeManager recipeManager) {
         return recipeManager.getAllRecipesFor(ModRecipeTypes.COOK_TYPE.get());
-    }
-
-    private List<RecipeHolder<CookRecipe>> collectVanillaCampfireRecipes(RecipeManager recipeManager, HolderLookup.Provider registries) {
-        return recipeManager
-                .getAllRecipesFor(net.minecraft.world.item.crafting.RecipeType.CAMPFIRE_COOKING)
-                .stream()
-                .map(holder -> toCookRecipeHolder(holder, registries))
-                .toList();
     }
 
     private RecipeHolder<CookRecipe> toCookRecipeHolder(RecipeHolder<CampfireCookingRecipe> holder, HolderLookup.Provider registries) {
@@ -145,22 +182,6 @@ public class JeiNerdSoftKitchenPlugin implements IModPlugin {
                 recipe.getCookingTime()
         );
         return new RecipeHolder<>(holder.id(), cookRecipe);
-    }
-
-    private record IronCupSubtypeInterpreter(
-            DataComponentType<IronCupContent> componentType
-    ) implements ISubtypeInterpreter<ItemStack> {
-
-        @Override
-        public @Nullable String getSubtypeData(@NotNull ItemStack ingredient, @NotNull UidContext context) {
-            IronCupContent content = ingredient.get(componentType);
-            return content != null ? content.getSerializedName() : null;
-        }
-
-        @Override
-        public @NotNull String getLegacyStringSubtypeInfo(@NotNull ItemStack ingredient, @NotNull UidContext context) {
-            return "";
-        }
     }
 }
 //?}

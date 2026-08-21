@@ -52,7 +52,7 @@ public final class ModCreativeTabs {
         output.accept(ModItems.GRILLED_CHEESE);
         output.accept(ModItems.STONE_KNIFE);
         output.accept(ModItems.IRON_KNIFE);
-        output.accept(ModItems.GOLD_KNIFE);
+        output.accept(ModItems.GOLDEN_KNIFE);
         output.accept(ModItems.DIAMOND_KNIFE);
         output.accept(ModItems.OBSIDIAN_KNIFE);
         output.accept(ModItems.NETHERITE_KNIFE);

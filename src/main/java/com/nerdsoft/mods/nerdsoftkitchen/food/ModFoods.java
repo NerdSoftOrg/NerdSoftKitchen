@@ -41,6 +41,9 @@ public final class ModFoods {
     /// Dairy products
     public static final FoodProperties MILK =
             new FoodProperties.Builder().nutrition(0).saturationModifier(0f).alwaysEdible().build();
+    /// Liquid ingredients (Iron Cup contents pulled from a cooking surface, not a drink meant to be enjoyable)
+    public static final FoodProperties LIQUID_EGG =
+            new FoodProperties.Builder().nutrition(1).saturationModifier(0.1f).build();
     public static final FoodProperties YOGURT =
             new FoodProperties.Builder().nutrition(3).saturationModifier(0.6f).build();
     public static final FoodProperties STRAWBERRY_YOGURT =

@@ -1,6 +1,7 @@
 package com.nerdsoft.mods.nerdsoftkitchen.datagen.block;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlockTags;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -10,6 +11,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +32,11 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
+        tag(cTag("grill_tables")).add(
+                ModBlocks.GRILL_TABLE.get(),
+                ModBlocks.GRILL_TABLE_SOUL.get()
+        );
+
         tag(BlockTags.CROPS).add(
                 ModBlocks.WILD_STRAWBERRY.get(),
                 ModBlocks.WILD_TOMATO.get(),
@@ -59,6 +66,17 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
         );
 
         tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.ORGANIC_SOIL.get(), ModBlocks.FERTILE_FARMLAND.get());
+
+        tag(cTag("heat_sources")).add(
+                Blocks.FIRE,
+                Blocks.SOUL_FIRE,
+                Blocks.MAGMA_BLOCK,
+                Blocks.LAVA,
+                Blocks.CAMPFIRE,
+                Blocks.SOUL_CAMPFIRE,
+                ModBlocks.GRILL_TABLE.get(),
+                ModBlocks.GRILL_TABLE_SOUL.get()
+        );
     }
 
     @SuppressWarnings("unused")

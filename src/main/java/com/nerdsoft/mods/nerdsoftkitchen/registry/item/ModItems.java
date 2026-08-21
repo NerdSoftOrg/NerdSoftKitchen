@@ -42,7 +42,7 @@ public final class ModItems {
     /*private static final float COPPER_KNIFE_DAMAGE = 0.75F; // 2.75 - 1.0 (copper tier)
      *///?}
     private static final float IRON_KNIFE_DAMAGE = 0.0F; // 3.0
-    private static final float GOLD_KNIFE_DAMAGE = 1.0F; // 2.0
+    private static final float GOLDEN_KNIFE_DAMAGE = 1.0F; // 2.0
     private static final float DIAMOND_KNIFE_DAMAGE = -0.5F; // 3.5
     private static final float OBSIDIAN_KNIFE_DAMAGE = -1.25F; // 3.75
     private static final float NETHERITE_KNIFE_DAMAGE = -1.0F; // 4.0
@@ -92,8 +92,8 @@ public final class ModItems {
             props -> new KnifeItem(Tiers.STONE, STONE_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> IRON_KNIFE = ITEMS.registerItem("iron_knife",
             props -> new KnifeItem(Tiers.IRON, IRON_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
-    public static final DeferredItem<KnifeItem> GOLD_KNIFE = ITEMS.registerItem("gold_knife",
-            props -> new KnifeItem(Tiers.GOLD, GOLD_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
+    public static final DeferredItem<KnifeItem> GOLDEN_KNIFE = ITEMS.registerItem("golden_knife",
+            props -> new KnifeItem(Tiers.GOLD, GOLDEN_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> DIAMOND_KNIFE = ITEMS.registerItem("diamond_knife",
             props -> new KnifeItem(Tiers.DIAMOND, DIAMOND_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> OBSIDIAN_KNIFE = ITEMS.registerItem("obsidian_knife",
@@ -141,8 +141,8 @@ public final class ModItems {
             props -> new KnifeItem(ToolMaterial.STONE, STONE_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> IRON_KNIFE = ITEMS.registerItem("iron_knife",
             props -> new KnifeItem(ToolMaterial.IRON, IRON_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
-    public static final DeferredItem<KnifeItem> GOLD_KNIFE = ITEMS.registerItem("gold_knife",
-            props -> new KnifeItem(ToolMaterial.GOLD, GOLD_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
+    public static final DeferredItem<KnifeItem> GOLDEN_KNIFE = ITEMS.registerItem("golden_knife",
+            props -> new KnifeItem(ToolMaterial.GOLD, GOLDEN_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> DIAMOND_KNIFE = ITEMS.registerItem("diamond_knife",
             props -> new KnifeItem(ToolMaterial.DIAMOND, DIAMOND_KNIFE_DAMAGE, DEFAULT_KNIFE_SPEED, props));
     public static final DeferredItem<KnifeItem> OBSIDIAN_KNIFE = ITEMS.registerItem("obsidian_knife",

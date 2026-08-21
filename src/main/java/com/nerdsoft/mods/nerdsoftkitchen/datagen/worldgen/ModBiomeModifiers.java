@@ -1,7 +1,7 @@
 package com.nerdsoft.mods.nerdsoftkitchen.datagen.worldgen;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
-import com.nerdsoft.mods.nerdsoftkitchen.registry.worldgen.ModPlacedFeatures;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.world.worldgen.ModPlacedFeatures;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;

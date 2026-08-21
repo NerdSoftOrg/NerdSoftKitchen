@@ -12,18 +12,21 @@ import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.data.ModDamageTypes;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.sound.ModSounds;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.world.damagesource.BlockDamageSource;
 import com.nerdsoft.mods.nerdsoftkitchen.util.RandomUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -155,15 +158,30 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
     }
 
     @Override
-    protected void entityInside(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Entity entity) {
-        if (!level.isClientSide && entity instanceof LivingEntity && !entity.fireImmune() && state.getValue(LIT)) {
-            DamageSource source = level.damageSources().source(ModDamageTypes.GRILL_BURN, entity);
-            //? if <1.21.2 {
-            entity.hurt(source, STEP_DAMAGE);
-            //?} else
-             //entity.hurtServer((ServerLevel) level, source, STEP_DAMAGE);
+    public void stepOn(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Entity entity) {
+        if (!level.isClientSide
+                && state.getValue(LIT)
+                && entity instanceof LivingEntity living
+                && !living.fireImmune()) {
+
+            if (entity.getOnPos().equals(pos)) {
+                //? if <1.21.2 {
+                Holder<DamageType> cookwareBurnHolder = level.registryAccess()
+                        .registryOrThrow(Registries.DAMAGE_TYPE)
+                        .getHolderOrThrow(ModDamageTypes.COOKWARE_BURN);
+                //?} else {
+                /*Holder<DamageType> cookwareBurnHolder = level.registryAccess()
+                        .lookupOrThrow(Registries.DAMAGE_TYPE)
+                        .getOrThrow(ModDamageTypes.COOKWARE_BURN);
+                *///?}
+
+                //? if <1.21.2 {
+                living.hurt(new BlockDamageSource(cookwareBurnHolder, this), STEP_DAMAGE);
+                //?} else
+                //living.hurtServer((ServerLevel) level, new BlockDamageSource(cookwareBurnHolder, this), STEP_DAMAGE);
+            }
         }
-        super.entityInside(state, level, pos, entity);
+        super.stepOn(level, pos, state, entity);
     }
 
     //? if <1.21.2 {

@@ -1,8 +1,8 @@
 {
 	"parent": "minecraft:block/block",
 	"textures": {
-		"texture": "nerdsoftkitchen:item/skillet_unlit",
-		"particle": "nerdsoftkitchen:item/skillet_unlit"
+		"texture": "nerdsoftkitchen:block/skillet_unlit",
+		"particle": "nerdsoftkitchen:block/skillet_unlit"
 	},
 	"elements": [
 		{

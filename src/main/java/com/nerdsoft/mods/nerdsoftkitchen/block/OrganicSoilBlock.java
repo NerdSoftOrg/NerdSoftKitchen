@@ -125,7 +125,6 @@ public class OrganicSoilBlock extends BaseEntityBlock {
         if (!(level.getBlockEntity(pos) instanceof OrganicSoilBlockEntity soilEntity) || !soilEntity.isNourished()) {
             return;
         }
-        // The mushroom above was just removed (broken/harvested) while nourished: grant the bonus and reset.
         if (level.getBlockState(neighborPos).getBlock() instanceof MushroomBlock) {
             return;
         }
@@ -136,7 +135,6 @@ public class OrganicSoilBlock extends BaseEntityBlock {
     }
 
     private void spawnBonusMushrooms(ServerLevel level, BlockPos pos) {
-        // The specific mushroom type isn't tracked once broken, so award brown mushrooms as the common case.
         int count = MIN_BONUS_MUSHROOMS + level.getRandom().nextInt(MAX_BONUS_MUSHROOMS - MIN_BONUS_MUSHROOMS + 1);
         popResource(level, pos, new ItemStack(Items.BROWN_MUSHROOM, count));
     }

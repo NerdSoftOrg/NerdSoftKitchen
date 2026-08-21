@@ -39,7 +39,7 @@ public class ModItemModelProvider extends ItemModelProvider {
                 ModItems.CUT_POTATO, ModItems.CUT_PURPLE_ONION,
                 ModItems.ORGANIC_MIXTURE,
                 ModItems.RAW_SANDWICH_BREAD, ModItems.TOASTED_SANDWICH_BREAD,
-                ModItems.OBSIDIAN_KNIFE, ModItems.NETHERITE_KNIFE
+                ModItems.NETHERITE_KNIFE
         );
 
         // SandwichItems (3 layers)
@@ -47,7 +47,7 @@ public class ModItemModelProvider extends ItemModelProvider {
 
         // Tintable Handheld
         tintableKnives(
-                ModItems.STONE_KNIFE, ModItems.IRON_KNIFE, ModItems.GOLD_KNIFE, ModItems.DIAMOND_KNIFE
+                ModItems.STONE_KNIFE, ModItems.IRON_KNIFE, ModItems.GOLDEN_KNIFE, ModItems.DIAMOND_KNIFE, ModItems.OBSIDIAN_KNIFE
         );
 
         ironCup();
@@ -126,18 +126,22 @@ public class ModItemModelProvider extends ItemModelProvider {
         customItem2D(ModItems.IRON_CUP);
 
         ItemModelBuilder cupBuilder = getBuilder(ModItems.IRON_CUP.getId().getPath());
+        String baseCupPath = "item/" + ModItems.IRON_CUP.getId().getPath();
+
         for (IronCupContent content : IronCupContent.values()) {
             String name = "iron_cup_" + content.getSerializedName();
-            String path = "item/" + name;
+            String contentTexturePath = "item/iron_cup_" + content.getSerializedName();
 
-            DatagenUtils.trackTexture(existingFileHelper, path);
+            DatagenUtils.trackTexture(existingFileHelper, contentTexturePath);
             DatagenUtils.trackModel(existingFileHelper, "item/" + name);
 
-            withExistingParent(name, mcLoc("item/generated")).texture("layer0", modLoc(path));
+            withExistingParent(name, mcLoc("item/generated"))
+                    .texture("layer0", modLoc(baseCupPath))
+                    .texture("layer1", modLoc(contentTexturePath));
 
             cupBuilder.override()
                     .predicate(modLoc("content"), content.modelIndex() + 1)
-                    .model(getExistingFile(modLoc(path)))
+                    .model(getExistingFile(modLoc(name)))
                     .end();
         }
     }

@@ -21,32 +21,40 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+
+import java.util.Map;
 
 // Compatibility for 1.21
 @SuppressWarnings("removal")
 @EventBusSubscriber(modid = NerdSoftKitchen.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public final class ModClientSetup {
 
-    private ModClientSetup() {
-    }
+    private ModClientSetup() {}
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> ItemProperties.register(ModItems.IRON_CUP.get(),
-                ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, "content"), (stack, level, entity,
-                                                                                           seed) -> {
+        event.enqueueWork(() -> ItemProperties.register(
+                ModItems.IRON_CUP.get(),
+                ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, "content"),
+                (stack, level, entity, seed) -> {
                     IronCupContent content = IronCupItem.contentOf(stack);
                     return content == null ? 0.0F : content.modelIndex() + 1;
-                }));
-        //? if <1.21.2 {
-        JeiCategorySorter.forceGrillAfterCampfire();
-        //?}
+                }
+        ));
 
         LodDiagnostics.checkCullDistanceAgainstLod("CuttingBoard", 48.0, ModBlocks.CUTTING_BOARD.get());
         LodDiagnostics.checkCullDistanceAgainstLod("GrillTable", 48.0, ModBlocks.GRILL_TABLE.get());
     }
+
+    //? if <1.21.2 {
+    @SubscribeEvent
+    public static void onLoadComplete(FMLLoadCompleteEvent event) {
+        event.enqueueWork(JeiCategorySorter::forceCategoriesOrder);
+    }
+    //?}
 
     @SubscribeEvent
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -69,45 +77,26 @@ public final class ModClientSetup {
     }
 
     @SubscribeEvent
-    @SuppressWarnings("InvariantValue")
     public static void registerItemColors(RegisterColorHandlersEvent.Item event) {
+        Map<Item, KnifeColors> knifeColors = Map.of(
+                ModItems.STONE_KNIFE.get(),    new KnifeColors(0xFFB1AFAD, 0xFFB1AFAD),
+                ModItems.IRON_KNIFE.get(),     new KnifeColors(0xFFECF5F5, 0xFFECF5F5),
+                ModItems.GOLDEN_KNIFE.get(),   new KnifeColors(0xFFFAF25E, 0xFFFFFCEB),
+                ModItems.DIAMOND_KNIFE.get(),  new KnifeColors(0xFF72F7E4, 0xFFC9FFF8),
+                ModItems.OBSIDIAN_KNIFE.get(), new KnifeColors(0xFF865FBF, 0xFFD2BCF7)
+        );
+
         event.register((stack, tintIndex) -> {
-                    if (tintIndex == 1) { // layer1 = blade
-                        Item item = stack.getItem();
-                        if (item == ModItems.STONE_KNIFE.get()) return 0xFFB1AFAD;    // Gray
-                        // A prepare for copper age knife
-                        //? if > 1.21.8 {
-                        // if (item == ModItems.COPPER_KNIFE.get()) return 0xFF9C4E31;   // Orange
-                        //?}
-                        if (item == ModItems.IRON_KNIFE.get()) return 0xFFECF5F5;     // White
-                        if (item == ModItems.GOLD_KNIFE.get()) return 0xFFFFF540;     // Yellow
-                        if (item == ModItems.DIAMOND_KNIFE.get()) return 0xFF72F7E4;  // Cyan
-                        if (item == ModItems.OBSIDIAN_KNIFE.get()) return 0xFF865FBF; // Purple
-                        if (item == ModItems.NETHERITE_KNIFE.get()) return 0xFF252433;// Black
-                    }
-                    if (tintIndex == 2) { // layer1 = highlight
-                        Item item = stack.getItem();
-                        if (item == ModItems.STONE_KNIFE.get()) return 0xFFB1AFAD;    // Gray
-                        // A prepare for copper age knife
-                        //? if > 1.21.8 {
-                        // if (item == ModItems.COPPER_KNIFE.get()) return 0xFF9C4E31;   // Orange
-                        //?}
-                        if (item == ModItems.IRON_KNIFE.get()) return 0xFFECF5F5;     // White
-                        if (item == ModItems.GOLD_KNIFE.get()) return 0xFFFFFCEB;     // Yellow
-                        if (item == ModItems.DIAMOND_KNIFE.get()) return 0xFFC9FFF8;  // Cyan
-                        if (item == ModItems.OBSIDIAN_KNIFE.get()) return 0xFFD2BCF7; // Purple
-                        if (item == ModItems.NETHERITE_KNIFE.get()) return 0xFFA6979F;// Black
-                    }
-                    return -1; // layer0 = handle without tint
-                },
-                ModItems.STONE_KNIFE.get(),
-                //? if > 1.21.8 {
-                // ModItems.COPPER_KNIFE.get(),
-                //?}
-                ModItems.IRON_KNIFE.get(),
-                ModItems.GOLD_KNIFE.get(),
-                ModItems.DIAMOND_KNIFE.get(),
-                ModItems.OBSIDIAN_KNIFE.get(),
-                ModItems.NETHERITE_KNIFE.get());
+            KnifeColors colors = knifeColors.get(stack.getItem());
+            if (colors == null) return -1;
+
+            return switch (tintIndex) {
+                case 1 -> colors.blade();
+                case 2 -> colors.highlight();
+                default -> -1; // layer0 (no tint)
+            };
+        }, knifeColors.keySet().toArray(new Item[0]));
     }
+
+    private record KnifeColors(int blade, int highlight) {}
 }

@@ -138,7 +138,6 @@ public class CuttingBoardBlock extends BaseEntityBlock implements LodBlock {
     protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, Level level, @NotNull BlockPos pos,
                                                         @NotNull Player player, @NotNull BlockHitResult hitResult) {
         if (level.getBlockEntity(pos) instanceof CuttingBoardBlockEntity board && !board.isEmpty()) {
-            // Clic con mano vacía -> Recuperar el stack completo
             //? if <1.21.2 {
             return returnItem(level, board, player).result();
             //?} else
@@ -254,7 +253,7 @@ public class CuttingBoardBlock extends BaseEntityBlock implements LodBlock {
         }
 
         Optional<RecipeHolder<CuttingRecipe>> match = recipeManager
-                .getRecipeFor(ModRecipeTypes.CUT_TYPE.get(), new CuttingRecipeInput(board.getStoredItem()), level);
+                .getRecipeFor(ModRecipeTypes.CUT_TYPE.get(), new CuttingRecipeInput(board.getStoredItem(), knife), level);
 
         if (match.isEmpty()) {
             //? if <1.21.2 {
@@ -264,7 +263,7 @@ public class CuttingBoardBlock extends BaseEntityBlock implements LodBlock {
         }
 
         if (!level.isClientSide) {
-            ItemStack result = match.get().value().assemble(new CuttingRecipeInput(board.getStoredItem()), level.registryAccess());
+            ItemStack result = match.get().value().assemble(new CuttingRecipeInput(board.getStoredItem(), knife), level.registryAccess());
             board.clearStoredItem();
 
             if (hasFireAspect(knife, level)) {

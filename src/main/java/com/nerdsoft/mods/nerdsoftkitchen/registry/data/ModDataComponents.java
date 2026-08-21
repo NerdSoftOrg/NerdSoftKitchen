@@ -30,7 +30,7 @@ public final class ModDataComponents {
                             .persistent(Codec.FLOAT)
                             .networkSynchronized(ByteBufCodecs.FLOAT)
                             .build());
-    
+
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<SkilletHotState>> SKILLET_HOT_STATE =
             DATA_COMPONENTS.register("skillet_hot_state",
                     () -> DataComponentType.<SkilletHotState>builder()

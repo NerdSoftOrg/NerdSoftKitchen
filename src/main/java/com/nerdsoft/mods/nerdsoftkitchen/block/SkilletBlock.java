@@ -3,18 +3,31 @@ package com.nerdsoft.mods.nerdsoftkitchen.block;
 import com.mojang.serialization.MapCodec;
 import com.nerdsoft.mods.nerdsoftkitchen.blockentity.SkilletBlockEntity;
 import com.nerdsoft.mods.nerdsoftkitchen.client.sound.SkilletLoopSoundManager;
+import com.nerdsoft.mods.nerdsoftkitchen.item.IronCupItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.SkilletBlockItem;
+import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.data.ModDamageTypes;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.world.damagesource.BlockDamageSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -39,6 +52,7 @@ import org.jetbrains.annotations.Nullable;
 /*import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.server.level.ServerLevel;
 *///?} else {
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
@@ -73,6 +87,7 @@ public class SkilletBlock extends BaseEntityBlock implements SimpleWaterloggedBl
     private static final double OIL_XZ_SPREAD = 0.6;
     private static final double OIL_XZ_MARGIN = 0.2;
     private static final double OIL_RISE_SPEED = 0.01;
+    private static final float STEP_DAMAGE = 1.0F;
 
     static {
         for (Direction dir : Direction.Plane.HORIZONTAL) {
@@ -91,18 +106,21 @@ public class SkilletBlock extends BaseEntityBlock implements SimpleWaterloggedBl
         );
     }
 
+    public static final TagKey<Block> HEAT_SOURCES =
+           BlockTags.create(
+                    ResourceLocation.fromNamespaceAndPath("c", "heat_sources"));
+
     public static boolean isHeatSourceBelow(LevelReader level, BlockPos pos) {
         BlockPos below = pos.below();
         BlockState belowState = level.getBlockState(below);
-        Block belowBlock = belowState.getBlock();
 
-        if (belowBlock instanceof GrillTableBlock) {
-            return belowState.hasProperty(GrillTableBlock.LIT) && belowState.getValue(GrillTableBlock.LIT);
+        if (!belowState.is(HEAT_SOURCES)) {
+            return false;
         }
-        if (belowBlock instanceof CampfireBlock) {
-            return belowState.hasProperty(BlockStateProperties.LIT) && belowState.getValue(BlockStateProperties.LIT);
+        if (belowState.hasProperty(BlockStateProperties.LIT)) {
+            return belowState.getValue(BlockStateProperties.LIT);
         }
-        return belowBlock instanceof FireBlock || belowBlock == Blocks.MAGMA_BLOCK || belowBlock == Blocks.LAVA;
+        return true;
     }
 
     @Override
@@ -119,6 +137,11 @@ public class SkilletBlock extends BaseEntityBlock implements SimpleWaterloggedBl
     ) {
         if (level.getBlockEntity(pos) instanceof SkilletBlockEntity skilletEntity) {
             ItemStack itemstack = player.getItemInHand(hand);
+
+            if (itemstack.getItem() instanceof IronCupItem) {
+                return handleCupInteraction(skilletEntity, level, player, hand, itemstack);
+            }
+
             if (skilletEntity.hasCookableRecipe(itemstack)) {
                 if (!level.isClientSide && skilletEntity.placeFood(player, itemstack)) {
                     player.awardStat(Stats.INTERACT_WITH_CAMPFIRE);
@@ -133,6 +156,74 @@ public class SkilletBlock extends BaseEntityBlock implements SimpleWaterloggedBl
                 //?} else
                 //return InteractionResult.CONSUME;
             }
+
+            if (itemstack.is(Items.EGG)) {
+                //? if <1.21.2 {
+                return ItemInteractionResult.CONSUME;
+                //?} else
+                //return InteractionResult.CONSUME;
+            }
+        }
+
+        //? if <1.21.2 {
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        //?} else
+        //return InteractionResult.PASS;
+    }
+
+    //? if <1.21.2 {
+    private ItemInteractionResult handleCupInteraction(SkilletBlockEntity skilletEntity, Level level, Player player,
+                                                        InteractionHand hand, ItemStack cupStack) {
+    //?} else {
+    /*private InteractionResult handleCupInteraction(SkilletBlockEntity skilletEntity, Level level, Player player,
+                                                    InteractionHand hand, ItemStack cupStack) {
+    *///?}
+        boolean cupEmpty = IronCupItem.isEmpty(cupStack);
+
+        if (cupEmpty && skilletEntity.canExtractEggToCup()) {
+            if (!level.isClientSide) {
+                ItemStack filledCup = skilletEntity.extractEggToCup(cupStack);
+                if (player.getAbilities().instabuild) {
+                    player.setItemInHand(hand, filledCup);
+                } else {
+                    cupStack.shrink(1);
+                    if (cupStack.isEmpty()) {
+                        player.setItemInHand(hand, filledCup);
+                    } else if (!player.getInventory().add(filledCup)) {
+                        player.drop(filledCup, false);
+                    }
+                }
+                level.playSound(null, skilletEntity.getBlockPos(), SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+            }
+            //? if <1.21.2 {
+            return ItemInteractionResult.SUCCESS;
+            //?} else
+            //return InteractionResult.SUCCESS;
+        }
+
+        IronCupContent content = IronCupItem.contentOf(cupStack);
+        boolean cupHasEgg = content == IronCupContent.LIQUID_EGG;
+
+        if (cupHasEgg && skilletEntity.canPourEggFromCup()) {
+            if (!level.isClientSide) {
+                skilletEntity.pourEggFromCup();
+                ItemStack emptyCup = new ItemStack(cupStack.getItem());
+                if (player.getAbilities().instabuild) {
+                    player.setItemInHand(hand, emptyCup);
+                } else {
+                    cupStack.shrink(1);
+                    if (cupStack.isEmpty()) {
+                        player.setItemInHand(hand, emptyCup);
+                    } else if (!player.getInventory().add(emptyCup)) {
+                        player.drop(emptyCup, false);
+                    }
+                }
+                level.playSound(null, skilletEntity.getBlockPos(), SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+            }
+            //? if <1.21.2 {
+            return ItemInteractionResult.SUCCESS;
+            //?} else
+            //return InteractionResult.SUCCESS;
         }
 
         //? if <1.21.2 {
@@ -142,9 +233,47 @@ public class SkilletBlock extends BaseEntityBlock implements SimpleWaterloggedBl
     }
 
     @Override
+    protected @NotNull InteractionResult useWithoutItem(
+            @NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult hitResult
+    ) {
+        if (level.getBlockEntity(pos) instanceof SkilletBlockEntity skilletEntity && skilletEntity.hasHandRecoverableContents()) {
+            if (!level.isClientSide) {
+                ItemStack taken = skilletEntity.takeContents();
+                if (!taken.isEmpty()) {
+                    if (!player.getInventory().add(taken)) {
+                        player.drop(taken, false);
+                    }
+                    level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.6F, 1.0F);
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
+        return InteractionResult.PASS;
+    }
+
+    @Override
     public void stepOn(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Entity entity) {
-        if (!level.isClientSide && state.getValue(LIT) && entity instanceof LivingEntity && !entity.fireImmune()) {
-            entity.igniteForSeconds(1);
+        if (!level.isClientSide
+                && state.getValue(LIT)
+                && entity instanceof LivingEntity living
+                && !living.fireImmune()) {
+
+            if (entity.getOnPos().equals(pos)) {
+                //? if <1.21.2 {
+                Holder<DamageType> cookwareBurnHolder = level.registryAccess()
+                        .registryOrThrow(Registries.DAMAGE_TYPE)
+                        .getHolderOrThrow(ModDamageTypes.COOKWARE_BURN);
+                //?} else {
+                /*Holder<DamageType> cookwareBurnHolder = level.registryAccess()
+                        .lookupOrThrow(Registries.DAMAGE_TYPE)
+                        .getOrThrow(ModDamageTypes.COOKWARE_BURN);
+                *///?}
+
+                //? if <1.21.2 {
+                living.hurt(new BlockDamageSource(cookwareBurnHolder, this), STEP_DAMAGE);
+                //?} else
+                //living.hurtServer((ServerLevel) level, new BlockDamageSource(cookwareBurnHolder, this), STEP_DAMAGE);
+            }
         }
         super.stepOn(level, pos, state, entity);
     }
@@ -154,7 +283,7 @@ public class SkilletBlock extends BaseEntityBlock implements SimpleWaterloggedBl
         Direction facing = context.getHorizontalDirection().getOpposite();
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
-        boolean waterlogged = level.getFluidState(pos).is(net.minecraft.tags.FluidTags.WATER);
+        boolean waterlogged = level.getFluidState(pos).is(FluidTags.WATER);
 
         BlockState state = this.defaultBlockState().setValue(FACING, facing).setValue(WATERLOGGED, waterlogged);
 

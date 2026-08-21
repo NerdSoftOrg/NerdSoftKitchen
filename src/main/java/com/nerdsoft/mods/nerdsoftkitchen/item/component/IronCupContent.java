@@ -5,23 +5,35 @@ import com.nerdsoft.mods.nerdsoftkitchen.food.ModFoods;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.IntFunction;
 
 public enum IronCupContent implements StringRepresentable {
     MILK("milk", ModFoods.MILK),
     YOGURT("yogurt", ModFoods.YOGURT),
-    STRAWBERRY_YOGURT("strawberry_yogurt", ModFoods.STRAWBERRY_YOGURT);
+    STRAWBERRY_YOGURT("strawberry_yogurt", ModFoods.STRAWBERRY_YOGURT),
+    LIQUID_EGG("liquid_egg", ModFoods.LIQUID_EGG);
 
     public static final Codec<IronCupContent> CODEC = StringRepresentable.fromEnum(IronCupContent::values);
     private static final IronCupContent[] VALUES = values();
+
+    private static final IntFunction<IronCupContent> BY_ID = ByIdMap.continuous(
+            IronCupContent::ordinal,
+            VALUES,
+            ByIdMap.OutOfBoundsStrategy.ZERO
+    );
+
     public static final StreamCodec<ByteBuf, IronCupContent> STREAM_CODEC =
-            ByteBufCodecs.STRING_UTF8.map(IronCupContent::byName, IronCupContent::getSerializedName);
+            ByteBufCodecs.idMapper(BY_ID, IronCupContent::ordinal);
+
     private final String name;
     private final FoodProperties food;
 
@@ -36,16 +48,17 @@ public enum IronCupContent implements StringRepresentable {
                 return value;
             }
         }
-        throw new IllegalArgumentException("Unknown IronCupContent: " + name);
+        return MILK;
     }
 
     @SuppressWarnings("unused")
     public static IronCupContent byModelIndex(int index) {
+        if (index < 0 || index >= VALUES.length) return MILK;
         return VALUES[index];
     }
 
     public static List<ItemStack> allFilledStacks(Item cupItem) {
-        List<ItemStack> stacks = new java.util.ArrayList<>(VALUES.length);
+        List<ItemStack> stacks = new ArrayList<>(VALUES.length);
         for (IronCupContent content : VALUES) {
             stacks.add(com.nerdsoft.mods.nerdsoftkitchen.item.IronCupItem.filled(cupItem, content));
         }

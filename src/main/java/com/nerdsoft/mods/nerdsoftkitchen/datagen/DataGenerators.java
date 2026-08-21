@@ -1,10 +1,10 @@
 package com.nerdsoft.mods.nerdsoftkitchen.datagen;
 
-import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.advancement.ModAdvancementProvider;
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.block.ModBlockStateProvider;
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.block.ModBlockTagsProvider;
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.data.ModDamageTypeProvider;
+import com.nerdsoft.mods.nerdsoftkitchen.datagen.data.ModDamageTypeTagsProvider;
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.data.ModDataMapProvider;
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.data.ModLootTableProvider;
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.item.ModItemModelProvider;
@@ -15,7 +15,7 @@ import com.nerdsoft.mods.nerdsoftkitchen.datagen.recipe.ModRecipeProvider;
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.sound.ModSoundDefinitionsProvider;
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.worldgen.ModBiomeModifiers;
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.worldgen.ModConfiguredFeatures;
-import com.nerdsoft.mods.nerdsoftkitchen.registry.worldgen.ModPlacedFeatures;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.world.worldgen.ModPlacedFeatures;
 import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
 //? if >=1.21.2 {
 /*import net.minecraft.data.DataProvider;
@@ -76,6 +76,7 @@ public final class DataGenerators {
                     (output, lookup) -> new ModBlockTagsProvider(output, lookup, existingFileHelper),
                     (output, lookup, blockTags) -> new ModItemTagsProvider(output, lookup, blockTags, existingFileHelper)
             );
+            generator.addProvider(event.includeServer(), new ModDamageTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
         }
         //?} else {
         /*DataProvider.Factory<ModBlockStateProvider> blockStateFactory = output -> new ModBlockStateProvider(output, existingFileHelper);
@@ -111,7 +112,7 @@ public final class DataGenerators {
                 .add(Registries.PLACED_FEATURE, ModPlacedFeatures::bootstrap)
                 .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModBiomeModifiers::bootstrap);
 
-        DataProvider.Factory<DatapackBuiltinEntriesProvider> datapackFactory = output -> new DatapackBuiltinEntriesProvider(output, lookupProvider, datapackBuilder, Set.of(NerdSoftKitchen.MOD_ID));
+        DataProvider.Factory<DatapackBuiltinEntriesProvider> datapackFactory = output -> new DatapackBuiltinEntriesProvider(output, lookupProvider, datapackBuilder, Set.of(com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen.MOD_ID));
         generator.addProvider(event.includeServer(), datapackFactory);
 
         if (event.includeServer()) {
@@ -120,6 +121,9 @@ public final class DataGenerators {
 
             DataProvider.Factory<ModItemTagsProvider> itemTagsFactory = output -> new ModItemTagsProvider(output, lookupProvider, blockTagsProvider.contentsGetter(), existingFileHelper);
             generator.addProvider(true, itemTagsFactory);
+
+            DataProvider.Factory<ModDamageTypeTagsProvider> damageTypeTagsFactory = output -> new ModDamageTypeTagsProvider(output, lookupProvider, existingFileHelper);
+            generator.addProvider(true, damageTypeTagsFactory);
         }
         *///?}
     }

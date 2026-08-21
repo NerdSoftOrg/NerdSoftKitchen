@@ -4,15 +4,19 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeInput;
 import org.jetbrains.annotations.NotNull;
 
-public record CuttingRecipeInput(ItemStack item) implements RecipeInput {
+public record CuttingRecipeInput(ItemStack item, ItemStack knife) implements RecipeInput {
+
+    public CuttingRecipeInput(ItemStack item) {
+        this(item, ItemStack.EMPTY);
+    }
 
     @Override
     public @NotNull ItemStack getItem(int index) {
-        return item;
+        return index == 0 ? item : knife;
     }
 
     @Override
     public int size() {
-        return 1;
+        return 2;
     }
 }

@@ -10,7 +10,7 @@ import net.neoforged.bus.api.IEventBus;
 
 public final class ModDamageTypes {
 
-    public static final ResourceKey<DamageType> GRILL_BURN = create("grill_burn");
+    public static final ResourceKey<DamageType> COOKWARE_BURN = create("cookware_burn");
 
     private ModDamageTypes() {
     }
@@ -20,6 +20,7 @@ public final class ModDamageTypes {
         NerdSoftKitchenLogger.info("Damage Types registered successfully.");
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static ResourceKey<DamageType> create(String name) {
         return ResourceKey.create(Registries.DAMAGE_TYPE,
                 ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, name));

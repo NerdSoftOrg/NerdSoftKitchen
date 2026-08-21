@@ -1,7 +1,6 @@
 package com.nerdsoft.mods.nerdsoftkitchen;
 
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.DataGenerators;
-import com.nerdsoft.mods.nerdsoftkitchen.item.KnifeItem;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.data.ModCapabilities;
@@ -15,7 +14,7 @@ import com.nerdsoft.mods.nerdsoftkitchen.registry.recipe.ModIngredientTypes;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.recipe.ModRecipeSerializers;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.recipe.ModRecipeTypes;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.sound.ModSounds;
-import com.nerdsoft.mods.nerdsoftkitchen.registry.worldgen.ModPlacedFeatures;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.world.worldgen.ModPlacedFeatures;
 import com.nerdsoft.mods.nerdsoftkitchen.util.NerdSoftKitchenLogger;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;

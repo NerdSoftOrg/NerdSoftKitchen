@@ -65,10 +65,10 @@ public final class TomatoCropBlock extends ModCropBlock {
     //? if <1.21.2 {
     protected @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state,
                                                        //?} else
-            //protected @NotNull InteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state,
-                                                           @NotNull Level level, @NotNull BlockPos pos,
-                                                           @NotNull Player player, @NotNull InteractionHand hand,
-                                                           @NotNull BlockHitResult hitResult) {
+                                                       //protected @NotNull InteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state,
+                                                       @NotNull Level level, @NotNull BlockPos pos,
+                                                       @NotNull Player player, @NotNull InteractionHand hand,
+                                                       @NotNull BlockHitResult hitResult) {
         if (!stack.is(Items.STICK)) {
             return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
         }
@@ -82,12 +82,12 @@ public final class TomatoCropBlock extends ModCropBlock {
         int age = state.getValue(this.getAgeProperty());
         TomatoCropPoleBlock poleBlock = this.poleBlockSupplier.get();
 
-        level.setBlock(pos, TomatoCropPoleBlock.createLower(poleBlock, age), 3);
-        TomatoCropPoleBlock.tryGrowOrSyncUpper(poleBlock, level, pos, BlockStateProperties.AGE_5, age);
-
         if (player instanceof ServerPlayer serverPlayer) {
             CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger(serverPlayer, pos, stack);
         }
+
+        level.setBlock(pos, TomatoCropPoleBlock.createLower(poleBlock, age), 3);
+        TomatoCropPoleBlock.tryGrowOrSyncUpper(poleBlock, level, pos, BlockStateProperties.AGE_5, age);
 
         if (!player.getAbilities().instabuild) {
             stack.shrink(1);

@@ -2,6 +2,7 @@ package com.nerdsoft.mods.nerdsoftkitchen.recipe.cutting;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.item.ModItemTags;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.recipe.ModRecipeSerializers;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.recipe.ModRecipeTypes;
 import net.minecraft.core.HolderLookup;
@@ -16,18 +17,44 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 //? if >=1.21.2 {
-/*import net.minecraft.world.item.crafting.PlacementInfo;
+/*import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeBookCategories;
 
 import java.util.List;
 *///?}
 
-public record CuttingRecipe(Ingredient input, ItemStack result) implements Recipe<CuttingRecipeInput> {
+public record CuttingRecipe(Ingredient input, ItemStack result, Ingredient knife) implements Recipe<CuttingRecipeInput> {
+
+    public CuttingRecipe(Ingredient input, ItemStack result) {
+        this(input, result, defaultKnifeIngredient(null));
+    }
+
+    public CuttingRecipe(Ingredient input, ItemStack result, HolderLookup.Provider registries) {
+        this(input, result, defaultKnifeIngredient(registries));
+    }
+
+    public static Ingredient defaultKnifeIngredient(HolderLookup.Provider registries) {
+        //? if <1.21.2 {
+        return Ingredient.of(ModItemTags.KNIFE);
+        //?} else {
+        /*if (registries != null) {
+            var itemLookup = registries.lookupOrThrow(Registries.ITEM);
+            return Ingredient.of(itemLookup.getOrThrow(ModItemTags.KNIFE));
+        }
+        return Ingredient.of(BuiltInRegistries.ITEM.getOrThrow(ModItemTags.KNIFE));
+        *///?}
+    }
 
     @Override
     public boolean matches(@NotNull CuttingRecipeInput recipeInput, @NotNull Level level) {
-        return input.test(recipeInput.item());
+        if (!input.test(recipeInput.item())) {
+            return false;
+        }
+        ItemStack heldKnife = recipeInput.knife();
+        return heldKnife.isEmpty() || knife.test(heldKnife);
     }
 
     @Override
@@ -83,12 +110,19 @@ public record CuttingRecipe(Ingredient input, ItemStack result) implements Recip
         public static final MapCodec<CuttingRecipe> CODEC =
                 RecordCodecBuilder.mapCodec(instance -> instance.group(
                                 Ingredient.CODEC.fieldOf("input").forGetter(CuttingRecipe::input),
-                                ItemStack.CODEC.fieldOf("result").forGetter(CuttingRecipe::result))
-                        .apply(instance, CuttingRecipe::new));
+                                ItemStack.CODEC.fieldOf("result").forGetter(CuttingRecipe::result),
+                                Ingredient.CODEC
+                                        .optionalFieldOf("knife")
+                                        .forGetter(recipe -> java.util.Optional.of(recipe.knife())))
+                        .apply(instance, (input, result, knifeOpt) ->
+                                new CuttingRecipe(input, result, knifeOpt.orElseGet(() -> CuttingRecipe.defaultKnifeIngredient(null)))));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, CuttingRecipe> STREAM_CODEC =
-                StreamCodec.composite(Ingredient.CONTENTS_STREAM_CODEC, CuttingRecipe::input,
-                        ItemStack.STREAM_CODEC, CuttingRecipe::result, CuttingRecipe::new);
+                StreamCodec.composite(
+                        Ingredient.CONTENTS_STREAM_CODEC, CuttingRecipe::input,
+                        ItemStack.STREAM_CODEC, CuttingRecipe::result,
+                        Ingredient.CONTENTS_STREAM_CODEC, CuttingRecipe::knife,
+                        CuttingRecipe::new);
 
         @Override
         public @NotNull MapCodec<CuttingRecipe> codec() {

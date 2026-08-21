@@ -1,4 +1,4 @@
-package com.nerdsoft.mods.nerdsoftkitchen.registry.worldgen;
+package com.nerdsoft.mods.nerdsoftkitchen.registry.world.worldgen;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.datagen.worldgen.ModConfiguredFeatures;

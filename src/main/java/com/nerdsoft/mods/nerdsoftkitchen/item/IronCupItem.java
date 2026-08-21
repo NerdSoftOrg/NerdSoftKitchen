@@ -181,8 +181,10 @@ public class IronCupItem extends Item {
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context,
                                 @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
         IronCupContent content = contentOf(stack);
-        if (content == null) {
-            tooltip.add(Component.translatable("nerdsoftkitchen.iron_cup.tooltip.empty").withStyle(ChatFormatting.GRAY));
+        if (content == IronCupContent.MILK) {
+            tooltip.add(Component.translatable("nerdsoftkitchen.iron_cup.tooltip.milk").withStyle(ChatFormatting.GRAY));
+        } else if (content == IronCupContent.LIQUID_EGG) {
+            tooltip.add(Component.translatable("nerdsoftkitchen.iron_cup.tooltip.liquid_egg").withStyle(ChatFormatting.GRAY));
         }
 
         if (!flag.isAdvanced()) return;

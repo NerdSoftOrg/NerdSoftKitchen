@@ -23,7 +23,6 @@ public class FertileFarmlandBlock extends FarmBlock {
     public static final int MAX_FERTILITY = 3;
     public static final IntegerProperty FERTILITY = IntegerProperty.create("fertility", 0, MAX_FERTILITY);
 
-    // Extra random-tick growth attempts granted to the crop above, per fertility level.
     private static final int[] GROWTH_ATTEMPTS_PER_LEVEL = {0, 1, 2, 3};
 
     public FertileFarmlandBlock(Properties properties) {
@@ -72,10 +71,6 @@ public class FertileFarmlandBlock extends FarmBlock {
         }
     }
 
-    /**
-     * Called by crops planted on this block once they have been harvested at maturity.
-     * Reduces fertility by one level; once it reaches 0 the block reverts to vanilla farmland.
-     */
     public void notifyHarvested(ServerLevel level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         if (!state.is(this)) {
@@ -89,9 +84,6 @@ public class FertileFarmlandBlock extends FarmBlock {
         level.setBlock(pos, state.setValue(FERTILITY, fertility - 1), 3);
     }
 
-    /**
-     * Extra crop yield granted by this block's fertility level: +2 at max fertility, +1 at the level below, none otherwise.
-     */
     @SuppressWarnings("NonStrictComparisonCanBeEquality")
     public static int bonusDropsFor(BlockGetter level, BlockPos farmlandPos) {
         BlockState state = level.getBlockState(farmlandPos);

@@ -39,7 +39,7 @@ public class SkilletBlockEntityRenderer implements BlockEntityRenderer<SkilletBl
     private static final float PILE_Y_LIFT_STEP = 0.012F;
     private static final float PILE_YAW_JITTER_DEGREES = 15.0F;
 
-    private static final int EGG_LIQUID_ARGB = 0xF0F2D34A;
+    private static final int LIQUID_EGG_ARGB = 0xF0F2D34A;
     private static final float EGG_POOL_Y_OFFSET = 0.05F;
     private static final float EGG_POOL_SIZE = 0.5f;
 
@@ -98,7 +98,7 @@ public class SkilletBlockEntityRenderer implements BlockEntityRenderer<SkilletBl
     private void renderEggPool(float surfaceY, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         poseStack.pushPose();
         poseStack.translate(0.5, surfaceY - EGG_POOL_Y_OFFSET, 0.5);
-        FlatLiquidQuadRenderer.renderFlatPool(poseStack, bufferSource, EGG_LIQUID_ARGB, EGG_POOL_SIZE, EGG_POOL_SIZE, packedLight);
+        FlatLiquidQuadRenderer.renderFlatPool(poseStack, bufferSource, LIQUID_EGG_ARGB, EGG_POOL_SIZE, EGG_POOL_SIZE, packedLight);
         poseStack.popPose();
     }
 
