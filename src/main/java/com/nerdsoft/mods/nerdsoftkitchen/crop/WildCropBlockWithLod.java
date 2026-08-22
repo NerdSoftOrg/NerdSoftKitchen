@@ -6,7 +6,6 @@ import com.nerdsoft.mods.nerdsoftkitchen.lod.LodConfig;
 import com.nerdsoft.mods.nerdsoftkitchen.lod.LodProperty;
 import com.nerdsoft.mods.nerdsoftkitchen.lod.LodRegistry;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
@@ -15,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class WildCropBlockWithLod extends WildCropBlock implements LodBlock {
 
-    public static final int DEFAULT_LOD_DISTANCE_CHUNKS = 3;
+    public static final int DEFAULT_LOD_DISTANCE_CHUNKS = 1; // Cambiado de 3 a 1
     private static final ThreadLocal<IntegerProperty> PENDING_LOD_PROPERTY = new ThreadLocal<>();
     private final LodConfig.Entry lodEntry;
     private final IntegerProperty lod;
