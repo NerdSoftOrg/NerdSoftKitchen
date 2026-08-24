@@ -12,7 +12,7 @@ import snownee.jade.api.ui.IElement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SkilletItemStorageExtension extends BaseCookingItemExtension<SkilletBlockEntity> {
+public class SkilletItemStorageExtension extends CookingItemExtension<SkilletBlockEntity> {
 
     public static final SkilletItemStorageExtension INSTANCE = new SkilletItemStorageExtension();
 

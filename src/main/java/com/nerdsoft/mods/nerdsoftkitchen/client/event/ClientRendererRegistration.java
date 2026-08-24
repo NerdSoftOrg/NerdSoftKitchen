@@ -17,10 +17,10 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 public final class ClientRendererRegistration {
 
     public static final ModelResourceLocation PROGRESS_TORTILLA_MODEL_LOC =
-            ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, "block/progress_tortilla"));
+            ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, "block/display/progress_tortilla"));
 
     public static final ModelResourceLocation FINISHED_TORTILLA_MODEL_LOC =
-            ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, "block/finished_tortilla"));
+            ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, "block/display/finished_tortilla"));
 
     private ClientRendererRegistration() {
     }

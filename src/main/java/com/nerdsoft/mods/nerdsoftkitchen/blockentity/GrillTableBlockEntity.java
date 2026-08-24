@@ -1,8 +1,6 @@
 package com.nerdsoft.mods.nerdsoftkitchen.blockentity;
 
 import com.nerdsoft.mods.nerdsoftkitchen.block.GrillTableBlock;
-import com.nerdsoft.mods.nerdsoftkitchen.lod.LodBlock;
-import com.nerdsoft.mods.nerdsoftkitchen.lod.LodResolver;
 import com.nerdsoft.mods.nerdsoftkitchen.perf.StateMask;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipe;
 import com.nerdsoft.mods.nerdsoftkitchen.recipe.cook.CookRecipeInput;
@@ -17,7 +15,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
-import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
@@ -30,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements WorldlyContainer {
+public class GrillTableBlockEntity extends AbstractCookingBlockEntity {
 
     public static final int GRILL_SLOTS_START = 0;
     public static final int GRILL_SLOTS_COUNT = 4;
@@ -52,12 +49,10 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
     private final float[] grillRotation = new float[GRILL_SLOTS_COUNT];
     private final float[] grillOffsetX = new float[GRILL_SLOTS_COUNT];
     private final float[] grillOffsetZ = new float[GRILL_SLOTS_COUNT];
-    private final int renderSeedBase;
     private float speedMultiplier = BASE_MULTIPLIER;
 
     public GrillTableBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.GRILL_TABLE.get(), pos, state, TOTAL_SLOTS);
-        this.renderSeedBase = (int) pos.asLong();
     }
 
     private static boolean isGrillSlot(int slot) {
@@ -109,14 +104,6 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
 
     public static void tick(Level level, BlockPos pos, BlockState state, GrillTableBlockEntity entity) {
         genericTick(level, pos, state, entity);
-        if (level instanceof ServerLevel serverLevel && LodResolver.isDue(pos, level.getGameTime())
-                && state.getBlock() instanceof LodBlock lodBlock) {
-            LodResolver.resolveAndApply(serverLevel, pos, state, lodBlock);
-        }
-    }
-
-    public int getRenderSeedBase() {
-        return renderSeedBase;
     }
 
     @SuppressWarnings("unused")
@@ -353,16 +340,6 @@ public class GrillTableBlockEntity extends AbstractCookingBlockEntity implements
             return CAMPFIRE_SLOTS;
         }
         return ALL_SLOTS;
-    }
-
-    @Override
-    public boolean canPlaceItemThroughFace(int slot, @NotNull ItemStack stack, @Nullable Direction direction) {
-        return canPlaceItem(slot, stack);
-    }
-
-    @Override
-    public boolean canTakeItemThroughFace(int slot, @NotNull ItemStack stack, @NotNull Direction direction) {
-        return cookProgress[slot] == 0;
     }
 
     @Override

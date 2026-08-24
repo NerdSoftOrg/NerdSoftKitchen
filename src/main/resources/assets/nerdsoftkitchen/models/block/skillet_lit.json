@@ -1,7 +1,0 @@
-{
-	"parent": "nerdsoftkitchen:block/skillet_unlit",
-	"textures": {
-		"texture": "nerdsoftkitchen:block/skillet_lit",
-		"particle": "nerdsoftkitchen:block/skillet_lit"
-	}
-}

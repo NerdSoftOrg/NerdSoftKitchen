@@ -2,14 +2,13 @@ package com.nerdsoft.mods.nerdsoftkitchen.datagen.lang;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
+@SuppressWarnings("SameParameterValue")
 public abstract class ModLanguageProvider extends LanguageProvider {
 
     public ModLanguageProvider(PackOutput output, String locale) {

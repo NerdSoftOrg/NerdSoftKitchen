@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-final class LodItemModelCache {
+public final class LodItemModelCache {
 
     private static final Direction FRONT_FACE = Direction.SOUTH;
 
@@ -29,7 +29,13 @@ final class LodItemModelCache {
         return CACHE.computeIfAbsent(original, SingleFaceModel::new);
     }
 
+    public static void clear() {
+        CACHE.clear();
+    }
+
     private static final class SingleFaceModel extends BakedModelWrapper<BakedModel> {
+
+        private volatile List<BakedQuad> cachedNullSideQuads;
 
         SingleFaceModel(BakedModel originalModel) {
             super(originalModel);
@@ -43,6 +49,12 @@ final class LodItemModelCache {
                         ? originalModel.getQuads(state, side, rand, data, renderType)
                         : List.of();
             }
+
+            List<BakedQuad> cached = cachedNullSideQuads;
+            if (cached != null) {
+                return cached;
+            }
+
             List<BakedQuad> all = originalModel.getQuads(state, null, rand, data, renderType);
             List<BakedQuad> kept = new ArrayList<>(all.size());
             for (BakedQuad quad : all) {
@@ -50,6 +62,7 @@ final class LodItemModelCache {
                     kept.add(quad);
                 }
             }
+            cachedNullSideQuads = kept;
             return kept;
         }
     }

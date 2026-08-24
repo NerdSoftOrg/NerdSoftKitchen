@@ -10,6 +10,7 @@ import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.DeferredItem;
 
+@SuppressWarnings("SameParameterValue")
 public class ModItemModelProvider extends ItemModelProvider {
 
     public ModItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
@@ -17,132 +18,124 @@ public class ModItemModelProvider extends ItemModelProvider {
     }
 
     @Override
-    @SuppressWarnings("InvariantValue")
     protected void registerModels() {
-        // Block Items
-        blockItemModel(ModItems.GRILL_TABLE, "grill_table_lit");
-        blockItemModel(ModItems.GRILL_TABLE_SOUL, "grill_table_soul_lit");
-
-        blockItemModel(ModItems.CUTTING_BOARD);
-        blockItemModel(ModItems.ORGANIC_SOIL);
-        blockItemModel(ModItems.FERTILE_FARMLAND, "fertile_farmland_3");
-        blockItemModel(ModItems.SKILLET, "skillet_unlit");
+        // Blocks
+        applianceLit(ModItems.GRILL_TABLE, ModItems.GRILL_TABLE_SOUL, ModItems.SKILLET);
+        applianceBlock(ModItems.CUTTING_BOARD, ModItems.GRILL_TABLE_UNLIT);
+        applianceBlockGenerated(ModItems.ORGANIC_SOIL);
+        applianceBlockSuffixGenerated("_0", ModItems.FERTILE_FARMLAND);
 
         // 2D Items
-        customItem2D(
-                ModItems.WILD_PURPLE_ONION, ModItems.WILD_LETTUCE, ModItems.WILD_TOMATO, ModItems.WILD_STRAWBERRY,
-                ModItems.STRAWBERRY_SEEDS, ModItems.TOMATO_SEEDS, ModItems.LETTUCE_SEEDS, ModItems.PURPLE_ONION_SEEDS,
-                ModItems.STRAWBERRY, ModItems.TOMATO, ModItems.LETTUCE, ModItems.PURPLE_ONION,
-                ModItems.RAW_CHICKEN_PIECES, ModItems.COOKED_CHICKEN_PIECES, ModItems.FRIED_EGG, ModItems.SALAD,
-                ModItems.CHEESE, ModItems.CHEESE_SLICE, ModItems.GRILLED_CHEESE,
-                ModItems.TORTILLA, ModItems.POTATO_TORTILLA, ModItems.ONION_TORTILLA,
-                ModItems.CUT_POTATO, ModItems.CUT_PURPLE_ONION,
-                ModItems.ORGANIC_MIXTURE,
-                ModItems.RAW_SANDWICH_BREAD, ModItems.TOASTED_SANDWICH_BREAD,
-                ModItems.NETHERITE_KNIFE
+        item2D("wild", ModItems.WILD_PURPLE_ONION, ModItems.WILD_LETTUCE, ModItems.WILD_TOMATO, ModItems.WILD_STRAWBERRY,
+                ModItems.WILD_RICE);
+        item2D("seed", ModItems.STRAWBERRY_SEEDS, ModItems.TOMATO_SEEDS, ModItems.LETTUCE_SEEDS, ModItems.PURPLE_ONION_SEEDS);
+        item2D("food",
+                ModItems.RAW_CHICKEN_PIECES, ModItems.COOKED_CHICKEN_PIECES,
+                ModItems.FRIED_EGG, ModItems.SALAD, ModItems.CHEESE, ModItems.CHEESE_SLICE, ModItems.GRILLED_CHEESE,
+                ModItems.TORTILLA, ModItems.STRAWBERRY, ModItems.TOMATO, ModItems.LETTUCE, ModItems.PURPLE_ONION,
+                ModItems.CUT_POTATO, ModItems.CUT_PURPLE_ONION, ModItems.ORGANIC_MIXTURE, ModItems.POTATO_TORTILLA,
+                ModItems.RICE_BOWL, ModItems.RICE_SEEDS, ModItems.ONION_TORTILLA, ModItems.RICE, ModItems.COOKED_RICE
         );
 
-        // SandwichItems (3 layers)
-        sandwichItemPair(ModItems.CHEESE_RAW_SANDWICH, ModItems.CHEESE_TOASTED_SANDWICH, "cheese_sandwich_content");
+        item2D("sandwich/raw", ModItems.RAW_SANDWICH_BREAD);
+        item2D("sandwich/toasted", ModItems.TOASTED_SANDWICH_BREAD);
 
-        // Tintable Handheld
-        tintableKnives(
-                ModItems.STONE_KNIFE, ModItems.IRON_KNIFE, ModItems.GOLDEN_KNIFE, ModItems.DIAMOND_KNIFE, ModItems.OBSIDIAN_KNIFE
-        );
-
+        // Tools & Extras
+        item2D("knife/custom", ModItems.NETHERITE_KNIFE);
+        sandwichPair(ModItems.CHEESE_RAW_SANDWICH, ModItems.CHEESE_TOASTED_SANDWICH, "cheese_sandwich_content");
+        tintableKnives(ModItems.STONE_KNIFE, ModItems.IRON_KNIFE, ModItems.GOLDEN_KNIFE, ModItems.DIAMOND_KNIFE, ModItems.OBSIDIAN_KNIFE);
         ironCup();
     }
 
-    @SuppressWarnings("SameParameterValue")
-    private void tintableKnives(String handleTexture, String bladeTexture, String hihglightTexture, DeferredItem<?>... items) {
-        String handlePath = "item/" + handleTexture;
-        String bladePath = "item/" + bladeTexture;
-        String hihglightPath = "item/" + hihglightTexture;
-
-        DatagenUtils.trackTexture(existingFileHelper, handlePath);
-        DatagenUtils.trackTexture(existingFileHelper, bladePath);
-        DatagenUtils.trackTexture(existingFileHelper, hihglightPath);
-
+    // block/appliance/<itemId>_lit
+    private void applianceLit(DeferredItem<?>... items) {
         for (DeferredItem<?> item : items) {
-            withExistingParent(item.getId().getPath(), mcLoc("item/generated"))
-                    .texture("layer0", modLoc(handlePath))
-                    .texture("layer1", modLoc(bladePath))
-                    .texture("layer2", modLoc(hihglightPath));
+            String itemId = item.getId().getPath();
+            blockItemModel(itemId, "appliance/" + itemId + "_lit");
         }
     }
 
-    @SuppressWarnings("SameParameterValue")
+    // block/appliance/<itemId>
+    private void applianceBlock(DeferredItem<?>... items) {
+        for (DeferredItem<?> item : items) {
+            String itemId = item.getId().getPath();
+            blockItemModel(itemId, "appliance/" + itemId);
+        }
+    }
+
+    // generated/**/block/<itemId>
+    private void applianceBlockGenerated(DeferredItem<?>... items) {
+        for (DeferredItem<?> item : items) {
+            String itemId = item.getId().getPath();
+            blockItemModel(itemId, itemId);
+        }
+    }
+
+    //generated/**/block/<itemId><suffix>
+    private void applianceBlockSuffixGenerated(String suffix, DeferredItem<?>... items) {
+        for (DeferredItem<?> item : items) {
+            String itemId = item.getId().getPath();
+            blockItemModel(itemId, itemId + suffix);
+        }
+    }
+
+    private void blockItemModel(String itemPath, String blockPath) {
+        DatagenUtils.trackModel(existingFileHelper, "block/" + blockPath);
+        withExistingParent(itemPath, modLoc("block/" + blockPath));
+    }
+
+    private void item2D(String folder, DeferredItem<?>... items) {
+        for (DeferredItem<?> item : items) {
+            generatedLayers(item.getId().getPath(), folder + "/" + item.getId().getPath());
+        }
+    }
+
+    private void sandwichPair(DeferredItem<?> rawItem, DeferredItem<?> toastedItem, String contentTex) {
+        sandwichItem(rawItem.getId().getPath(), "raw/raw_sandwich_bread", contentTex);
+        sandwichItem(toastedItem.getId().getPath(), "toasted/toasted_sandwich_bread", contentTex);
+    }
+
+    private void sandwichItem(String modelName, String breadPrefix, String contentTex) {
+        generatedLayers(modelName,
+                "sandwich/" + breadPrefix + "_lower",
+                "sandwich/content/" + contentTex,
+                "sandwich/" + breadPrefix + "_upper"
+        );
+    }
+
     private void tintableKnives(DeferredItem<?>... items) {
-        tintableKnives("knife_handle", "knife_blade", "knife_highlight", items);
-    }
-
-    private void customItem2D(DeferredItem<?>... items) {
         for (DeferredItem<?> item : items) {
-            String path = "item/" + item.getId().getPath();
-            DatagenUtils.trackTexture(existingFileHelper, path);
-
-            withExistingParent(item.getId().getPath(), mcLoc("item/generated"))
-                    .texture("layer0", modLoc(path));
+            generatedLayers(item.getId().getPath(), "knife/knife_handle", "knife/knife_blade", "knife/knife_highlight");
         }
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private void sandwichItemPair(DeferredItem<?> rawItem, DeferredItem<?> toastedItem, String breadName, String contentTexture) {
-        sandwichItem(rawItem.getId().getPath(), "raw_" + breadName, contentTexture);
-        sandwichItem(toastedItem.getId().getPath(), "toasted_" + breadName, contentTexture);
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private void sandwichItemPair(DeferredItem<?> rawItem, DeferredItem<?> toastedItem, String contentTexture) {
-        sandwichItemPair(rawItem, toastedItem, "sandwich_bread", contentTexture);
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
-    private ItemModelBuilder sandwichItem(String modelName, String breadStagePrefix, String contentTexture) {
-        String lowerPath = "item/" + breadStagePrefix + "_lower";
-        String contentPath = "item/" + contentTexture;
-        String upperPath = "item/" + breadStagePrefix + "_upper";
-
-        DatagenUtils.trackTexture(existingFileHelper, lowerPath);
-        DatagenUtils.trackTexture(existingFileHelper, contentPath);
-        DatagenUtils.trackTexture(existingFileHelper, upperPath);
-
-        return withExistingParent(modelName, mcLoc("item/generated"))
-                .texture("layer0", modLoc(lowerPath))
-                .texture("layer1", modLoc(contentPath))
-                .texture("layer2", modLoc(upperPath));
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private void blockItemModel(DeferredItem<?> item) {
-        blockItemModel(item, item.getId().getPath());
-    }
-
-    private void blockItemModel(DeferredItem<?> item, String blockPath) {
-        withExistingParent(item.getId().getPath(), modLoc("block/" + blockPath));
     }
 
     private void ironCup() {
-        customItem2D(ModItems.IRON_CUP);
+        String baseName = ModItems.IRON_CUP.getId().getPath();
+        String baseTexture = baseName + "/" + baseName;
 
-        ItemModelBuilder cupBuilder = getBuilder(ModItems.IRON_CUP.getId().getPath());
-        String baseCupPath = "item/" + ModItems.IRON_CUP.getId().getPath();
+        generatedLayers(baseName, baseTexture);
+
+        ItemModelBuilder cupBuilder = getBuilder(baseName);
 
         for (IronCupContent content : IronCupContent.values()) {
-            String name = "iron_cup_" + content.getSerializedName();
-            String contentTexturePath = "item/iron_cup_" + content.getSerializedName();
-
-            DatagenUtils.trackTexture(existingFileHelper, contentTexturePath);
+            String name = baseName + "_" + content.getSerializedName();
             DatagenUtils.trackModel(existingFileHelper, "item/" + name);
 
-            withExistingParent(name, mcLoc("item/generated"))
-                    .texture("layer0", modLoc(baseCupPath))
-                    .texture("layer1", modLoc(contentTexturePath));
+            generatedLayers(name, baseTexture, baseName + "/" + name);
 
             cupBuilder.override()
                     .predicate(modLoc("content"), content.modelIndex() + 1)
-                    .model(getExistingFile(modLoc(name)))
+                    .model(getExistingFile(modLoc("item/" + name)))
                     .end();
+        }
+    }
+
+    private void generatedLayers(String modelName, String... relativeTextures) {
+        ItemModelBuilder builder = withExistingParent(modelName, mcLoc("item/generated"));
+        for (int i = 0; i < relativeTextures.length; i++) {
+            String fullPath = "item/" + relativeTextures[i];
+            DatagenUtils.trackTexture(existingFileHelper, fullPath);
+            builder.texture("layer" + i, modLoc(fullPath));
         }
     }
 }

@@ -21,7 +21,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
-import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -37,7 +36,7 @@ import java.util.List;
 import java.util.Optional;
 
 @SuppressWarnings("CommentedOutCode")
-public class SkilletBlockEntity extends AbstractCookingBlockEntity implements WorldlyContainer {
+public class SkilletBlockEntity extends AbstractCookingBlockEntity {
 
     public static final int PAN_SLOTS_COUNT = 2;
     public static final int EGG_SLOT = 0;
@@ -46,6 +45,7 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
 
     private static final double PAN_MAX_RANDOM_OFFSET = 0.045;
     private static final double TAU = Math.PI * 2.0;
+    private static final double SYNC_TRACKING_RANGE = 64.0;
 
     private static final String HOT_UNTIL_KEY = "HotUntilTick";
     private static final int HOT_STATE_SECONDS = 20;
@@ -59,7 +59,6 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
     private final float[] panRotation = new float[PAN_SLOTS_COUNT];
     private final float[] panOffsetX = new float[PAN_SLOTS_COUNT];
     private final float[] panOffsetZ = new float[PAN_SLOTS_COUNT];
-    private final int renderSeedBase;
 
     private long hotUntilTick;
     private int damage = 0;
@@ -68,7 +67,6 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
 
     public SkilletBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SKILLET.get(), pos, state, PAN_SLOTS_COUNT);
-        this.renderSeedBase = (int) pos.asLong();
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, SkilletBlockEntity entity) {
@@ -92,10 +90,6 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
 
     private static ItemStack eggStack() {
         return new ItemStack(Items.EGG);
-    }
-
-    public int getRenderSeedBase() {
-        return renderSeedBase;
     }
 
     public float getPanRotation(int slot) {
@@ -261,9 +255,13 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
             eggAloneProgress = 0;
             eggAloneCookTime = 0;
             markUpdated();
-        } else if (eggAloneProgress % 5 == 0) {
+        } else if (eggAloneProgress % 5 == 0 && hasNearbyPlayer(level, pos)) {
             markUpdated();
         }
+    }
+
+    private static boolean hasNearbyPlayer(Level level, BlockPos pos) {
+        return level.hasNearbyAlivePlayer(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SYNC_TRACKING_RANGE);
     }
 
     public boolean placeFood(@Nullable LivingEntity entity, ItemStack food) {
@@ -375,16 +373,6 @@ public class SkilletBlockEntity extends AbstractCookingBlockEntity implements Wo
     @Override
     public int @NotNull [] getSlotsForFace(@NotNull Direction side) {
         return ALL_SLOTS;
-    }
-
-    @Override
-    public boolean canPlaceItemThroughFace(int slot, @NotNull ItemStack stack, @Nullable Direction direction) {
-        return canPlaceItem(slot, stack);
-    }
-
-    @Override
-    public boolean canTakeItemThroughFace(int slot, @NotNull ItemStack stack, @NotNull Direction direction) {
-        return cookProgress[slot] == 0;
     }
 
     @Override

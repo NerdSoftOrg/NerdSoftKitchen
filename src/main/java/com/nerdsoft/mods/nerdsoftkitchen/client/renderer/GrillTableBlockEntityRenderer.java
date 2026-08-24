@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -37,6 +36,11 @@ public class GrillTableBlockEntityRenderer implements BlockEntityRenderer<GrillT
 
     private static final double CULL_DISTANCE_BLOCKS = 48.0;
     private static final double CULL_DISTANCE_SQR = CULL_DISTANCE_BLOCKS * CULL_DISTANCE_BLOCKS;
+
+    private static final double ITEM_RADIUS_BLOCKS = 0.3;
+    private static final double ITEM_RADIUS_SQR = ITEM_RADIUS_BLOCKS * ITEM_RADIUS_BLOCKS;
+
+    private static final double LOD_COVERAGE_THRESHOLD = ScreenSpaceLod.thresholdForDistance(ITEM_RADIUS_SQR, 32.0);
 
     static {
         for (int i = 0; i < 4; i++) {
@@ -68,7 +72,7 @@ public class GrillTableBlockEntityRenderer implements BlockEntityRenderer<GrillT
         int facing2D = state.getValue(GrillTableBlock.FACING).get2DDataValue();
         int seedBase = blockEntity.getRenderSeedBase();
         ClientLevel renderLevel = Minecraft.getInstance().level;
-        boolean pastLod1 = state.getValue(GrillTableBlock.LOD) >= 1;
+        boolean pastLod1 = isPastLodDistance(blockEntity);
 
         for (int slot = 0; slot < GrillTableBlockEntity.GRILL_SLOTS_COUNT; slot++) {
             ItemStack stack = blockEntity.getItem(GrillTableBlockEntity.GRILL_SLOTS_START + slot);
@@ -90,6 +94,18 @@ public class GrillTableBlockEntityRenderer implements BlockEntityRenderer<GrillT
             return true;
         }
         return player.distanceToSqr(x, y, z) <= CULL_DISTANCE_SQR;
+    }
+
+    private static boolean isPastLodDistance(GrillTableBlockEntity blockEntity) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) {
+            return false;
+        }
+        double x = blockEntity.getBlockPos().getX() + 0.5;
+        double y = blockEntity.getBlockPos().getY() + 0.5;
+        double z = blockEntity.getBlockPos().getZ() + 0.5;
+        double distanceSqr = player.distanceToSqr(x, y, z);
+        return ScreenSpaceLod.isPastThreshold(blockEntity.getBlockPos().asLong(), ITEM_RADIUS_SQR, distanceSqr, LOD_COVERAGE_THRESHOLD);
     }
 
     private void renderGrillSlot(GrillTableBlockEntity blockEntity, int slot, ItemStack stack, int facing2D,

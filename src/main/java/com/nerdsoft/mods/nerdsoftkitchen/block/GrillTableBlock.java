@@ -5,35 +5,31 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.nerdsoft.mods.nerdsoftkitchen.blockentity.GrillTableBlockEntity;
 import com.nerdsoft.mods.nerdsoftkitchen.client.sound.GrillLoopSoundManager;
-import com.nerdsoft.mods.nerdsoftkitchen.lod.LodBlock;
-import com.nerdsoft.mods.nerdsoftkitchen.lod.LodConfig;
-import com.nerdsoft.mods.nerdsoftkitchen.lod.LodProperty;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
-import com.nerdsoft.mods.nerdsoftkitchen.registry.data.ModDamageTypes;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.sound.ModSounds;
-import com.nerdsoft.mods.nerdsoftkitchen.registry.world.damagesource.BlockDamageSource;
 import com.nerdsoft.mods.nerdsoftkitchen.util.RandomUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.*;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -42,19 +38,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
-//? if >=1.21.2 {
-/*import net.minecraft.world.level.redstone.Orientation;
-import net.minecraft.world.InteractionResult;
-*///?}
-//? if <1.21.2 {
-import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.SimpleWaterloggedBlock;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
- //?} else {
-/*import net.minecraft.world.level.block.state.properties.EnumProperty;
-*///?}
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
@@ -65,16 +48,24 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterloggedBlock, LodBlock {
+//? if >=1.21.2 {
+/*import net.minecraft.world.level.redstone.Orientation;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+*///?} else {
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+//?}
+
+public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
 
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     //? if <1.21.2 {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-     //?} else {
+    //?} else {
     /*public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-    *///?}
-    public static final IntegerProperty LOD = LodProperty.create(LodConfig.GRILL_TABLE.maxTier());
+     *///?}
 
     public static final MapCodec<GrillTableBlock> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
@@ -85,7 +76,6 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
     );
 
     protected static final VoxelShape SHAPE = Shapes.block();
-    private static final float STEP_DAMAGE = 1.0F;
 
     private final boolean soul;
 
@@ -98,23 +88,7 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
                         .setValue(LIT, true)
                         .setValue(WATERLOGGED, false)
                         .setValue(FACING, Direction.NORTH)
-                        .setValue(LOD, 0)
         );
-    }
-
-    @Override
-    public IntegerProperty lodProperty() {
-        return LOD;
-    }
-
-    @Override
-    public int tierDistanceChunks(int tier) {
-        return LodConfig.GRILL_TABLE.distanceChunksForTier(tier);
-    }
-
-    @Override
-    public int maxLodTier() {
-        return LodConfig.GRILL_TABLE.maxTier();
     }
 
     public boolean isSoul() {
@@ -159,28 +133,7 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
 
     @Override
     public void stepOn(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Entity entity) {
-        if (!level.isClientSide
-                && state.getValue(LIT)
-                && entity instanceof LivingEntity living
-                && !living.fireImmune()) {
-
-            if (entity.getOnPos().equals(pos)) {
-                //? if <1.21.2 {
-                Holder<DamageType> cookwareBurnHolder = level.registryAccess()
-                        .registryOrThrow(Registries.DAMAGE_TYPE)
-                        .getHolderOrThrow(ModDamageTypes.COOKWARE_BURN);
-                //?} else {
-                /*Holder<DamageType> cookwareBurnHolder = level.registryAccess()
-                        .lookupOrThrow(Registries.DAMAGE_TYPE)
-                        .getOrThrow(ModDamageTypes.COOKWARE_BURN);
-                *///?}
-
-                //? if <1.21.2 {
-                living.hurt(new BlockDamageSource(cookwareBurnHolder, this), STEP_DAMAGE);
-                //?} else
-                //living.hurtServer((ServerLevel) level, new BlockDamageSource(cookwareBurnHolder, this), STEP_DAMAGE);
-            }
-        }
+        CookingBlockHelpers.applyStepBurn(level, pos, state, entity, LIT, this);
         super.stepOn(level, pos, state, entity);
     }
 
@@ -188,11 +141,7 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
     @Override
     protected void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!state.is(newState.getBlock())) {
-            BlockEntity blockentity = level.getBlockEntity(pos);
-            if (blockentity instanceof GrillTableBlockEntity grillTableBlockEntity) {
-                grillTableBlockEntity.dropContents(level, pos);
-            }
-
+            CookingBlockHelpers.dropContentsOnRemoval(state, level, pos, newState);
             super.onRemove(state, level, pos, newState, movedByPiston);
         }
     }
@@ -200,11 +149,7 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
     /*@Override
     protected void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
-            BlockEntity blockentity = level.getBlockEntity(pos);
-            if (blockentity instanceof GrillTableBlockEntity grillTableBlockEntity) {
-                grillTableBlockEntity.dropContents(level, pos);
-            }
-
+            CookingBlockHelpers.dropContentsOnRemoval(state, level, pos, newState);
             super.onRemove(state, level, pos, newState, isMoving);
         }
     }
@@ -271,7 +216,11 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
         BlockPos abovePos = pos.above();
         BlockState aboveState = level.getBlockState(abovePos);
 
+        //? if <1.21.2 {
         boolean isCovered = aboveState.getBlock() instanceof SkilletBlock || aboveState.isSolidRender(level, abovePos);
+        //?} else {
+        /*boolean isCovered = aboveState.getBlock() instanceof SkilletBlock || aboveState.isSolidRender();
+         *///?}
 
         if (!isCovered && random.nextInt(15) == 0) {
             level.addParticle(ParticleTypes.LAVA,
@@ -296,7 +245,7 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
             }
 
             if (wasLit && soul) {
-                swapToUnlitRegular(state, level, pos, fluidState);
+                swapToUnlit(state, level, pos, fluidState);
                 return true;
             }
 
@@ -307,7 +256,7 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
         return false;
     }
 
-    private void swapToUnlitRegular(BlockState state, LevelAccessor level, BlockPos pos, FluidState fluidState) {
+    private void swapToUnlit(BlockState state, LevelAccessor level, BlockPos pos, FluidState fluidState) {
         NonNullList<ItemStack> preservedItems = null;
         if (level.getBlockEntity(pos) instanceof GrillTableBlockEntity oldGrillEntity) {
             preservedItems = NonNullList.withSize(oldGrillEntity.getItems().size(), ItemStack.EMPTY);
@@ -317,18 +266,16 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
             oldGrillEntity.clearContent();
         }
 
-        BlockState regular = ModBlocks.GRILL_TABLE.get().defaultBlockState()
+        BlockState unlitState = ModBlocks.GRILL_TABLE_UNLIT.get().defaultBlockState()
                 .setValue(LIT, false)
-                .setValue(WATERLOGGED, true)
+                .setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER)
                 .setValue(FACING, state.getValue(FACING));
 
-        level.setBlock(pos, regular, 3);
+        level.setBlock(pos, unlitState, 3);
 
         if (preservedItems != null && level.getBlockEntity(pos) instanceof GrillTableBlockEntity newEntity) {
             newEntity.copyItemsFrom(preservedItems);
         }
-
-        level.scheduleTick(pos, fluidState.getType(), fluidState.getType().getTickDelay(level));
     }
 
     @Override
@@ -342,6 +289,14 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
                 && !state.getValue(WATERLOGGED)) {
             level.setBlock(blockpos, state.setValue(LIT, true), 11);
         }
+    }
+
+    @Override
+    public @NotNull MutableComponent getName() {
+        if (this.getStateDefinition().getProperties().contains(LIT) && !this.defaultBlockState().getValue(LIT)) {
+            return Component.translatable("block.nerdsoftkitchen.grill_table_unlit");
+        }
+        return super.getName();
     }
 
     @Override
@@ -379,7 +334,7 @@ public class GrillTableBlock extends BaseEntityBlock implements SimpleWaterlogge
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(LIT, WATERLOGGED, FACING, LOD);
+        builder.add(LIT, WATERLOGGED, FACING);
     }
 
     @Override

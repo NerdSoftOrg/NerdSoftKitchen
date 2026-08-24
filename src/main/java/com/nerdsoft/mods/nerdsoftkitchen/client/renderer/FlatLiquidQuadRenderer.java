@@ -16,7 +16,7 @@ import net.minecraft.world.inventory.InventoryMenu;
 public final class FlatLiquidQuadRenderer {
 
     public static final ResourceLocation DEFAULT_LIQUID_SPRITE =
-            ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, "block/skillet_pool");
+            ResourceLocation.fromNamespaceAndPath(NerdSoftKitchen.MOD_ID, "block/display/skillet_pool");
 
     private FlatLiquidQuadRenderer() {
     }

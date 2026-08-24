@@ -38,7 +38,7 @@ public final class ModBlocks {
             () -> new GrillTableBlock(
                     false,
                     BlockBehaviour.Properties.of()
-                            .mapColor(MapColor.PODZOL)
+                            .mapColor(MapColor.COLOR_GRAY)
                             .instrument(NoteBlockInstrument.BASS)
                             .strength(2.0F).sound(SoundType.WOOD)
                             .noOcclusion()
@@ -49,13 +49,15 @@ public final class ModBlocks {
             "grill_table_soul",
             () -> new GrillTableBlock(
                     true,
-                    BlockBehaviour.Properties.of()
-                            .mapColor(MapColor.PODZOL)
-                            .instrument(NoteBlockInstrument.BASS)
-                            .strength(2.0F).sound(SoundType.WOOD)
-                            .noOcclusion()
-                            .lightLevel(state -> state.getValue(GrillTableBlock.LIT) ? 10 : 0)
-                            .ignitedByLava()));
+                    BlockBehaviour.Properties.ofFullCopy(GRILL_TABLE.get())
+                            .lightLevel(state -> state.getValue(GrillTableBlock.LIT) ? 10 : 0)));
+
+    public static final DeferredBlock<GrillTableBlock> GRILL_TABLE_UNLIT = BLOCKS.register(
+            "grill_table_unlit",
+            () -> new GrillTableBlock(
+                    true,
+                    BlockBehaviour.Properties.ofFullCopy(GRILL_TABLE.get())
+                            .lightLevel(state -> 0)));
 
     public static final DeferredBlock<CuttingBoardBlock> CUTTING_BOARD = BLOCKS.register(
             "cutting_board",
@@ -68,10 +70,7 @@ public final class ModBlocks {
 
     public static final DeferredBlock<FertileFarmlandBlock> FERTILE_FARMLAND = BLOCKS.register(
             "fertile_farmland",
-            () -> new FertileFarmlandBlock(
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.FARMLAND)
-                            .mapColor(MapColor.PODZOL)
-                            .randomTicks()));
+            () -> new FertileFarmlandBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.FARMLAND)));
 
     public static final DeferredBlock<OrganicSoilBlock> ORGANIC_SOIL = BLOCKS.register(
             "organic_soil",
@@ -95,7 +94,7 @@ public final class ModBlocks {
             "grill_table",
             props -> new GrillTableBlock(false, props),
             BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.PODZOL)
+                    .mapColor(MapColor.COLOR_GRAY)
                     .instrument(NoteBlockInstrument.BASS)
                     .strength(2.0F)
                     .sound(SoundType.WOOD)
@@ -107,12 +106,23 @@ public final class ModBlocks {
             "grill_table_soul",
             props -> new GrillTableBlock(true, props),
             BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.PODZOL)
+                    .mapColor(MapColor.COLOR_GRAY)
                     .instrument(NoteBlockInstrument.BASS)
                     .strength(2.0F)
                     .sound(SoundType.WOOD)
                     .noOcclusion()
                     .lightLevel(state -> state.getValue(GrillTableBlock.LIT) ? 10 : 0)
+                    .ignitedByLava()
+    );
+    public static final DeferredBlock<GrillTableBlock> GRILL_TABLE_UNLIT = BLOCKS.registerBlock(
+            "grill_table_unlit",
+            props -> new GrillTableBlock(true, props),
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_GRAY)
+                    .instrument(NoteBlockInstrument.BASS)
+                    .strength(2.0F)
+                    .sound(SoundType.WOOD)
+                    .noOcclusion()
                     .ignitedByLava()
     );
     public static final DeferredBlock<CuttingBoardBlock> CUTTING_BOARD = BLOCKS.registerBlock(
@@ -129,8 +139,6 @@ public final class ModBlocks {
             "fertile_farmland",
             FertileFarmlandBlock::new,
             BlockBehaviour.Properties.ofFullCopy(Blocks.FARMLAND)
-                    .mapColor(MapColor.PODZOL)
-                    .randomTicks()
     );
     public static final DeferredBlock<OrganicSoilBlock> ORGANIC_SOIL = BLOCKS.registerBlock(
             "organic_soil",

@@ -60,6 +60,7 @@ public final class GlobalTickManager {
         stateBySlot[slot] = state;
     }
 
+    @SuppressWarnings("unused")
     public void tickAll(TickSink sink) {
         BlockEntity[] elements = tickables.elements();
         for (int i = 0; i < size; i++) {

@@ -55,7 +55,7 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
 
     @Override
     protected void generate() {
-        dropSelf(ModBlocks.GRILL_TABLE.get());
+        add(ModBlocks.GRILL_TABLE.get(), block -> createSingleItemTable(ModBlocks.GRILL_TABLE.get()));
         dropSelf(ModBlocks.GRILL_TABLE_SOUL.get());
         dropSelf(ModBlocks.CUTTING_BOARD.get());
         dropSelf(ModBlocks.ORGANIC_SOIL.get());
@@ -125,6 +125,16 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
                 .withPool(LootPool.lootPool()
                         .add(LootItem.lootTableItem(seedItem)
                                 .apply(SetItemCountFunction.setCount(UniformGenerator.between(SEED_YIELD_MIN, SEED_YIELD_MAX)))));
+    }
+
+    private LootTable.Builder createLitStateDrops(Block block, ItemLike litItem, ItemLike unlitItem) {
+        LootItemCondition.Builder isLit = LootItemBlockStatePropertyCondition.hasBlockStateProperties(block)
+                .setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(BlockStateProperties.LIT, true));
+
+        return LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .add(LootItem.lootTableItem(litItem).when(isLit))
+                        .add(LootItem.lootTableItem(unlitItem).when(isLit.invert())));
     }
 
     @Override

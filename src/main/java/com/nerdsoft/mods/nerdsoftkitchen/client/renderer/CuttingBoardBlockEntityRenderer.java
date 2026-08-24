@@ -42,6 +42,11 @@ public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<Cutt
     private static final double CULL_DISTANCE_BLOCKS = 48.0;
     private static final double CULL_DISTANCE_SQR = CULL_DISTANCE_BLOCKS * CULL_DISTANCE_BLOCKS;
 
+    private static final double ITEM_RADIUS_BLOCKS = 0.3;
+    private static final double ITEM_RADIUS_SQR = ITEM_RADIUS_BLOCKS * ITEM_RADIUS_BLOCKS;
+
+    private static final double LOD_COVERAGE_THRESHOLD = ScreenSpaceLod.thresholdForDistance(ITEM_RADIUS_SQR, 32.0);
+
     private static final double ITEM_DROP_STEP_BLOCKS = 16.0;
 
     private final ItemRenderer itemRenderer;
@@ -52,8 +57,8 @@ public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<Cutt
 
     @Override
     public boolean shouldRender(@NotNull CuttingBoardBlockEntity board, @NotNull Vec3 cameraPos) {
-        // vanilla default already culls at 2304 (48^2) via closerThanCenter;
-        // we tighten that to our own 24-block radius on top of it.
+        // 48 blocks (2304 = 48^2) is our own cull radius, not a vanilla default, chosen to
+        // match getViewDistance() below.
         return BlockEntityRenderer.super.shouldRender(board, cameraPos)
                 && withinCullDistance(board.getBlockPos());
     }
@@ -77,16 +82,16 @@ public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<Cutt
         ItemStack stack = board.getStoredItem();
         if (stack.isEmpty()) return;
 
-        int lodTier = board.getBlockState().getValue(CuttingBoardBlock.LOD);
-        double playerDistance = distanceToPlayer(board.getBlockPos());
-        boolean pastLod1 = lodTier >= 1;
+        BlockPos pos = board.getBlockPos();
+        double playerDistanceSqr = distanceToPlayerSqr(pos);
+        boolean pastLod1 = ScreenSpaceLod.isPastThreshold(pos.asLong(), ITEM_RADIUS_SQR, playerDistanceSqr, LOD_COVERAGE_THRESHOLD);
+        double playerDistance = pastLod1 ? Math.sqrt(playerDistanceSqr) : 0.0;
 
         Direction facing = board.getBlockState().getValue(CuttingBoardBlock.FACING);
         float boardYRot = facing.toYRot() + 180.0F;
         float halfDepth = halfDepthFor(stack);
 
         int itemCount = renderedItemCountFor(stack, pastLod1, playerDistance);
-        BlockPos pos = board.getBlockPos();
         RandomSource random = RandomSource.create(seedFor(pos));
 
         for (int i = 0; i < itemCount; i++) {
@@ -138,12 +143,12 @@ public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<Cutt
         );
     }
 
-    private static double distanceToPlayer(BlockPos pos) {
+    private static double distanceToPlayerSqr(BlockPos pos) {
         Player player = Minecraft.getInstance().player;
         if (player == null) {
             return 0.0;
         }
-        return Math.sqrt(player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5));
+        return player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
     }
 
     private float halfDepthFor(ItemStack stack) {

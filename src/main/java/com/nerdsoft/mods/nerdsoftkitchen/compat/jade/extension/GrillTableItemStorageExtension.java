@@ -13,7 +13,7 @@ import snownee.jade.api.ui.IElement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GrillTableItemStorageExtension extends BaseCookingItemExtension<GrillTableBlockEntity> {
+public class GrillTableItemStorageExtension extends CookingItemExtension<GrillTableBlockEntity> {
 
     public static final GrillTableItemStorageExtension INSTANCE = new GrillTableItemStorageExtension();
 

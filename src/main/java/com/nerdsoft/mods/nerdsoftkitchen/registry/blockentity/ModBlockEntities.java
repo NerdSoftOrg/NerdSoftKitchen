@@ -15,7 +15,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 //? if >=1.21.2 {
 /*import java.util.Set;
-*///?}
+ *///?}
 
 public final class ModBlockEntities {
 
@@ -26,7 +26,9 @@ public final class ModBlockEntities {
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GrillTableBlockEntity>> GRILL_TABLE =
             BLOCK_ENTITIES.register("grill_table", () -> BlockEntityType.Builder.of(GrillTableBlockEntity::new,
-                    ModBlocks.GRILL_TABLE.get(), ModBlocks.GRILL_TABLE_SOUL.get()).build(null));
+                    ModBlocks.GRILL_TABLE.get(),
+                    ModBlocks.GRILL_TABLE_SOUL.get(),
+                    ModBlocks.GRILL_TABLE_UNLIT.get()).build(null));
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CuttingBoardBlockEntity>> CUTTING_BOARD =
             BLOCK_ENTITIES.register("cutting_board", () -> BlockEntityType.Builder.of(CuttingBoardBlockEntity::new,
@@ -43,7 +45,7 @@ public final class ModBlockEntities {
     /*public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GrillTableBlockEntity>> GRILL_TABLE =
             BLOCK_ENTITIES.register("grill_table", () -> new BlockEntityType<>(
                     GrillTableBlockEntity::new,
-                    Set.of(ModBlocks.GRILL_TABLE.get(), ModBlocks.GRILL_TABLE_SOUL.get())
+                    Set.of(ModBlocks.GRILL_TABLE.get(), ModBlocks.GRILL_TABLE_SOUL.get(), ModBlocks.GRILL_TABLE_UNLIT.get())
             ));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CuttingBoardBlockEntity>> CUTTING_BOARD =
             BLOCK_ENTITIES.register("cutting_board", () -> new BlockEntityType<>(

@@ -57,6 +57,8 @@ public final class ModItems {
             props -> new GrillBlockItem(ModBlocks.GRILL_TABLE.get(), props));
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE_SOUL = ITEMS.registerItem("grill_table_soul",
             props -> new GrillBlockItem(ModBlocks.GRILL_TABLE_SOUL.get(), props));
+    public static final DeferredItem<GrillBlockItem> GRILL_TABLE_UNLIT = ITEMS.registerItem("grill_table_unlit",
+            props -> new GrillBlockItem(ModBlocks.GRILL_TABLE_UNLIT.get(), props));
     public static final DeferredItem<BlockItem> CUTTING_BOARD = ITEMS.registerSimpleBlockItem(ModBlocks.CUTTING_BOARD);
     public static final DeferredItem<BlockItem> FERTILE_FARMLAND = ITEMS.registerSimpleBlockItem(ModBlocks.FERTILE_FARMLAND);
     public static final DeferredItem<BlockItem> ORGANIC_SOIL = ITEMS.registerSimpleBlockItem(ModBlocks.ORGANIC_SOIL);
@@ -106,6 +108,8 @@ public final class ModItems {
             "grill_table", props -> new GrillBlockItem(ModBlocks.GRILL_TABLE.get(), props));
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE_SOUL = ITEMS.registerItem(
             "grill_table_soul", props -> new GrillBlockItem(ModBlocks.GRILL_TABLE_SOUL.get(), props));
+    public static final DeferredItem<GrillBlockItem> GRILL_TABLE_UNLIT = ITEMS.registerItem(
+            "grill_table_unlit", props -> new GrillBlockItem(ModBlocks.GRILL_TABLE_UNLIT.get(), props));
     public static final DeferredItem<BlockItem> CUTTING_BOARD = ITEMS.registerSimpleBlockItem(ModBlocks.CUTTING_BOARD);
     public static final DeferredItem<BlockItem> FERTILE_FARMLAND = ITEMS.registerSimpleBlockItem(ModBlocks.FERTILE_FARMLAND);
     public static final DeferredItem<BlockItem> ORGANIC_SOIL = ITEMS.registerSimpleBlockItem(ModBlocks.ORGANIC_SOIL);

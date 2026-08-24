@@ -2,7 +2,7 @@ package com.nerdsoft.mods.nerdsoftkitchen.datagen.lang;
 
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.item.ModItems;
-import com.nerdsoft.mods.nerdsoftkitchen.registry.sound.ModSounds; // Asumiendo tu registro de sonidos
+import com.nerdsoft.mods.nerdsoftkitchen.registry.sound.ModSounds;
 import net.minecraft.data.PackOutput;
 
 public class ModEnUsLanguageProvider extends ModLanguageProvider {
@@ -20,6 +20,7 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
         // Blocks
         add(ModBlocks.GRILL_TABLE, "Grill");
         add(ModBlocks.GRILL_TABLE_SOUL, "Soul Grill");
+        add(ModBlocks.GRILL_TABLE_UNLIT, "Unlit Grill");
         add(ModBlocks.TOMATO_CROP_POLE, "Staked Tomato Vine");
         add(ModBlocks.FERTILE_FARMLAND, "Fertile Farmland");
         add(ModBlocks.ORGANIC_SOIL, "Organic Soil");

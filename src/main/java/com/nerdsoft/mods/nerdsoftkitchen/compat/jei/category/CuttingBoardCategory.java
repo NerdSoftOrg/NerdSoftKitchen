@@ -37,6 +37,8 @@ public final class CuttingBoardCategory extends AbstractRecipeCategory<RecipeHol
     private static final int KNIFE_SLOT_X = 3;
     private static final int KNIFE_SLOT_Y = 8;
 
+    private List<ItemStack> knives;
+
     public CuttingBoardCategory(IGuiHelper guiHelper) {
         super(
                 RECIPE_TYPE,
@@ -64,12 +66,15 @@ public final class CuttingBoardCategory extends AbstractRecipeCategory<RecipeHol
                 .addIngredients(VanillaTypes.ITEM_STACK, allKnives());
     }
 
-    private static List<ItemStack> allKnives() {
-        List<ItemStack> knives = new ArrayList<>();
-        for (Item item : BuiltInRegistries.ITEM) {
-            if (BuiltInRegistries.ITEM.wrapAsHolder(item).is(ModItemTags.KNIFE)) {
-                knives.add(new ItemStack(item));
+    private List<ItemStack> allKnives() {
+        if (knives == null) {
+            List<ItemStack> found = new ArrayList<>();
+            for (Item item : BuiltInRegistries.ITEM) {
+                if (BuiltInRegistries.ITEM.wrapAsHolder(item).is(ModItemTags.KNIFE)) {
+                    found.add(new ItemStack(item));
+                }
             }
+            knives = found;
         }
         return knives;
     }

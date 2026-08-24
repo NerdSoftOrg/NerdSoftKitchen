@@ -1,10 +1,9 @@
 package com.nerdsoft.mods.nerdsoftkitchen.blockentity;
 
-import com.nerdsoft.mods.nerdsoftkitchen.perf.GlobalTickManager;
-import com.nerdsoft.mods.nerdsoftkitchen.perf.PackedPos;
 import com.nerdsoft.mods.nerdsoftkitchen.perf.StateMask;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.data.ModDataComponents;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -13,9 +12,9 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.Containers;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -28,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Collections;
 
-public abstract class AbstractCookingBlockEntity extends BlockEntity implements Container {
+public abstract class AbstractCookingBlockEntity extends BlockEntity implements WorldlyContainer {
 
     private static final String ITEMS_KEY = "Items";
     private static final String PROGRESS_KEY = "CookProgress";
@@ -41,21 +40,21 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
     protected final long[] slotSeeds;
     final ItemStack[] cachedOutput;
     private final int totalSlots;
+    private final int renderSeedBase;
     int cookingSlotCount;
     int nonEmptySlotCount;
 
-    private final long packedPos;
-    private int tickSlot = -1;
+    private short tickState;
 
     protected AbstractCookingBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int totalSlots) {
         super(type, pos, state);
         this.totalSlots = totalSlots;
+        this.renderSeedBase = (int) pos.asLong();
         this.items = NonNullList.withSize(totalSlots, ItemStack.EMPTY);
         this.cookProgress = new int[totalSlots];
         this.cookTime = new int[totalSlots];
         this.slotSeeds = new long[totalSlots];
         this.cachedOutput = new ItemStack[totalSlots];
-        this.packedPos = PackedPos.pack(pos.getX(), pos.getY(), pos.getZ());
         for (int i = 0; i < totalSlots; i++) {
             this.slotSeeds[i] = SEED_SOURCE.nextLong();
         }
@@ -98,6 +97,35 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
         }
     }
 
+    private static NonNullList<ItemStack> mergeStacksForDrop(NonNullList<ItemStack> source) {
+        NonNullList<ItemStack> merged = NonNullList.create();
+        for (ItemStack stack : source) {
+            if (stack.isEmpty()) {
+                continue;
+            }
+            ItemStack clean = stack.copy();
+            clean.remove(ModDataComponents.COOK_PROGRESS.get());
+
+            boolean addedToExisting = false;
+            for (ItemStack existing : merged) {
+                if (ItemStack.isSameItemSameComponents(existing, clean)
+                        && existing.getCount() + clean.getCount() <= existing.getMaxStackSize()) {
+                    existing.grow(clean.getCount());
+                    addedToExisting = true;
+                    break;
+                }
+            }
+            if (!addedToExisting) {
+                merged.add(clean);
+            }
+        }
+        return merged;
+    }
+
+    public final int getRenderSeedBase() {
+        return renderSeedBase;
+    }
+
     protected final void markUpdated() {
         setChanged();
         if (level != null) {
@@ -105,32 +133,12 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
         }
     }
 
-    protected final void ensureRegistered() {
-        if (tickSlot == -1) {
-            tickSlot = GlobalTickManager.INSTANCE.register(packedPos, this, (short) 0);
-        }
-    }
-
-    @Override
-    public void setRemoved() {
-        super.setRemoved();
-        if (tickSlot != -1) {
-            GlobalTickManager.INSTANCE.unregister(packedPos);
-            tickSlot = -1;
-        }
-    }
-
-    protected final long packedPos() {
-        return packedPos;
-    }
-
     protected final short tickState() {
-        return tickSlot != -1 ? GlobalTickManager.INSTANCE.getState(tickSlot) : 0;
+        return tickState;
     }
 
     protected final void setTickState(short state) {
-        ensureRegistered();
-        GlobalTickManager.INSTANCE.setState(tickSlot, state);
+        tickState = state;
     }
 
     private void setNonEmptySlotCount(int value) {
@@ -293,6 +301,16 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
     }
 
     @Override
+    public boolean canPlaceItemThroughFace(int slot, @NotNull ItemStack stack, @Nullable Direction direction) {
+        return canPlaceItem(slot, stack);
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(int slot, @NotNull ItemStack stack, @NotNull Direction direction) {
+        return cookProgress[slot] == 0;
+    }
+
+    @Override
     public void clearContent() {
         Collections.fill(items, ItemStack.EMPTY);
         Arrays.fill(cookProgress, 0);
@@ -322,31 +340,6 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
         Arrays.fill(cachedOutput, null);
         cookingSlotCount = 0;
         setNonEmptySlotCount(0);
-    }
-
-    private static NonNullList<ItemStack> mergeStacksForDrop(NonNullList<ItemStack> source) {
-        NonNullList<ItemStack> merged = NonNullList.create();
-        for (ItemStack stack : source) {
-            if (stack.isEmpty()) {
-                continue;
-            }
-            ItemStack clean = stack.copy();
-            clean.remove(ModDataComponents.COOK_PROGRESS.get());
-
-            boolean addedToExisting = false;
-            for (ItemStack existing : merged) {
-                if (ItemStack.isSameItemSameComponents(existing, clean)
-                        && existing.getCount() + clean.getCount() <= existing.getMaxStackSize()) {
-                    existing.grow(clean.getCount());
-                    addedToExisting = true;
-                    break;
-                }
-            }
-            if (!addedToExisting) {
-                merged.add(clean);
-            }
-        }
-        return merged;
     }
 
     private void readTagInto(CompoundTag tag, HolderLookup.Provider registries, boolean reseedOnMismatch) {
@@ -394,7 +387,6 @@ public abstract class AbstractCookingBlockEntity extends BlockEntity implements 
     @Override
     public void onLoad() {
         super.onLoad();
-        ensureRegistered();
         refreshAllSlotRecipes();
     }
 

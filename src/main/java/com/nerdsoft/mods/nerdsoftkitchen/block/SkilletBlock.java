@@ -8,19 +8,14 @@ import com.nerdsoft.mods.nerdsoftkitchen.item.SkilletBlockItem;
 import com.nerdsoft.mods.nerdsoftkitchen.item.component.IronCupContent;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlockTags;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
-import com.nerdsoft.mods.nerdsoftkitchen.registry.data.ModDamageTypes;
-import com.nerdsoft.mods.nerdsoftkitchen.registry.world.damagesource.BlockDamageSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -85,7 +80,6 @@ public class SkilletBlock extends BaseEntityBlock implements SimpleWaterloggedBl
     private static final double OIL_XZ_SPREAD = 0.6;
     private static final double OIL_XZ_MARGIN = 0.2;
     private static final double OIL_RISE_SPEED = 0.01;
-    private static final float STEP_DAMAGE = 1.0F;
 
     static {
         for (Direction dir : Direction.Plane.HORIZONTAL) {
@@ -250,28 +244,7 @@ public class SkilletBlock extends BaseEntityBlock implements SimpleWaterloggedBl
 
     @Override
     public void stepOn(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Entity entity) {
-        if (!level.isClientSide
-                && state.getValue(LIT)
-                && entity instanceof LivingEntity living
-                && !living.fireImmune()) {
-
-            if (entity.getOnPos().equals(pos)) {
-                //? if <1.21.2 {
-                Holder<DamageType> cookwareBurnHolder = level.registryAccess()
-                        .registryOrThrow(Registries.DAMAGE_TYPE)
-                        .getHolderOrThrow(ModDamageTypes.COOKWARE_BURN);
-                //?} else {
-                /*Holder<DamageType> cookwareBurnHolder = level.registryAccess()
-                        .lookupOrThrow(Registries.DAMAGE_TYPE)
-                        .getOrThrow(ModDamageTypes.COOKWARE_BURN);
-                *///?}
-
-                //? if <1.21.2 {
-                living.hurt(new BlockDamageSource(cookwareBurnHolder, this), STEP_DAMAGE);
-                //?} else
-                //living.hurtServer((ServerLevel) level, new BlockDamageSource(cookwareBurnHolder, this), STEP_DAMAGE);
-            }
-        }
+        CookingBlockHelpers.applyStepBurn(level, pos, state, entity, LIT, this);
         super.stepOn(level, pos, state, entity);
     }
 
@@ -363,10 +336,7 @@ public class SkilletBlock extends BaseEntityBlock implements SimpleWaterloggedBl
     @Override
     protected void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!state.is(newState.getBlock())) {
-            BlockEntity blockentity = level.getBlockEntity(pos);
-            if (blockentity instanceof SkilletBlockEntity skilletEntity) {
-                skilletEntity.dropContents(level, pos);
-            }
+            CookingBlockHelpers.dropContentsOnRemoval(state, level, pos, newState);
             super.onRemove(state, level, pos, newState, movedByPiston);
         }
     }
@@ -374,10 +344,7 @@ public class SkilletBlock extends BaseEntityBlock implements SimpleWaterloggedBl
     /*@Override
     protected void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
-            BlockEntity blockentity = level.getBlockEntity(pos);
-            if (blockentity instanceof SkilletBlockEntity skilletEntity) {
-                skilletEntity.dropContents(level, pos);
-            }
+            CookingBlockHelpers.dropContentsOnRemoval(state, level, pos, newState);
             super.onRemove(state, level, pos, newState, isMoving);
         }
     }

@@ -6,12 +6,17 @@ import com.nerdsoft.mods.nerdsoftkitchen.blockentity.GrillTableBlockEntity;
 import com.nerdsoft.mods.nerdsoftkitchen.blockentity.SkilletBlockEntity;
 import com.nerdsoft.mods.nerdsoftkitchen.compat.jade.extension.GrillTableItemStorageExtension;
 import com.nerdsoft.mods.nerdsoftkitchen.compat.jade.extension.SkilletItemStorageExtension;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.IBlockComponentProvider;
+import snownee.jade.api.ITooltip;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.IPluginConfig;
 
 @WailaPlugin
 public class NerdSoftKitchenJadePlugin implements IWailaPlugin {

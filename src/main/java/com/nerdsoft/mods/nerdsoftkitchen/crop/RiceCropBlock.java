@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
-public final class RiceCropBlock extends ModCropBlock {
+public final class RiceCropBlock extends ModCropBlock implements TallPlantHalves {
 
     private static final int MAX_AGE = 3;
 
@@ -58,6 +58,11 @@ public final class RiceCropBlock extends ModCropBlock {
     }
 
     @Override
+    public @NotNull EnumProperty<DoubleBlockHalf> halfProperty() {
+        return HALF;
+    }
+
+    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(BlockStateProperties.AGE_3, HALF);
     }
@@ -70,30 +75,29 @@ public final class RiceCropBlock extends ModCropBlock {
     @Override
     @Nullable
     public BlockState getStateForPlacement(@NotNull BlockPlaceContext context) {
-        BlockPos pos = context.getClickedPos();
-        Level level = context.getLevel();
-        //? if <1.21.2 {
-        if (pos.getY() >= level.getMaxBuildHeight() - 1 || !level.getBlockState(pos.above()).canBeReplaced(context)) {
-        //?} else {
-        /*if (pos.getY() >= level.getMaxY() - 1 || !level.getBlockState(pos.above()).canBeReplaced(context)) {
-        *///?}
-            return null;
-        }
+        return tallPlantStateForPlacement(context);
+    }
+
+    @Override
+    public @NotNull BlockState lowerStateForPlacement(@NotNull BlockPlaceContext context) {
         return this.defaultBlockState().setValue(HALF, DoubleBlockHalf.LOWER);
+    }
+
+    @Override
+    public @NotNull BlockState upperStateForPlacedBy(@NotNull Level level, @NotNull BlockPos lowerPos, @NotNull BlockState lowerState) {
+        return this.defaultBlockState().setValue(HALF, DoubleBlockHalf.UPPER);
     }
 
     @Override
     public void setPlacedBy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state,
                             @Nullable LivingEntity placer, @NotNull ItemStack stack) {
-        BlockPos abovePos = pos.above();
-        level.setBlock(abovePos, this.defaultBlockState().setValue(HALF, DoubleBlockHalf.UPPER), 3);
+        tallPlantSetPlacedBy(level, pos, state, placer, stack);
     }
 
     @Override
     protected boolean canSurvive(@NotNull BlockState state, @NotNull LevelReader level, @NotNull BlockPos pos) {
         if (state.getValue(HALF) == DoubleBlockHalf.UPPER) {
-            BlockState below = level.getBlockState(pos.below());
-            return below.is(this) && below.getValue(HALF) == DoubleBlockHalf.LOWER;
+            return upperHalfCanSurvive(this, level, pos);
         }
         return super.canSurvive(state, level, pos);
     }
@@ -103,26 +107,18 @@ public final class RiceCropBlock extends ModCropBlock {
     public @NotNull BlockState updateShape(@NotNull BlockState state, @NotNull Direction direction,
                                            @NotNull BlockState neighborState, @NotNull LevelAccessor level,
                                            @NotNull BlockPos pos, @NotNull BlockPos neighborPos) {
-
+        return tallPlantUpdateShape(this, state, direction, neighborState, pos,
+                () -> state.canSurvive(level, pos),
+                () -> super.updateShape(state, direction, neighborState, level, pos, neighborPos));
+    }
      //?} else {
     /*protected @NotNull BlockState updateShape(@NotNull BlockState state, @NotNull LevelReader level,
                                               @NotNull ScheduledTickAccess scheduledTickAccess, @NotNull BlockPos pos,
                                               @NotNull Direction direction, @NotNull BlockPos neighborPos,
                                               @NotNull BlockState neighborState, @NotNull RandomSource random) {
-    *///?}
-        DoubleBlockHalf half = state.getValue(HALF);
-        if (direction.getAxis() != Direction.Axis.Y
-                || (half == DoubleBlockHalf.LOWER) != (direction == Direction.UP)
-                || (neighborState.is(this) && neighborState.getValue(HALF) != half)) {
-            return half == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canSurvive(level, pos)
-                    ? Blocks.AIR.defaultBlockState()
-                    //? if <1.21.2 {
-                    : super.updateShape(state, direction, neighborState, level, pos, neighborPos)
-                    //?} else {
-                    /*: super.updateShape(state, level, scheduledTickAccess, pos, direction, neighborPos, neighborState, random)
-                    *///?}
-            ;
-        }
-        return Blocks.AIR.defaultBlockState();
+        return tallPlantUpdateShape(this, state, direction, neighborState, pos,
+                () -> state.canSurvive(level, pos),
+                () -> super.updateShape(state, level, scheduledTickAccess, pos, direction, neighborPos, neighborState, random));
     }
+    *///?}
 }

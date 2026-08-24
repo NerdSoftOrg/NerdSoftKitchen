@@ -20,4 +20,5 @@ stonecutter {
     }
 }
 
-rootProject.name = "NerdSoft Kitchen"
+val name = sc.properties["mod_name"] as String
+rootProject.name = name

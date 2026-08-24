@@ -20,6 +20,7 @@ public class ModEsEsLanguageProvider extends ModLanguageProvider {
         // Bloques
         add(ModBlocks.GRILL_TABLE, "Parrilla");
         add(ModBlocks.GRILL_TABLE_SOUL, "Parrilla de Almas");
+        add(ModBlocks.GRILL_TABLE_UNLIT, "Parrilla Apagada");
         add(ModBlocks.TOMATO_CROP_POLE, "Tomatera Entutorada");
         add(ModBlocks.FERTILE_FARMLAND, "Tierra Fértil");
         add(ModBlocks.ORGANIC_SOIL, "Tierra Orgánica");
