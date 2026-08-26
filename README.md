@@ -21,7 +21,7 @@ Table**, and fill a reusable **Iron Cup** with milk, yogurt, or strawberry yogur
 top of vanilla systems (custom recipe types, data components, and datagen for `recipes/loot/tags/advancements/language`),
 so the mod stays lightweight and easy to extend or add compatibility for.
 
-> Currently in **Beta 0.2** — core systems are implemented and stable, but content, balance, and polish are still
+> Currently in **Beta** — core systems are implemented and stable, but content, balance, and polish are still
 > evolving. Feedback and bug reports are very welcome.
 
 ## Features
@@ -76,7 +76,7 @@ so the mod stays lightweight and easy to extend or add compatibility for.
 | Mod Loader  | [NeoForge](https://neoforged.net/) `21.X` or later |
 | Java        | `21+`                                              |
 
-1. Install [NeoForge](https://neoforged.net/) `21.X` or later for Minecraft 1.21.1.
+1. Install [NeoForge](https://neoforged.net/) `21.X` or later for Minecraft 1.21-1.21.3.
 2. Download the latest **NerdSoft Kitchen** jar from [Modrinth](https://modrinth.com/mod/nerdsoftkitchen)
    or [CurseForge](https://www.curseforge.com/minecraft/mc-mods/nerdsoftkitchen).
 3. Drop the jar into your `mods/` folder.
@@ -108,7 +108,7 @@ Iron Cup contents are implemented as a
 first-class [data component](https://docs.neoforged.net/docs/1.21.1/items/datacomponents/), not NBT or metadata — this
 keeps stacking, tooltips, and JEI/Jade integration consistent and future-proof against further additions.
 
-No config file is required for Beta 0.2; all tuning currently lives in the datapack (recipes, loot tables, tags).
+No config file is required for Beta; all tuning currently lives in the datapack (recipes, loot tables, tags).
 
 ## Screenshots
 
