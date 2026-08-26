@@ -39,8 +39,12 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // Blocks
         litModel(ModBlocks.GRILL_TABLE, "appliance/grill_table_lit", "appliance/grill_table_unlit", false);
         litModel(ModBlocks.GRILL_TABLE_SOUL, "appliance/grill_table_soul_lit", "appliance/grill_table_unlit", false);
+        litModel(ModBlocks.GRILL_TABLE_UNLIT, "appliance/grill_table_lit", "appliance/grill_table_unlit", false);
+        litModel(ModBlocks.GRILL_TABLE_SOUL_UNLIT, "appliance/grill_table_soul_lit", "appliance/grill_table_unlit", false);
+        trackGrillTableLodModels();
         applianceLits(ModBlocks.SKILLET);
         applianceHorizontals(ModBlocks.CUTTING_BOARD);
+        trackCuttingBoardLodModel();
         applianceSimple(ModBlocks.ORGANIC_SOIL);
         fertileFarmland(ModBlocks.FERTILE_FARMLAND);
 
@@ -70,6 +74,16 @@ public class ModBlockStateProvider extends BlockStateProvider {
     private ModelFile getExistingModel(String relativePath) {
         DatagenUtils.trackModel(models().existingFileHelper, "block/" + relativePath);
         return models().getExistingFile(blockLoc(relativePath));
+    }
+
+    private void trackGrillTableLodModels() {
+        getExistingModel("appliance/grill_table_lit_lod1");
+        getExistingModel("appliance/grill_table_soul_lit_lod1");
+        getExistingModel("appliance/grill_table_unlit_lod1");
+    }
+
+    private void trackCuttingBoardLodModel() {
+        getExistingModel("appliance/cutting_board_lod1");
     }
 
     private ModelFile cropModel(String name, ResourceLocation tex, boolean cross) {

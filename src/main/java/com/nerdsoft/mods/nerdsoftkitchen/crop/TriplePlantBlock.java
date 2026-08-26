@@ -3,6 +3,7 @@ package com.nerdsoft.mods.nerdsoftkitchen.crop;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
@@ -76,5 +77,11 @@ public abstract class TriplePlantBlock extends BushBlock implements TriplePlantH
             BlockState below = level.getBlockState(pos.below());
             return below.is(this) && below.getValue(HALF) == TripleBlockHalf.MIDDLE;
         }
+    }
+
+    @Override
+    public @NotNull BlockState playerWillDestroy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
+        triplePlantPlayerWillDestroy(this, level, pos, state, player);
+        return super.playerWillDestroy(level, pos, state, player);
     }
 }

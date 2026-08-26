@@ -3,7 +3,6 @@ package com.nerdsoft.mods.nerdsoftkitchen.client;
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
 import com.nerdsoft.mods.nerdsoftkitchen.client.renderer.GrillTableBlockEntityRenderer;
 import com.nerdsoft.mods.nerdsoftkitchen.client.renderer.LodItemModelCache;
-import com.nerdsoft.mods.nerdsoftkitchen.client.renderer.SkilletBlockEntityRenderer;
 //? if <1.21.2 {
 import com.nerdsoft.mods.nerdsoftkitchen.compat.jei.client.JeiCategorySorter;
 //?}
@@ -79,7 +78,6 @@ public final class ModClientSetup {
     @SubscribeEvent
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.GRILL_TABLE.get(), GrillTableBlockEntityRenderer::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.SKILLET.get(), SkilletBlockEntityRenderer::new);
     }
 
     @SubscribeEvent

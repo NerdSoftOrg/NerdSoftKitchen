@@ -1,6 +1,7 @@
 package com.nerdsoft.mods.nerdsoftkitchen.client.event;
 
 import com.nerdsoft.mods.nerdsoftkitchen.NerdSoftKitchen;
+import com.nerdsoft.mods.nerdsoftkitchen.client.renderer.BlockLodModelCache;
 import com.nerdsoft.mods.nerdsoftkitchen.client.renderer.CuttingBoardBlockEntityRenderer;
 import com.nerdsoft.mods.nerdsoftkitchen.client.renderer.SkilletBlockEntityRenderer;
 import com.nerdsoft.mods.nerdsoftkitchen.registry.blockentity.ModBlockEntities;
@@ -35,5 +36,11 @@ public final class ClientRendererRegistration {
     public static void onRegisterAdditionalModels(ModelEvent.RegisterAdditional event) {
         event.register(PROGRESS_TORTILLA_MODEL_LOC);
         event.register(FINISHED_TORTILLA_MODEL_LOC);
+        BlockLodModelCache.registerAdditional(event);
+    }
+
+    @SubscribeEvent
+    public static void onModelBakingCompleted(ModelEvent.BakingCompleted event) {
+        BlockLodModelCache.onBakingCompleted(event);
     }
 }

@@ -3,6 +3,7 @@ package com.nerdsoft.mods.nerdsoftkitchen.crop;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
@@ -16,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
-
 
 public interface TallPlantHalves {
 
@@ -32,9 +32,9 @@ public interface TallPlantHalves {
         Level level = context.getLevel();
         //? if <1.21.2 {
         if (pos.getY() >= level.getMaxBuildHeight() - 1 || !level.getBlockState(pos.above()).canBeReplaced(context)) {
-        //?} else {
+         //?} else {
         /*if (pos.getY() >= level.getMaxY() - 1 || !level.getBlockState(pos.above()).canBeReplaced(context)) {
-        *///?}
+            *///?}
             return null;
         }
         return lowerStateForPlacement(context);
@@ -52,16 +52,39 @@ public interface TallPlantHalves {
     }
 
     default @NotNull BlockState tallPlantUpdateShape(@NotNull Block self, @NotNull BlockState state, @NotNull Direction direction,
-                                                     @NotNull BlockState neighborState, @SuppressWarnings("unused") @NotNull BlockPos pos,
-                                                     @NotNull Supplier<Boolean> lowerCanSurviveHere, @NotNull Supplier<BlockState> fallbackSuper) {
-        DoubleBlockHalf half = state.getValue(halfProperty());
-        if (direction.getAxis() != Direction.Axis.Y
-                || (half == DoubleBlockHalf.LOWER) != (direction == Direction.UP)
-                || (neighborState.is(self) && neighborState.getValue(halfProperty()) != half)) {
-            return half == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !lowerCanSurviveHere.get()
-                    ? Blocks.AIR.defaultBlockState()
-                    : fallbackSuper.get();
+                                                     @NotNull LevelReader level, @NotNull BlockPos pos, @NotNull Supplier<BlockState> fallbackSuper) {
+        if (direction != Direction.DOWN || state.canSurvive(level, pos)) {
+            return fallbackSuper.get();
         }
-        return Blocks.AIR.defaultBlockState();
+
+        if (level instanceof Level activeLevel && !activeLevel.isClientSide()) {
+            DoubleBlockHalf half = state.getValue(halfProperty());
+            activeLevel.setBlock(pos, Blocks.AIR.defaultBlockState(), 35);
+            activeLevel.levelEvent(2001, pos, Block.getId(state));
+
+            BlockPos otherPos = half == DoubleBlockHalf.UPPER ? pos.below() : pos.above();
+            BlockState otherState = activeLevel.getBlockState(otherPos);
+            if (otherState.is(self) && otherState.getValue(halfProperty()) != half) {
+                activeLevel.setBlock(otherPos, Blocks.AIR.defaultBlockState(), 35);
+                activeLevel.levelEvent(2001, otherPos, Block.getId(otherState));
+            }
+        }
+        return state;
+    }
+
+    default void tallPlantPlayerWillDestroy(@NotNull Block self, @NotNull Level level, @NotNull BlockPos pos,
+                                            @NotNull BlockState state, @NotNull Player player) {
+        if (level.isClientSide()) {
+            return;
+        }
+
+        DoubleBlockHalf half = state.getValue(halfProperty());
+        BlockPos otherPos = half == DoubleBlockHalf.UPPER ? pos.below() : pos.above();
+        BlockState otherState = level.getBlockState(otherPos);
+
+        if (otherState.is(self) && otherState.getValue(halfProperty()) != half) {
+            level.setBlock(otherPos, Blocks.AIR.defaultBlockState(), 35);
+            level.levelEvent(player, 2001, otherPos, Block.getId(otherState));
+        }
     }
 }

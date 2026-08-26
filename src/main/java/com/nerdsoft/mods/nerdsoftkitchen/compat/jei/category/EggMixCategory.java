@@ -57,6 +57,7 @@ public final class EggMixCategory extends AbstractRecipeCategory<RecipeHolder<Mi
         );
     }
 
+    @SuppressWarnings("unused")
     public static boolean isEggMix(MixRecipe recipe) {
         for (Ingredient ingredient : recipe.inputs()) {
             if (ingredient.test(new ItemStack(Items.EGG))) {

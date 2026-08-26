@@ -81,6 +81,22 @@ public class ModRecipeProvider extends RecipeProvider /*? if <1.21.2 {*/ impleme
                 .define('I', Items.IRON_INGOT).define('S', Items.STONE_BRICKS).define('C', Items.SOUL_CAMPFIRE)
                 .unlockedBy(getHasName(Items.SOUL_CAMPFIRE), has(Items.SOUL_CAMPFIRE)), output, "grill_table_soul");
 
+        saveCustomKey(createShapeless(RecipeCategory.MISC, ModItems.GRILL_TABLE.get())
+                        .requires(ModItems.GRILL_TABLE_UNLIT.get()).requires(Items.BLAZE_POWDER)
+                        .unlockedBy(getHasName(ModItems.GRILL_TABLE_UNLIT.get()), has(ModItems.GRILL_TABLE_UNLIT.get())),
+                output, "grill_table_relight");
+
+        saveCustomKey(createShapeless(RecipeCategory.MISC, ModItems.GRILL_TABLE_SOUL.get())
+                        .requires(ModItems.GRILL_TABLE_UNLIT.get()).requires(Items.BLAZE_POWDER)
+                        .requires(Ingredient.of(Items.SOUL_SAND, Items.SOUL_SOIL))
+                        .unlockedBy(getHasName(ModItems.GRILL_TABLE_UNLIT.get()), has(ModItems.GRILL_TABLE_UNLIT.get())),
+                output, "grill_table_soul_relight");
+
+        saveCustomKey(createShapeless(RecipeCategory.MISC, ModItems.GRILL_TABLE_SOUL.get())
+                        .requires(ModItems.GRILL_TABLE_SOUL_UNLIT.get()).requires(Items.BLAZE_POWDER)
+                        .unlockedBy(getHasName(ModItems.GRILL_TABLE_SOUL_UNLIT.get()), has(ModItems.GRILL_TABLE_SOUL_UNLIT.get())),
+                output, "grill_table_soul_unlit_relight");
+
         createShaped(RecipeCategory.MISC, ModItems.CUTTING_BOARD.get()).pattern("PPP")
                 .define('P', Items.OAK_PLANKS).unlockedBy(getHasName(Items.OAK_PLANKS), has(Items.OAK_PLANKS)).save(output);
 

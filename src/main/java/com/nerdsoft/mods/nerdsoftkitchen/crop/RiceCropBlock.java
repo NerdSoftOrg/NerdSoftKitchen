@@ -4,17 +4,14 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.*;
 //? if >=1.21.2 {
 /*import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ScheduledTickAccess;
 *///?}
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -107,8 +104,7 @@ public final class RiceCropBlock extends ModCropBlock implements TallPlantHalves
     public @NotNull BlockState updateShape(@NotNull BlockState state, @NotNull Direction direction,
                                            @NotNull BlockState neighborState, @NotNull LevelAccessor level,
                                            @NotNull BlockPos pos, @NotNull BlockPos neighborPos) {
-        return tallPlantUpdateShape(this, state, direction, neighborState, pos,
-                () -> state.canSurvive(level, pos),
+        return tallPlantUpdateShape(this, state, direction, level, pos,
                 () -> super.updateShape(state, direction, neighborState, level, pos, neighborPos));
     }
      //?} else {
@@ -116,9 +112,14 @@ public final class RiceCropBlock extends ModCropBlock implements TallPlantHalves
                                               @NotNull ScheduledTickAccess scheduledTickAccess, @NotNull BlockPos pos,
                                               @NotNull Direction direction, @NotNull BlockPos neighborPos,
                                               @NotNull BlockState neighborState, @NotNull RandomSource random) {
-        return tallPlantUpdateShape(this, state, direction, neighborState, pos,
-                () -> state.canSurvive(level, pos),
+        return tallPlantUpdateShape(this, state, direction, level, pos,
                 () -> super.updateShape(state, level, scheduledTickAccess, pos, direction, neighborPos, neighborState, random));
     }
     *///?}
+
+    @Override
+    public @NotNull BlockState playerWillDestroy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
+        tallPlantPlayerWillDestroy(this, level, pos, state, player);
+        return super.playerWillDestroy(level, pos, state, player);
+    }
 }

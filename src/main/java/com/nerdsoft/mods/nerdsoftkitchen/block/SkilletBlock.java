@@ -111,7 +111,7 @@ public class SkilletBlock extends BaseEntityBlock implements SimpleWaterloggedBl
             return true;
         }
 
-        return false;
+        return level.getFluidState(belowPos).is(FluidTags.LAVA);
     }
 
     @Override

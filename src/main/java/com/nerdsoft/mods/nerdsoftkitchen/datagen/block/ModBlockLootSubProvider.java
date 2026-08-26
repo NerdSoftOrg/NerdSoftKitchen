@@ -57,6 +57,8 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
     protected void generate() {
         add(ModBlocks.GRILL_TABLE.get(), block -> createSingleItemTable(ModBlocks.GRILL_TABLE.get()));
         dropSelf(ModBlocks.GRILL_TABLE_SOUL.get());
+        dropSelf(ModBlocks.GRILL_TABLE_UNLIT.get());
+        dropSelf(ModBlocks.GRILL_TABLE_SOUL_UNLIT.get());
         dropSelf(ModBlocks.CUTTING_BOARD.get());
         dropSelf(ModBlocks.ORGANIC_SOIL.get());
         dropSelf(ModBlocks.SKILLET.get());
@@ -142,6 +144,8 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         return List.of(
                 ModBlocks.GRILL_TABLE.get(),
                 ModBlocks.GRILL_TABLE_SOUL.get(),
+                ModBlocks.GRILL_TABLE_UNLIT.get(),
+                ModBlocks.GRILL_TABLE_SOUL_UNLIT.get(),
                 ModBlocks.CUTTING_BOARD.get(),
                 ModBlocks.WILD_STRAWBERRY.get(),
                 ModBlocks.WILD_TOMATO.get(),

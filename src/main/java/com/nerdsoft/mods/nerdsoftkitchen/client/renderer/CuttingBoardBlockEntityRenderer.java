@@ -1,11 +1,15 @@
 package com.nerdsoft.mods.nerdsoftkitchen.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.nerdsoft.mods.nerdsoftkitchen.block.CuttingBoardBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.blockentity.CuttingBoardBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -18,7 +22,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.RenderTypeHelper;
 import org.jetbrains.annotations.NotNull;
 
 public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<CuttingBoardBlockEntity> {
@@ -47,12 +53,18 @@ public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<Cutt
 
     private static final double LOD_COVERAGE_THRESHOLD = ScreenSpaceLod.thresholdForDistance(ITEM_RADIUS_SQR, 32.0);
 
+    private static final double BODY_RADIUS_BLOCKS = 0.5;
+    private static final double BODY_RADIUS_SQR = BODY_RADIUS_BLOCKS * BODY_RADIUS_BLOCKS;
+    private static final double BODY_LOD_COVERAGE_THRESHOLD = ScreenSpaceLod.thresholdForDistance(BODY_RADIUS_SQR, 32.0);
+
     private static final double ITEM_DROP_STEP_BLOCKS = 16.0;
 
     private final ItemRenderer itemRenderer;
+    private final BlockRenderDispatcher blockRenderer;
 
     public CuttingBoardBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
         this.itemRenderer = context.getItemRenderer();
+        this.blockRenderer = context.getBlockRenderDispatcher();
     }
 
     @Override
@@ -66,7 +78,35 @@ public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<Cutt
     @Override
     public void render(@NotNull CuttingBoardBlockEntity board, float partialTick, @NotNull PoseStack poseStack,
                         @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
-        renderStoredItems(board, poseStack, bufferSource, packedLight);
+        BlockState state = board.getBlockState();
+        double distanceSqr = distanceToPlayerSqr(board.getBlockPos());
+        boolean bodyPastLod1 = ScreenSpaceLod.isBodyPastThreshold(board.getBlockPos().asLong(), BODY_RADIUS_SQR, distanceSqr, BODY_LOD_COVERAGE_THRESHOLD);
+
+        renderBody(state, poseStack, bufferSource, packedLight, packedOverlay, bodyPastLod1);
+        renderStoredItems(board, poseStack, bufferSource, packedLight, distanceSqr);
+    }
+
+    private void renderBody(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource,
+                             int packedLight, int packedOverlay, boolean pastLod1) {
+        BakedModel lodModel = pastLod1 ? BlockLodModelCache.get(BlockLodModelCache.Variant.CUTTING_BOARD) : null;
+        //? if <1.21.2 {
+        VertexConsumer buffer = bufferSource.getBuffer(RenderTypeHelper.getEntityRenderType(RenderType.solid(), false));
+        //?} else {
+        /*VertexConsumer buffer = bufferSource.getBuffer(RenderTypeHelper.getEntityRenderType(RenderType.solid()));
+        *///?}
+        ModelBlockRenderer modelRenderer = blockRenderer.getModelRenderer();
+
+        poseStack.pushPose();
+        if (lodModel != null) {
+            poseStack.translate(0.5, 0.0, 0.5);
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.getValue(CuttingBoardBlock.FACING).toYRot() + 180.0F));
+            poseStack.translate(-0.5, 0.0, -0.5);
+            modelRenderer.renderModel(poseStack.last(), buffer, state, lodModel, 1.0F, 1.0F, 1.0F, packedLight, packedOverlay);
+        } else {
+            BakedModel fullModel = blockRenderer.getBlockModel(state);
+            modelRenderer.renderModel(poseStack.last(), buffer, state, fullModel, 1.0F, 1.0F, 1.0F, packedLight, packedOverlay);
+        }
+        poseStack.popPose();
     }
 
     private static boolean withinCullDistance(BlockPos pos) {
@@ -78,12 +118,11 @@ public class CuttingBoardBlockEntityRenderer implements BlockEntityRenderer<Cutt
     }
 
     private void renderStoredItems(CuttingBoardBlockEntity board, PoseStack poseStack,
-                                    MultiBufferSource bufferSource, int packedLight) {
+                                    MultiBufferSource bufferSource, int packedLight, double playerDistanceSqr) {
         ItemStack stack = board.getStoredItem();
         if (stack.isEmpty()) return;
 
         BlockPos pos = board.getBlockPos();
-        double playerDistanceSqr = distanceToPlayerSqr(pos);
         boolean pastLod1 = ScreenSpaceLod.isPastThreshold(pos.asLong(), ITEM_RADIUS_SQR, playerDistanceSqr, LOD_COVERAGE_THRESHOLD);
         double playerDistance = pastLod1 ? Math.sqrt(playerDistanceSqr) : 0.0;
 

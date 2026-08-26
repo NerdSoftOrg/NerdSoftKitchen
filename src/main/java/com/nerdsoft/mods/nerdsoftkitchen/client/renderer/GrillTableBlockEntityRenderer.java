@@ -1,12 +1,17 @@
 package com.nerdsoft.mods.nerdsoftkitchen.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.nerdsoft.mods.nerdsoftkitchen.block.GrillTableBlock;
 import com.nerdsoft.mods.nerdsoftkitchen.blockentity.GrillTableBlockEntity;
+import com.nerdsoft.mods.nerdsoftkitchen.registry.block.ModBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -15,8 +20,10 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.RenderTypeHelper;
 import org.jetbrains.annotations.NotNull;
 
 public class GrillTableBlockEntityRenderer implements BlockEntityRenderer<GrillTableBlockEntity> {
@@ -42,6 +49,10 @@ public class GrillTableBlockEntityRenderer implements BlockEntityRenderer<GrillT
 
     private static final double LOD_COVERAGE_THRESHOLD = ScreenSpaceLod.thresholdForDistance(ITEM_RADIUS_SQR, 32.0);
 
+    private static final double BODY_RADIUS_BLOCKS = 0.7;
+    private static final double BODY_RADIUS_SQR = BODY_RADIUS_BLOCKS * BODY_RADIUS_BLOCKS;
+    private static final double BODY_LOD_COVERAGE_THRESHOLD = ScreenSpaceLod.thresholdForDistance(BODY_RADIUS_SQR, 32.0);
+
     static {
         for (int i = 0; i < 4; i++) {
             Direction dir = Direction.from2DDataValue(i);
@@ -53,17 +64,50 @@ public class GrillTableBlockEntityRenderer implements BlockEntityRenderer<GrillT
     }
 
     private final ItemRenderer itemRenderer;
+    private final BlockRenderDispatcher blockRenderer;
 
     public GrillTableBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
         this.itemRenderer = context.getItemRenderer();
+        this.blockRenderer = context.getBlockRenderDispatcher();
+    }
+
+    private static BakedModel lodModelFor(BlockState state) {
+        Block block = state.getBlock();
+        boolean isSoul = block == ModBlocks.GRILL_TABLE_SOUL.get() || block == ModBlocks.GRILL_TABLE_SOUL_UNLIT.get();
+        BlockLodModelCache.Variant variant;
+        if (!state.getValue(GrillTableBlock.LIT)) {
+            variant = BlockLodModelCache.Variant.GRILL_TABLE_UNLIT;
+        } else {
+            variant = isSoul ? BlockLodModelCache.Variant.GRILL_TABLE_SOUL_LIT : BlockLodModelCache.Variant.GRILL_TABLE_LIT;
+        }
+        return BlockLodModelCache.get(variant);
+    }
+
+    private static boolean withinCullDistance(double x, double y, double z) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) {
+            return true;
+        }
+        return player.distanceToSqr(x, y, z) <= CULL_DISTANCE_SQR;
+    }
+
+    private static double distanceToPlayerSqr(GrillTableBlockEntity blockEntity) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) {
+            return 0.0;
+        }
+        double x = blockEntity.getBlockPos().getX() + 0.5;
+        double y = blockEntity.getBlockPos().getY() + 0.5;
+        double z = blockEntity.getBlockPos().getZ() + 0.5;
+        return player.distanceToSqr(x, y, z);
     }
 
     @Override
     public boolean shouldRender(@NotNull GrillTableBlockEntity blockEntity, @NotNull Vec3 cameraPos) {
         return BlockEntityRenderer.super.shouldRender(blockEntity, cameraPos)
                 && withinCullDistance(blockEntity.getBlockPos().getX() + 0.5,
-                                       blockEntity.getBlockPos().getY() + 0.5,
-                                       blockEntity.getBlockPos().getZ() + 0.5);
+                blockEntity.getBlockPos().getY() + 0.5,
+                blockEntity.getBlockPos().getZ() + 0.5);
     }
 
     @Override
@@ -72,7 +116,13 @@ public class GrillTableBlockEntityRenderer implements BlockEntityRenderer<GrillT
         int facing2D = state.getValue(GrillTableBlock.FACING).get2DDataValue();
         int seedBase = blockEntity.getRenderSeedBase();
         ClientLevel renderLevel = Minecraft.getInstance().level;
-        boolean pastLod1 = isPastLodDistance(blockEntity);
+
+        double distanceSqr = distanceToPlayerSqr(blockEntity);
+        long packedPos = blockEntity.getBlockPos().asLong();
+        boolean pastLod1 = ScreenSpaceLod.isPastThreshold(packedPos, ITEM_RADIUS_SQR, distanceSqr, LOD_COVERAGE_THRESHOLD);
+        boolean bodyPastLod1 = ScreenSpaceLod.isBodyPastThreshold(packedPos, BODY_RADIUS_SQR, distanceSqr, BODY_LOD_COVERAGE_THRESHOLD);
+
+        renderBody(state, poseStack, bufferSource, packedLight, packedOverlay, bodyPastLod1);
 
         for (int slot = 0; slot < GrillTableBlockEntity.GRILL_SLOTS_COUNT; slot++) {
             ItemStack stack = blockEntity.getItem(GrillTableBlockEntity.GRILL_SLOTS_START + slot);
@@ -88,24 +138,27 @@ public class GrillTableBlockEntityRenderer implements BlockEntityRenderer<GrillT
         }
     }
 
-    private static boolean withinCullDistance(double x, double y, double z) {
-        Player player = Minecraft.getInstance().player;
-        if (player == null) {
-            return true;
-        }
-        return player.distanceToSqr(x, y, z) <= CULL_DISTANCE_SQR;
-    }
+    private void renderBody(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource,
+                            int packedLight, int packedOverlay, boolean pastLod1) {
+        BakedModel lodModel = pastLod1 ? lodModelFor(state) : null;
+        //? if <1.21.2 {
+        VertexConsumer buffer = bufferSource.getBuffer(RenderTypeHelper.getEntityRenderType(RenderType.cutout(), false));
+         //?} else {
+        /*VertexConsumer buffer = bufferSource.getBuffer(RenderTypeHelper.getEntityRenderType(RenderType.cutout()));
+        *///?}
+        ModelBlockRenderer modelRenderer = blockRenderer.getModelRenderer();
 
-    private static boolean isPastLodDistance(GrillTableBlockEntity blockEntity) {
-        Player player = Minecraft.getInstance().player;
-        if (player == null) {
-            return false;
+        poseStack.pushPose();
+        if (lodModel != null) {
+            poseStack.translate(0.5, 0.0, 0.5);
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.getValue(GrillTableBlock.FACING).toYRot()));
+            poseStack.translate(-0.5, 0.0, -0.5);
+            modelRenderer.renderModel(poseStack.last(), buffer, state, lodModel, 1.0F, 1.0F, 1.0F, packedLight, packedOverlay);
+        } else {
+            BakedModel fullModel = blockRenderer.getBlockModel(state);
+            modelRenderer.renderModel(poseStack.last(), buffer, state, fullModel, 1.0F, 1.0F, 1.0F, packedLight, packedOverlay);
         }
-        double x = blockEntity.getBlockPos().getX() + 0.5;
-        double y = blockEntity.getBlockPos().getY() + 0.5;
-        double z = blockEntity.getBlockPos().getZ() + 0.5;
-        double distanceSqr = player.distanceToSqr(x, y, z);
-        return ScreenSpaceLod.isPastThreshold(blockEntity.getBlockPos().asLong(), ITEM_RADIUS_SQR, distanceSqr, LOD_COVERAGE_THRESHOLD);
+        poseStack.popPose();
     }
 
     private void renderGrillSlot(GrillTableBlockEntity blockEntity, int slot, ItemStack stack, int facing2D,
@@ -141,7 +194,7 @@ public class GrillTableBlockEntityRenderer implements BlockEntityRenderer<GrillT
     }
 
     private void renderItem(ItemStack stack, PoseStack poseStack, MultiBufferSource bufferSource,
-                             int packedLight, int packedOverlay, ClientLevel renderLevel, int seed, boolean pastLod1) {
+                            int packedLight, int packedOverlay, ClientLevel renderLevel, int seed, boolean pastLod1) {
         if (!pastLod1) {
             itemRenderer.renderStatic(stack, ItemDisplayContext.FIXED, packedLight, packedOverlay, poseStack, bufferSource, renderLevel, seed);
             return;

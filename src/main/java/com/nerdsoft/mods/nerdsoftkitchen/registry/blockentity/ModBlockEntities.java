@@ -28,7 +28,8 @@ public final class ModBlockEntities {
             BLOCK_ENTITIES.register("grill_table", () -> BlockEntityType.Builder.of(GrillTableBlockEntity::new,
                     ModBlocks.GRILL_TABLE.get(),
                     ModBlocks.GRILL_TABLE_SOUL.get(),
-                    ModBlocks.GRILL_TABLE_UNLIT.get()).build(null));
+                    ModBlocks.GRILL_TABLE_UNLIT.get(),
+                    ModBlocks.GRILL_TABLE_SOUL_UNLIT.get()).build(null));
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CuttingBoardBlockEntity>> CUTTING_BOARD =
             BLOCK_ENTITIES.register("cutting_board", () -> BlockEntityType.Builder.of(CuttingBoardBlockEntity::new,
@@ -45,7 +46,7 @@ public final class ModBlockEntities {
     /*public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GrillTableBlockEntity>> GRILL_TABLE =
             BLOCK_ENTITIES.register("grill_table", () -> new BlockEntityType<>(
                     GrillTableBlockEntity::new,
-                    Set.of(ModBlocks.GRILL_TABLE.get(), ModBlocks.GRILL_TABLE_SOUL.get(), ModBlocks.GRILL_TABLE_UNLIT.get())
+                    Set.of(ModBlocks.GRILL_TABLE.get(), ModBlocks.GRILL_TABLE_SOUL.get(), ModBlocks.GRILL_TABLE_UNLIT.get(), ModBlocks.GRILL_TABLE_SOUL_UNLIT.get())
             ));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CuttingBoardBlockEntity>> CUTTING_BOARD =
             BLOCK_ENTITIES.register("cutting_board", () -> new BlockEntityType<>(

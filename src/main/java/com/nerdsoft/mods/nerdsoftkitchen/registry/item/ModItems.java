@@ -34,7 +34,7 @@ import java.util.List;
 @SuppressWarnings("CommentedOutCode")
 public final class ModItems {
 
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(NerdSoftKitchen.MOD_ID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(NerdSoftKitchen.MOD_ID);
 
     private static final float STONE_KNIFE_DAMAGE = 0.5F; // 2.5
     @SuppressWarnings("InvariantValue")
@@ -59,6 +59,8 @@ public final class ModItems {
             props -> new GrillBlockItem(ModBlocks.GRILL_TABLE_SOUL.get(), props));
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE_UNLIT = ITEMS.registerItem("grill_table_unlit",
             props -> new GrillBlockItem(ModBlocks.GRILL_TABLE_UNLIT.get(), props));
+    public static final DeferredItem<GrillBlockItem> GRILL_TABLE_SOUL_UNLIT = ITEMS.registerItem("grill_table_soul_unlit",
+            props -> new GrillBlockItem(ModBlocks.GRILL_TABLE_SOUL_UNLIT.get(), props));
     public static final DeferredItem<BlockItem> CUTTING_BOARD = ITEMS.registerSimpleBlockItem(ModBlocks.CUTTING_BOARD);
     public static final DeferredItem<BlockItem> FERTILE_FARMLAND = ITEMS.registerSimpleBlockItem(ModBlocks.FERTILE_FARMLAND);
     public static final DeferredItem<BlockItem> ORGANIC_SOIL = ITEMS.registerSimpleBlockItem(ModBlocks.ORGANIC_SOIL);
@@ -110,6 +112,8 @@ public final class ModItems {
             "grill_table_soul", props -> new GrillBlockItem(ModBlocks.GRILL_TABLE_SOUL.get(), props));
     public static final DeferredItem<GrillBlockItem> GRILL_TABLE_UNLIT = ITEMS.registerItem(
             "grill_table_unlit", props -> new GrillBlockItem(ModBlocks.GRILL_TABLE_UNLIT.get(), props));
+    public static final DeferredItem<GrillBlockItem> GRILL_TABLE_SOUL_UNLIT = ITEMS.registerItem(
+            "grill_table_soul_unlit", props -> new GrillBlockItem(ModBlocks.GRILL_TABLE_SOUL_UNLIT.get(), props));
     public static final DeferredItem<BlockItem> CUTTING_BOARD = ITEMS.registerSimpleBlockItem(ModBlocks.CUTTING_BOARD);
     public static final DeferredItem<BlockItem> FERTILE_FARMLAND = ITEMS.registerSimpleBlockItem(ModBlocks.FERTILE_FARMLAND);
     public static final DeferredItem<BlockItem> ORGANIC_SOIL = ITEMS.registerSimpleBlockItem(ModBlocks.ORGANIC_SOIL);

@@ -28,6 +28,8 @@ public final class ModCreativeTabs {
                         // WorkStations
                         output.accept(ModItems.GRILL_TABLE);
                         output.accept(ModItems.GRILL_TABLE_SOUL);
+                        output.accept(ModItems.GRILL_TABLE_UNLIT);
+                        output.accept(ModItems.GRILL_TABLE_SOUL_UNLIT);
                         output.accept(ModItems.SKILLET);
                         output.accept(ModItems.CUTTING_BOARD);
 

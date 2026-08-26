@@ -297,7 +297,7 @@ public class CuttingBoardBlock extends BaseEntityBlock {
 
     @Override
     protected @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
-        return RenderShape.MODEL;
+        return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 
     @Override

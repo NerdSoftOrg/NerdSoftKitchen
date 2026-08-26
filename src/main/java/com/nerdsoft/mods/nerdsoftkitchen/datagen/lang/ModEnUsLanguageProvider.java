@@ -21,6 +21,7 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
         add(ModBlocks.GRILL_TABLE, "Grill");
         add(ModBlocks.GRILL_TABLE_SOUL, "Soul Grill");
         add(ModBlocks.GRILL_TABLE_UNLIT, "Unlit Grill");
+        add(ModBlocks.GRILL_TABLE_SOUL_UNLIT, "Unlit Soul Grill");
         add(ModBlocks.TOMATO_CROP_POLE, "Staked Tomato Vine");
         add(ModBlocks.FERTILE_FARMLAND, "Fertile Farmland");
         add(ModBlocks.ORGANIC_SOIL, "Organic Soil");
@@ -114,6 +115,8 @@ public class ModEnUsLanguageProvider extends ModLanguageProvider {
         addJeiCategory("grill_cooking", "Grill Cooking");
         addJeiInfo("grill_table", "Cook food directly on the grill grate, or use the campfire slots underneath like a regular campfire. Place a Hay Block beneath it to cook 25% faster!");
         addJeiInfo("grill_table_soul", "Built with a Soul Campfire instead of a regular one. Works like the regular Grill, but cooks 10% faster!");
+        addJeiInfo("grill_table_unlit", "Cannot be crafted directly: put out a lit Grill with water or a Shovel (costs 1 durability) to get this. Relight it in place with Flint and Steel, a Fire Charge, or a flaming arrow, or craft it with Blaze Powder (add Soul Sand/Soil too to relight it as a Soul Grill instead).");
+        addJeiInfo("grill_table_soul_unlit", "Cannot be crafted directly: put out a lit Soul Grill with water or a Shovel (costs 1 durability) to get this. Relight it in place with Flint and Steel, a Fire Charge, or a flaming arrow, or craft it with Blaze Powder.");
         addJeiInfo("iron_cup", "Right-click a cow to fill with milk. Combine a filled cup with sugar on a crafting grid to make yogurt.");
         addJeiInfo("iron_cup_milk", "Cannot be crafted: right-click an empty Iron Cup on a cow (not a Mooshroom) to fill it with milk.");
         addJeiInfo("iron_cup_yogurt", "Craft a Milk-filled Iron Cup with Sugar to make plain Yogurt.");
