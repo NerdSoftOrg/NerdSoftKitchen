@@ -1,0 +1,6 @@
+{
+	"parent": "dice_and_delish:block/display/progress_tortilla",
+	"textures": {
+		"texture": "dice_and_delish:block/display/finished_tortilla"
+	}
+}

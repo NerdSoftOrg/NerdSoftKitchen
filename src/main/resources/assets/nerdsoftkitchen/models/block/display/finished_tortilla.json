@@ -1,6 +1,0 @@
-{
-	"parent": "nerdsoftkitchen:block/display/progress_tortilla",
-	"textures": {
-		"texture": "nerdsoftkitchen:block/display/finished_tortilla"
-	}
-}

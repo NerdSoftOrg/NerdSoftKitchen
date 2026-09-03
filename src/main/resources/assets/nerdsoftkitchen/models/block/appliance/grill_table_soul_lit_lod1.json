@@ -1,6 +1,0 @@
-{
-	"parent": "nerdsoftkitchen:block/appliance/grill_table_lit_lod1",
-	"textures": {
-		"fire": "minecraft:block/soul_campfire_fire"
-	}
-}

@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "com.panzer.mods.dice_and_delish.mixin",
+	"compatibilityLevel": "${java}",
+	"client": [
+		"client.CampfireBlockMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
