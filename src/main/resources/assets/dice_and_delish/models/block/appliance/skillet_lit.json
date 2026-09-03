@@ -1,0 +1,7 @@
+{
+	"parent": "dice_and_delish:block/appliance/skillet_unlit",
+	"textures": {
+		"texture": "dice_and_delish:block/appliance/skillet_lit",
+		"particle": "dice_and_delish:block/appliance/skillet_lit"
+	}
+}

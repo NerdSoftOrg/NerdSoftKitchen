@@ -1,10 +1,10 @@
 <div align="center">
 
-# ![NerdSoft Kitchen](docs/media/banner.png)
+# ![Dice & Delish](docs/media/banner.png)
 
 [![NeoForge](https://img.shields.io/badge/NeoForge-1.21--.3-orange?style=for-the-badge&logo=curseforge)](https://neoforged.net/)
-[![Modrinth](https://img.shields.io/badge/Modrinth-Download-1bd96a?style=for-the-badge&logo=modrinth)](https://modrinth.com/mod/nerdsoftkitchen)
-[![CurseForge](https://img.shields.io/badge/CurseForge-Download-f16436?style=for-the-badge&logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/nerdsoftkitchen)
+[![Modrinth](https://img.shields.io/badge/Modrinth-Download-1bd96a?style=for-the-badge&logo=modrinth)](https://modrinth.com/mod/diceanddelish)
+[![CurseForge](https://img.shields.io/badge/CurseForge-Download-f16436?style=for-the-badge&logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/diceanddelish)
 [![License](https://img.shields.io/badge/Code-AGPLv3-blueviolet?style=for-the-badge)](#license)
 
 **A cooking overhaul for NeoForge 1.21**
@@ -16,7 +16,7 @@
 
 ## Overview
 
-**NerdSoft Kitchen** adds a small but deep cooking loop to Minecraft: grow your own produce, work a hand-fed **Grill
+**Dice & Delish** adds a small but deep cooking loop to Minecraft: grow your own produce, work a hand-fed **Grill
 Table**, and fill a reusable **Iron Cup** with milk, yogurt, or strawberry yogurt. Everything is built data-driven on
 top of vanilla systems (custom recipe types, data components, and datagen for `recipes/loot/tags/advancements/language`),
 so the mod stays lightweight and easy to extend or add compatibility for.
@@ -77,8 +77,8 @@ so the mod stays lightweight and easy to extend or add compatibility for.
 | Java        | `21+`                                              |
 
 1. Install [NeoForge](https://neoforged.net/) `21.X` or later for Minecraft 1.21-1.21.3.
-2. Download the latest **NerdSoft Kitchen** jar from [Modrinth](https://modrinth.com/mod/nerdsoftkitchen)
-   or [CurseForge](https://www.curseforge.com/minecraft/mc-mods/nerdsoftkitchen).
+2. Download the latest **Dice & Delish** jar from [Modrinth](https://modrinth.com/mod/diceanddelish)
+   or [CurseForge](https://www.curseforge.com/minecraft/mc-mods/diceanddelish).
 3. Drop the jar into your `mods/` folder.
 4. (Optional) Install [JEI](https://modrinth.com/mod/jei/versions?l=neoforge)
    and/or [Jade](https://modrinth.com/mod/jade/versions?c=release&g=neoforge) for the integrations described
@@ -91,7 +91,7 @@ so the mod stays lightweight and easy to extend or add compatibility for.
 
 ### JEI (Just Enough Items)
 
-Optional, client-side. When installed, NerdSoft Kitchen registers:
+Optional, client-side. When installed, Dice & Delish registers:
 
 - A dedicated **Grill Cooking** recipe category showing every custom grill recipe alongside its required catalyst.
 - Subtype support for the Iron Cup, so each fill state (empty, milk, yogurt, strawberry yogurt) shows up and searches as
@@ -122,7 +122,7 @@ No config file is required for Beta; all tuning currently lives in the datapack 
 
 Contributions are welcome for **bug reports, translations, and datapack-side content** (recipes, loot tables, tags).
 
-1. **Bugs & suggestions:** open a [GitHub Issue](https://github.com/NerdSoftOrg/NerdSoft-Kitchen/issues) with your
+1. **Bugs & suggestions:** open a [GitHub Issue](https://github.com/PanzerOrg/Panzer-Kitchen/issues) with your
    Minecraft/NeoForge/mod version, a log if relevant, and steps to reproduce.
 2. **Pull requests:** open an issue first to discuss the change before investing time in a PR — this keeps effort
    aligned with where the project is headed, and avoids duplicate work.
@@ -135,7 +135,7 @@ Please be respectful and constructive when opening issues or discussing changes.
 
 ## License
 
-NerdSoft Kitchen uses a **dual-license model**:
+Dice & Delish uses a **dual-license model**:
 
 | Content                             | License                                                                                                                              |
 |-------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
@@ -150,7 +150,7 @@ In short, for the **source code**:
 
 And for **artwork, logos, and branding**:
 
-- **Attribution** — credit NerdSoft and link back to the original.
+- **Attribution** — credit Panzer and link back to the original.
 - **NonCommercial** — no selling the assets or derivatives, or using them commercially, without permission.
 - **ShareAlike** — if you remix or build on them, your version must carry the same license.
 
@@ -164,7 +164,7 @@ In short, you're free to:
 
 Under these terms:
 
-- **Attribution** — credit NerdSoft (Bichal & Hugo) and link back to the original.
+- **Attribution** — credit Panzer (Bichal & Hugo) and link back to the original.
 - **NonCommercial** — no selling the mod or derivatives, or using them commercially, without permission.
 - **ShareAlike** — if you remix or build on it, your version must carry the same license.
 
@@ -176,10 +176,10 @@ See [`LICENSE`](LICENSE) for the full legal text, or open an issue if you'd like
 
 ![Logo](docs/media/logo_small.png)
 
-Made by **[NerdSoft](https://github.com/NerdSoftOrg)**
+Made by **[Panzer](https://github.com/PanzerOrg)**
 
-[![Modrinth](https://img.shields.io/badge/Modrinth-Download-1bd96a?style=for-the-badge&logo=modrinth)](https://modrinth.com/mod/nerdsoftkitchen)
-[![CurseForge](https://img.shields.io/badge/CurseForge-Download-f16436?style=for-the-badge&logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/nerdsoftkitchen)
-[![Issues](https://img.shields.io/badge/issues-open_issue-f16436?style=for-the-badge&logo=github)](https://github.com/NerdSoftOrg/NerdSoft-Kitchen/issues)
+[![Modrinth](https://img.shields.io/badge/Modrinth-Download-1bd96a?style=for-the-badge&logo=modrinth)](https://modrinth.com/mod/diceanddelish)
+[![CurseForge](https://img.shields.io/badge/CurseForge-Download-f16436?style=for-the-badge&logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/diceanddelish)
+[![Issues](https://img.shields.io/badge/issues-open_issue-f16436?style=for-the-badge&logo=github)](https://github.com/PanzerOrg/Panzer-Kitchen/issues)
 
 </div>

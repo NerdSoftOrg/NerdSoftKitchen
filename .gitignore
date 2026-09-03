@@ -1,11 +1,12 @@
 .gradle/
 build/
-!buildSrc/src/main/kotlin/dev/nerdsoft/build/
+!buildSrc/src/main/kotlin/dev/panzer/build/
 run/
 *.iml
 .kotlin/
 generated/
 versions/
+stonecutter.properties.toml
 
 *.history
 *.bbmodel

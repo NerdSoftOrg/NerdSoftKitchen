@@ -1,0 +1,482 @@
+package com.panzer.mods.dice_and_delish.datagen.advancement;
+
+import com.panzer.mods.dice_and_delish.DiceAndDelish;
+import com.panzer.mods.dice_and_delish.item.IronCupItem;
+import com.panzer.mods.dice_and_delish.item.component.IronCupContent;
+import com.panzer.mods.dice_and_delish.registry.block.ModBlocks;
+import com.panzer.mods.dice_and_delish.registry.item.ModItems;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementRequirements;
+import net.minecraft.advancements.AdvancementRewards;
+import net.minecraft.advancements.AdvancementType;
+import net.minecraft.advancements.critereon.*;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentPredicate;
+import net.minecraft.data.PackOutput;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.neoforged.neoforge.common.data.AdvancementProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+
+//? if <1.21.2 {
+import net.minecraft.advancements.critereon.BlockPredicate;
+import net.minecraft.advancements.critereon.LocationPredicate;
+import net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger;
+//?} else {
+/*import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.Item;
+*///?}
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+
+import static net.minecraft.advancements.Advancement.Builder;
+
+@SuppressWarnings("CommentedOutCode")
+public class ModAdvancementProvider extends AdvancementProvider {
+
+    public ModAdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries,
+                                  ExistingFileHelper existingFileHelper) {
+        super(output, registries, existingFileHelper, List.of(ModAdvancementProvider::generate));
+    }
+
+    private static void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver,
+                                 ExistingFileHelper existingFileHelper) {
+
+        //? if >=1.21.2 {
+        /*HolderLookup.RegistryLookup<Item> itemRegistry = registries.lookupOrThrow(Registries.ITEM);
+        *///?}
+
+        AdvancementHolder root = Builder.advancement()
+                .display(
+                        ModItems.GRILL_TABLE.get(),
+                        Component.translatable("advancements.dice_and_delish.root.title"),
+                        Component.translatable("advancements.dice_and_delish.root.description"),
+                        ResourceLocation.withDefaultNamespace("textures/block/farmland.png"),
+                        AdvancementType.TASK,
+                        false, false, false
+                )
+                .addCriterion("has_grill_table",
+                        InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.GRILL_TABLE.get()))
+                .save(saver, id("root"));
+
+        // --- Utensils branch ---
+
+        AdvancementHolder ironCup = Builder.advancement()
+                .parent(root)
+                .display(
+                        ModItems.IRON_CUP.get(),
+                        Component.translatable("advancements.dice_and_delish.iron_cup.title"),
+                        Component.translatable("advancements.dice_and_delish.iron_cup.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true, true, false
+                )
+                .addCriterion("has_iron_cup",
+                        InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.IRON_CUP.get()))
+                .save(saver, id("craft_iron_cup"));
+
+        AdvancementHolder cuttingBoard = Builder.advancement()
+                .parent(root)
+                .display(
+                        ModItems.CUTTING_BOARD.get(),
+                        Component.translatable("advancements.dice_and_delish.cutting_board.title"),
+                        Component.translatable("advancements.dice_and_delish.cutting_board.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true, true, false
+                )
+                .addCriterion("has_cutting_board",
+                        InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.CUTTING_BOARD.get()))
+                .save(saver, id("craft_cutting_board"));
+
+        AdvancementHolder grillSoul = Builder.advancement()
+                .parent(root)
+                .display(
+                        ModItems.GRILL_TABLE_SOUL.get(),
+                        Component.translatable("advancements.dice_and_delish.grill_soul.title"),
+                        Component.translatable("advancements.dice_and_delish.grill_soul.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true, true, false
+                )
+                .addCriterion("has_grill_table_soul",
+                        InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.GRILL_TABLE_SOUL.get()))
+                .save(saver, id("craft_grill_table_soul"));
+
+        AdvancementHolder masterKnife = Builder.advancement()
+                .parent(cuttingBoard)
+                .display(
+                        ModItems.NETHERITE_KNIFE.get(),
+                        Component.translatable("advancements.dice_and_delish.master_knife.title"),
+                        Component.translatable("advancements.dice_and_delish.master_knife.description"),
+                        null,
+                        AdvancementType.CHALLENGE,
+                        true, true, false
+                )
+                .rewards(AdvancementRewards.Builder.experience(25))
+                .addCriterion("has_diamond_knife", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.DIAMOND_KNIFE.get()))
+                .addCriterion("has_obsidian_knife", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.OBSIDIAN_KNIFE.get()))
+                .addCriterion("has_netherite_knife", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.NETHERITE_KNIFE.get()))
+                .requirements(AdvancementRequirements.Strategy.OR)
+                .save(saver, id("craft_master_knife"));
+
+        // --- Farming branch ---
+
+        AdvancementHolder growStrawberry = Builder.advancement()
+                .parent(root)
+                .display(
+                        ModItems.STRAWBERRY.get(),
+                        Component.translatable("advancements.dice_and_delish.grow_strawberry.title"),
+                        Component.translatable("advancements.dice_and_delish.grow_strawberry.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true, true, false
+                )
+                .addCriterion("has_strawberry", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.STRAWBERRY.get()))
+                .save(saver, id("grow_strawberry"));
+
+        AdvancementHolder growLettuce = Builder.advancement()
+                .parent(root)
+                .display(
+                        ModItems.LETTUCE.get(),
+                        Component.translatable("advancements.dice_and_delish.grow_lettuce.title"),
+                        Component.translatable("advancements.dice_and_delish.grow_lettuce.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true, true, false
+                )
+                .addCriterion("has_lettuce", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.LETTUCE.get()))
+                .save(saver, id("grow_lettuce"));
+
+        AdvancementHolder growPurpleOnion = Builder.advancement()
+                .parent(root)
+                .display(
+                        ModItems.PURPLE_ONION.get(),
+                        Component.translatable("advancements.dice_and_delish.grow_purple_onion.title"),
+                        Component.translatable("advancements.dice_and_delish.grow_purple_onion.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true, true, false
+                )
+                .addCriterion("has_purple_onion", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.PURPLE_ONION.get()))
+                .save(saver, id("grow_purple_onion"));
+
+        AdvancementHolder growTomato = Builder.advancement()
+                .parent(root)
+                .display(
+                        ModItems.TOMATO.get(),
+                        Component.translatable("advancements.dice_and_delish.grow_tomato.title"),
+                        Component.translatable("advancements.dice_and_delish.grow_tomato.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true, true, false
+                )
+                .addCriterion("has_tomato", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.TOMATO.get()))
+                .save(saver, id("grow_tomato"));
+
+        AdvancementHolder trellisMaster = Builder.advancement()
+                .parent(growTomato)
+                .display(
+                        Items.STICK,
+                        Component.translatable("advancements.dice_and_delish.trellis_master.title"),
+                        Component.translatable("advancements.dice_and_delish.trellis_master.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true, true, false
+                )
+                //? if <1.21.2 {
+                .addCriterion("staked_tomato_crop", ItemUsedOnLocationTrigger.TriggerInstance.itemUsedOnBlock(
+                        LocationPredicate.Builder.location().setBlock(BlockPredicate.Builder.block().of(ModBlocks.TOMATO_CROP.get())),
+                        ItemPredicate.Builder.item().of(Items.STICK)
+                ))
+                //?} else {
+                /*.addCriterion("staked_tomato_crop", ItemUsedOnLocationTrigger.TriggerInstance.itemUsedOnBlock(
+                        LocationPredicate.Builder.location().setBlock(BlockPredicate.Builder.block().of(
+                                registries.lookupOrThrow(Registries.BLOCK),
+                                ModBlocks.TOMATO_CROP.get()
+                        )),
+                        ItemPredicate.Builder.item().of(
+                                itemRegistry,
+                                Items.STICK
+                        )
+                ))
+                *///?}
+                .save(saver, id("build_tomato_trellis"));
+
+        //? if <1.21.2 {
+        AdvancementHolder harvestAll = Builder.advancement()
+                .parent(root)
+                .display(
+                        ModItems.SALAD.get(),
+                        Component.translatable("advancements.dice_and_delish.harvest_all.title"),
+                        Component.translatable("advancements.dice_and_delish.harvest_all.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true, true, false
+                )
+                .addCriterion("has_strawberry", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ItemPredicate.Builder.item().of(ModItems.STRAWBERRY.get()).build()))
+                .addCriterion("has_tomato", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ItemPredicate.Builder.item().of(ModItems.TOMATO.get()).build()))
+                .addCriterion("has_lettuce", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ItemPredicate.Builder.item().of(ModItems.LETTUCE.get()).build()))
+                .addCriterion("has_purple_onion", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ItemPredicate.Builder.item().of(ModItems.PURPLE_ONION.get()).build()))
+                .save(saver, id("harvest_all_crops"));
+        //?} else {
+        /*AdvancementHolder harvestAll = Builder.advancement()
+                .parent(root)
+                .display(
+                        ModItems.SALAD.get(),
+                        Component.translatable("advancements.dice_and_delish.harvest_all.title"),
+                        Component.translatable("advancements.dice_and_delish.harvest_all.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true, true, false
+                )
+                .addCriterion("has_strawberry", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ItemPredicate.Builder.item().of(itemRegistry, ModItems.STRAWBERRY.get()).build()))
+                .addCriterion("has_tomato", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ItemPredicate.Builder.item().of(itemRegistry, ModItems.TOMATO.get()).build()))
+                .addCriterion("has_lettuce", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ItemPredicate.Builder.item().of(itemRegistry, ModItems.LETTUCE.get()).build()))
+                .addCriterion("has_purple_onion", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ItemPredicate.Builder.item().of(itemRegistry, ModItems.PURPLE_ONION.get()).build()))
+                .save(saver, id("harvest_all_crops"));
+        *///?}
+
+        // --- Cooking branch ---
+
+        AdvancementHolder makeSalad = Builder.advancement()
+                .parent(harvestAll)
+                .display(
+                        ModItems.SALAD.get(),
+                        Component.translatable("advancements.dice_and_delish.make_salad.title"),
+                        Component.translatable("advancements.dice_and_delish.make_salad.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true, true, false
+                )
+                .addCriterion("has_salad", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.SALAD.get()))
+                .save(saver, id("make_salad"));
+
+        AdvancementHolder cookChicken = Builder.advancement()
+                .parent(root)
+                .display(
+                        ModItems.COOKED_CHICKEN_PIECES.get(),
+                        Component.translatable("advancements.dice_and_delish.cook_chicken_pieces.title"),
+                        Component.translatable("advancements.dice_and_delish.cook_chicken_pieces.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true, true, false
+                )
+                .addCriterion("has_cooked_chicken_pieces",
+                        InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.COOKED_CHICKEN_PIECES.get()))
+                .save(saver, id("cook_chicken_pieces"));
+
+        AdvancementHolder fryEgg = Builder.advancement()
+                .parent(root)
+                .display(
+                        ModItems.FRIED_EGG.get(),
+                        Component.translatable("advancements.dice_and_delish.fry_egg.title"),
+                        Component.translatable("advancements.dice_and_delish.fry_egg.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true, true, false
+                )
+                .addCriterion("has_fried_egg", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.FRIED_EGG.get()))
+                .save(saver, id("fry_egg"));
+
+        AdvancementHolder grilledCheese = Builder.advancement()
+                .parent(cuttingBoard)
+                .display(
+                        ModItems.GRILLED_CHEESE.get(),
+                        Component.translatable("advancements.dice_and_delish.grilled_cheese.title"),
+                        Component.translatable("advancements.dice_and_delish.grilled_cheese.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true, true, false
+                )
+                .rewards(AdvancementRewards.Builder.experience(10))
+                .addCriterion("has_grilled_cheese", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.GRILLED_CHEESE.get()))
+                .save(saver, id("make_grilled_cheese"));
+
+        AdvancementHolder potatoTortilla = Builder.advancement()
+                .parent(cuttingBoard)
+                .display(
+                        ModItems.POTATO_TORTILLA.get(),
+                        Component.translatable("advancements.dice_and_delish.potato_tortilla.title"),
+                        Component.translatable("advancements.dice_and_delish.potato_tortilla.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true, true, false
+                )
+                .rewards(AdvancementRewards.Builder.experience(10))
+                .addCriterion("has_potato_tortilla", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.POTATO_TORTILLA.get()))
+                .save(saver, id("make_potato_tortilla"));
+
+        //? if <1.21.2 {
+        AdvancementHolder milkCup = Builder.advancement()
+                .parent(ironCup)
+                .display(
+                        ironCupWith(IronCupContent.MILK),
+                        Component.translatable("advancements.dice_and_delish.milk_cup.title"),
+                        Component.translatable("advancements.dice_and_delish.milk_cup.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true, true, false
+                )
+                .addCriterion("has_milk_cup",
+                        InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item()
+                                .of(ModItems.IRON_CUP.get())
+                                .hasComponents(DataComponentPredicate.allOf(ironCupWith(IronCupContent.MILK).getComponents()))
+                                .build()))
+                .save(saver, id("fill_cup_with_milk"));
+
+        AdvancementHolder plainYogurt = Builder.advancement()
+                .parent(milkCup)
+                .display(
+                        ironCupWith(IronCupContent.YOGURT),
+                        Component.translatable("advancements.dice_and_delish.yogurt.title"),
+                        Component.translatable("advancements.dice_and_delish.yogurt.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true, true, false
+                )
+                .addCriterion("has_yogurt",
+                        InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item()
+                                .of(ModItems.IRON_CUP.get())
+                                .hasComponents(DataComponentPredicate.allOf(ironCupWith(IronCupContent.YOGURT).getComponents()))
+                                .build()))
+                .save(saver, id("make_yogurt"));
+
+        AdvancementHolder strawberryYogurt = Builder.advancement()
+                .parent(plainYogurt)
+                .display(
+                        ironCupWith(IronCupContent.STRAWBERRY_YOGURT),
+                        Component.translatable("advancements.dice_and_delish.strawberry_yogurt.title"),
+                        Component.translatable("advancements.dice_and_delish.strawberry_yogurt.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true, true, false
+                )
+                .rewards(AdvancementRewards.Builder.experience(10))
+                .addCriterion("has_strawberry_yogurt",
+                        InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item()
+                                .of(ModItems.IRON_CUP.get())
+                                .hasComponents(DataComponentPredicate.allOf(ironCupWith(IronCupContent.STRAWBERRY_YOGURT).getComponents()))
+                                .build()))
+                .save(saver, id("make_strawberry_yogurt"));
+
+        // --- Capstone ---
+
+        Builder.advancement()
+                .parent(strawberryYogurt)
+                .display(
+                        ModItems.GRILLED_CHEESE.get(),
+                        Component.translatable("advancements.dice_and_delish.gourmet.title"),
+                        Component.translatable("advancements.dice_and_delish.gourmet.description"),
+                        null,
+                        AdvancementType.CHALLENGE,
+                        true, true, true
+                )
+                .rewards(AdvancementRewards.Builder.experience(50))
+                .addCriterion("has_grilled_cheese", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.GRILLED_CHEESE.get()))
+                .addCriterion("has_strawberry_yogurt",
+                        InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item()
+                                .of(ModItems.IRON_CUP.get())
+                                .hasComponents(DataComponentPredicate.allOf(ironCupWith(IronCupContent.STRAWBERRY_YOGURT).getComponents()))
+                                .build()))
+                .addCriterion("has_master_knife", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.NETHERITE_KNIFE.get()))
+                .addCriterion("has_salad", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.SALAD.get()))
+                .requirements(AdvancementRequirements.Strategy.AND)
+                .save(saver, id("gourmet_chef"));
+        //?} else {
+        /*AdvancementHolder milkCup = Builder.advancement()
+                .parent(ironCup)
+                .display(
+                        ironCupWith(IronCupContent.MILK),
+                        Component.translatable("advancements.dice_and_delish.milk_cup.title"),
+                        Component.translatable("advancements.dice_and_delish.milk_cup.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true, true, false
+                )
+                .addCriterion("has_milk_cup",
+                        InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item()
+                                .of(itemRegistry, ModItems.IRON_CUP.get())
+                                .hasComponents(DataComponentPredicate.allOf(ironCupWith(IronCupContent.MILK).getComponents()))
+                                .build()))
+                .save(saver, id("fill_cup_with_milk"));
+
+        AdvancementHolder plainYogurt = Builder.advancement()
+                .parent(milkCup)
+                .display(
+                        ironCupWith(IronCupContent.YOGURT),
+                        Component.translatable("advancements.dice_and_delish.yogurt.title"),
+                        Component.translatable("advancements.dice_and_delish.yogurt.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true, true, false
+                )
+                .addCriterion("has_yogurt",
+                        InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item()
+                                .of(itemRegistry, ModItems.IRON_CUP.get())
+                                .hasComponents(DataComponentPredicate.allOf(ironCupWith(IronCupContent.YOGURT).getComponents()))
+                                .build()))
+                .save(saver, id("make_yogurt"));
+
+        AdvancementHolder strawberryYogurt = Builder.advancement()
+                .parent(plainYogurt)
+                .display(
+                        ironCupWith(IronCupContent.STRAWBERRY_YOGURT),
+                        Component.translatable("advancements.dice_and_delish.strawberry_yogurt.title"),
+                        Component.translatable("advancements.dice_and_delish.strawberry_yogurt.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true, true, false
+                )
+                .rewards(AdvancementRewards.Builder.experience(10))
+                .addCriterion("has_strawberry_yogurt",
+                        InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item()
+                                .of(itemRegistry, ModItems.IRON_CUP.get())
+                                .hasComponents(DataComponentPredicate.allOf(ironCupWith(IronCupContent.STRAWBERRY_YOGURT).getComponents()))
+                                .build()))
+                .save(saver, id("make_strawberry_yogurt"));
+
+        Builder.advancement()
+                .parent(strawberryYogurt)
+                .display(
+                        ModItems.GRILLED_CHEESE.get(),
+                        Component.translatable("advancements.dice_and_delish.gourmet.title"),
+                        Component.translatable("advancements.dice_and_delish.gourmet.description"),
+                        null,
+                        AdvancementType.CHALLENGE,
+                        true, true, true
+                )
+                .rewards(AdvancementRewards.Builder.experience(50))
+                .addCriterion("has_grilled_cheese", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.GRILLED_CHEESE.get()))
+                .addCriterion("has_strawberry_yogurt",
+                        InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item()
+                                .of(itemRegistry, ModItems.IRON_CUP.get())
+                                .hasComponents(DataComponentPredicate.allOf(ironCupWith(IronCupContent.STRAWBERRY_YOGURT).getComponents()))
+                                .build()))
+                .addCriterion("has_master_knife", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.NETHERITE_KNIFE.get()))
+                .addCriterion("has_salad", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.SALAD.get()))
+                .requirements(AdvancementRequirements.Strategy.AND)
+                .save(saver, id("gourmet_chef"));
+        *///?}
+    }
+
+    private static ItemStack ironCupWith(IronCupContent content) {
+        return IronCupItem.filled(ModItems.IRON_CUP.get(), content);
+    }
+
+    private static String id(String name) {
+        return DiceAndDelish.MOD_ID + ":" + name;
+    }
+}
