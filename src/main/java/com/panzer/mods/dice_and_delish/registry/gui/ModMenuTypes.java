@@ -17,6 +17,6 @@ public final class ModMenuTypes {
 
     public static void register(IEventBus eventBus) {
         MENUS.register(eventBus);
-        ModLogger.info("Menu Types registered successfully.");
+        ModLogger.debug("Menu Types registered successfully.");
     }
 }

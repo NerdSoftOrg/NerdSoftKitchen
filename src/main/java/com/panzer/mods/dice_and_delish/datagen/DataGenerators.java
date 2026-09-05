@@ -45,7 +45,6 @@ public final class DataGenerators {
 
     public static void register(IEventBus eventBus) {
         eventBus.addListener(DataGenerators::gatherData);
-        ModLogger.info("Data Generators listener attached.");
     }
 
     private static void gatherData(GatherDataEvent event) {

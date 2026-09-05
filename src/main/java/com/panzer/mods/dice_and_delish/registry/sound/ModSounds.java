@@ -34,7 +34,7 @@ public final class ModSounds {
 
     public static void register(IEventBus eventBus) {
         SOUNDS.register(eventBus);
-        ModLogger.info("Sounds registered successfully.");
+        ModLogger.debug("Sounds registered successfully.");
     }
 
     private static ResourceLocation id(String path) {

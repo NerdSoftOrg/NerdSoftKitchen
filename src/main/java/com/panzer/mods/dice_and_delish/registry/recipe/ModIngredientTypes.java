@@ -23,6 +23,6 @@ public final class ModIngredientTypes {
 
     public static void register(IEventBus eventBus) {
         INGREDIENT_TYPES.register(eventBus);
-        ModLogger.info("Ingredient Types registered successfully.");
+        ModLogger.debug("Ingredient Types registered successfully.");
     }
 }

@@ -70,6 +70,6 @@ public final class ModBlockEntities {
 
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
-        ModLogger.info("Block Entities registered successfully.");
+        ModLogger.debug("Block Entities registered successfully.");
     }
 }

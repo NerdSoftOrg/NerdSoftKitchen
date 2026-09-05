@@ -33,12 +33,14 @@ public final class DiceAndDelish {
         ModLogger.info("Initializing Dice & Delish...");
 
         // Data & Utility Registries
+        ModLogger.info("Data and Utils registered successfully.");
         ModDataComponents.register(modEventBus);
         ModDamageTypes.register(modEventBus);
         ModCapabilities.register(modEventBus);
         ModCustomStats.register(modEventBus);
 
         // Core Game Registries
+        ModLogger.info("Core Game registered successfully.");
         ModSounds.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModItems.register(modEventBus);
@@ -48,11 +50,13 @@ public final class DiceAndDelish {
         ModCreativeTabs.register(modEventBus);
 
         // Recipe Registries
+        ModLogger.info("Recipes registered successfully.");
         ModRecipeTypes.register(modEventBus);
         ModRecipeSerializers.register(modEventBus);
         ModIngredientTypes.register(modEventBus);
 
         // WorldGen Datagen Helpers
+        ModLogger.info("Worldgen registered successfully.");
         ModFeatures.register(modEventBus);
         ModPlacedFeatures.register(modEventBus);
 

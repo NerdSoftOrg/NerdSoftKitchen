@@ -159,7 +159,7 @@ public final class ModBlocks {
 
     public static void register(IEventBus eventBus) {
         BLOCKS.register(eventBus);
-        ModLogger.info("Blocks registered successfully.");
+        ModLogger.debug("Blocks registered successfully.");
     }
 
     private static DeferredBlock<WildCropBlock> registerWildCrop(String name) {

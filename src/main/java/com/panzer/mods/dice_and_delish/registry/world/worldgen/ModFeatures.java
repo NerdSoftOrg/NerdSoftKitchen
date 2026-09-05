@@ -1,6 +1,7 @@
 package com.panzer.mods.dice_and_delish.registry.world.worldgen;
 
 import com.panzer.mods.dice_and_delish.DiceAndDelish;
+import com.panzer.mods.dice_and_delish.util.ModLogger;
 import com.panzer.mods.dice_and_delish.worldgen.feature.TriplePlantFeature;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -20,5 +21,6 @@ public final class ModFeatures {
 
     public static void register(IEventBus eventBus) {
         FEATURES.register(eventBus);
+        ModLogger.debug("Features registered successfully.");
     }
 }

@@ -26,7 +26,7 @@ public final class ModItemTags {
 
     @SuppressWarnings("unused")
     public static void register(IEventBus eventBus) {
-        ModLogger.info("Item Tags registered successfully.");
+        ModLogger.debug("Item Tags registered successfully.");
     }
 
     public static TagKey<Item> mod(String path) {

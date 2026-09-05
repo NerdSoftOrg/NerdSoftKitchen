@@ -43,6 +43,6 @@ public final class ModDataComponents {
 
     public static void register(IEventBus eventBus) {
         DATA_COMPONENTS.register(eventBus);
-        ModLogger.info("Data Components registered successfully.");
+        ModLogger.debug("Data Components registered successfully.");
     }
 }

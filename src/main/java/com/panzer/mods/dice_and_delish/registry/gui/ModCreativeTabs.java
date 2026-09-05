@@ -91,10 +91,10 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.OBSIDIAN_KNIFE);
                         output.accept(ModItems.NETHERITE_KNIFE);
 
-                        // Dirts
-                        output.accept(ModItems.ORGANIC_MIXTURE);
-                        output.accept(ModItems.ORGANIC_SOIL);
-                        output.accept(ModItems.FERTILE_FARMLAND);
+                        //! Dirts (Not yet)
+                        // output.accept(ModItems.ORGANIC_MIXTURE);
+                        // output.accept(ModItems.ORGANIC_SOIL);
+                        // output.accept(ModItems.FERTILE_FARMLAND);
                     })
                     .build()
     );
@@ -104,6 +104,6 @@ public final class ModCreativeTabs {
 
     public static void register(IEventBus eventBus) {
         CREATIVE_TABS.register(eventBus);
-        ModLogger.info("Creative Tabs registered successfully.");
+        ModLogger.debug("Creative Tabs registered successfully.");
     }
 }

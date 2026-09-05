@@ -53,11 +53,11 @@ parchment_mappings_version = "2025.03.23"
 # de arriba solo para ese mod_id. No hace falta declarar todos los campos: los que
 # faltan se heredan del bloque base de esa versión. Ejemplo:
 #
-# [overrides.tessera."1.21.1"]
+# [overrides.mod."1.21.1"]
 # neo_version = "21.1.180"
 # neo_version_range = "[21.1,21.2)"
 #
-# [overrides.tessera."1.21.4"]
+# [overrides.mod."1.21.4"]
 # parchment_mappings_version = "2025.02.09"
 
 [mod]

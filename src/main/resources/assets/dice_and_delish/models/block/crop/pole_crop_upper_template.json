@@ -1,0 +1,19 @@
+{
+	"textures": {
+		"particle": "dice_and_delish:block/appliance/pole_stick",
+		"texture": "dice_and_delish:block/appliance/pole_stick"
+	},
+	"elements": [
+		{
+			"from": [7.5, 0, 7.5],
+			"to": [8.5, 11, 8.5],
+			"faces": {
+				"north": {"uv": [0, 4, 1, 15], "texture": "#texture"},
+				"east": {"uv": [2, 4, 1, 15], "texture": "#texture"},
+				"south": {"uv": [0, 4, 1, 15], "texture": "#texture"},
+				"west": {"uv": [2, 4, 1, 15], "texture": "#texture"},
+				"up": {"uv": [0, 3, 1, 4], "texture": "#texture"}
+			}
+		}
+	]
+}

@@ -31,6 +31,6 @@ public final class ModRecipeSerializers {
 
     public static void register(IEventBus eventBus) {
         RECIPE_SERIALIZERS.register(eventBus);
-        ModLogger.info("Recipe Serializers registered successfully.");
+        ModLogger.debug("Recipe Serializers registered successfully.");
     }
 }

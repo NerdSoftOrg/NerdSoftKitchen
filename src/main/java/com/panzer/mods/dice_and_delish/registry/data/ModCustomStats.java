@@ -1,6 +1,7 @@
 package com.panzer.mods.dice_and_delish.registry.data;
 
 import com.panzer.mods.dice_and_delish.DiceAndDelish;
+import com.panzer.mods.dice_and_delish.util.ModLogger;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stat;
@@ -48,5 +49,6 @@ public final class ModCustomStats {
 
     public static void register(IEventBus eventBus) {
         CUSTOM_STATS.register(eventBus);
+        ModLogger.debug("Custom Stats registered successfully.");
     }
 }

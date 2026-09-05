@@ -245,6 +245,6 @@ public final class ModItems {
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
-        ModLogger.info("Items registered successfully.");
+        ModLogger.debug("Items registered successfully.");
     }
 }

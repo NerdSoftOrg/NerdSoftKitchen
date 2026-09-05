@@ -15,7 +15,7 @@ public final class ModCapabilities {
 
     public static void register(IEventBus eventBus) {
         eventBus.addListener(ModCapabilities::registerCapabilities);
-        ModLogger.info("Capabilities registered successfully.");
+        ModLogger.debug("Capabilities registered successfully.");
     }
 
     private static void registerCapabilities(RegisterCapabilitiesEvent event) {

@@ -35,7 +35,7 @@ public final class ModPlacedFeatures {
 
     @SuppressWarnings("unused")
     public static void register(IEventBus eventBus) {
-        ModLogger.info("Placed Features registered successfully.");
+        ModLogger.debug("Placed Features registered successfully.");
     }
 
     private static ResourceKey<PlacedFeature> key(String name) {

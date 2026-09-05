@@ -25,7 +25,7 @@ public final class ModRecipeTypes {
 
     public static void register(IEventBus eventBus) {
         RECIPE_TYPES.register(eventBus);
-        ModLogger.info("Recipe Types registered successfully.");
+        ModLogger.debug("Recipe Types registered successfully.");
     }
 
     private static <T extends net.minecraft.world.item.crafting.Recipe<?>> DeferredHolder<RecipeType<?>,

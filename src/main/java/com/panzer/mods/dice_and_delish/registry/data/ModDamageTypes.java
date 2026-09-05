@@ -17,7 +17,7 @@ public final class ModDamageTypes {
 
     @SuppressWarnings("unused")
     public static void register(IEventBus eventBus) {
-        ModLogger.info("Damage Types registered successfully.");
+        ModLogger.debug("Damage Types registered successfully.");
     }
 
     @SuppressWarnings("SameParameterValue")
